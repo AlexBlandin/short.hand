@@ -56,15 +56,20 @@ typedef float f32;
 /* use in a "... %"LU" ..." pattern, allows formatting */
 #define LU "llu"
 #define LD "lld"
+#define LN "\r\n"
 #else
 /* use in a "... %"LU" ..." pattern, allows formatting */
 #define LU "lu"
 #define LD "ld"
+#define LN "\n"
 #endif
 
 #ifndef printvar
-#define printvar(var) (printf("%s=%d",(#var),(var)),println())
+#define printvar(var) printf("%s=%d"LN,(#var),(var))
 #endif
+
+/* just prints a newline */
+#define println() printf(LN)
 
 #if !defined(bool) && defined(_Bool)
 #define bool _Bool
@@ -201,15 +206,6 @@ bool prime(u32 n) {
   return true;
 }
 #endif
-
-/* just prints a newline */
-void println(){
-#ifdef _WIN32
-  printf("\r\n");
-#else
-  printf("\n");
-#endif
-}
 
 /* 2 u32s into a u64, `a` goes into "left" (higher) bits */
 #define packu64(a, b) (((u64)(a)) << 32 | (b))
