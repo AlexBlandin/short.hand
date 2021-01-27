@@ -23,7 +23,7 @@ class data: # I recommend this pattern in general for POD, slightly more memory 
   y: float
   z: float
   w: float
-  def __dict__(self): # Can be a fairly safe inclusion (usually) otherwise rename as .slots() or something
+  def slots(self): # A useful inclusion
     return {slot:self.__getattribute__(slot) for slot in self.__slots__}
 
 def transpose(matrix):
