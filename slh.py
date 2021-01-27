@@ -1,4 +1,5 @@
 # Santa's Little Helpers
+from dataclasses import dataclass
 from functools import partial
 from itertools import chain
 from random import sample
@@ -12,11 +13,18 @@ except:
 
 flatten = chain.from_iterable
 
-class dot(dict): # as in a "dot dict", a dict you can access by a "."
+class dot(dict): # as in a "dot dict", a dict you can access by a "." # pretty inefficient bc. (dict), but elegant
   __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__
 
-def slots(self):
-  return {slot:self.__getattribute__(slot) for slot in self.__slots__}
+@dataclass
+class data: # I recommend this pattern in general for POD, slightly more memory with __slots__ but guarantees perf
+  __slots__ = ["x", "y", "z", "w"]
+  x: float
+  y: float
+  z: float
+  w: float
+  def __dict__(self): # Can be a fairly safe inclusion (usually) otherwise rename as .slots() or something
+    return {slot:self.__getattribute__(slot) for slot in self.__slots__}
 
 def transpose(matrix):
   return list(map(list, zip(*matrix)))
@@ -27,20 +35,23 @@ def lmap(f, *args): # because wrapping in list() all the time is awkward, rememb
 def tmap(f, *args):
   return tuple(map(f, *args))
 
-def join(it, sep = " "): # because sep.join(it) doesn't convert it to an iterable of str
-  return sep.join(map(str, it))
+def join(iterable, sep = " "): # because sep.join(it) doesn't convert it to an iterable of str
+  return sep.join(map(str, iterable))
 
-def avg(it, start=0): # because x/0 = 0 in euclidean
-  return sum(it, start) / len(it) if len(it) else 0
+def avg(iterable, start=0): # because x/0 = 0 in euclidean
+  return sum(iterable, start) / len(iterable) if len(iterable) else 0
 
-def shuffled(it): # aka, "shuffle but not in place", like reversed and sorted, shame they ignore prior
-  return sample(it, len(it))
+def minmax(*iterable): # get the minimum and maximum quickly
+  return min(iterable),max(iterable) # min(*iterable) is only faster for len(iterable) == 2
 
-def lenfilter(it, pred=bool): # counts how many are true for a given predicate
-  return sum(1 for i in it if pred(i))
+def shuffled(iterable): # aka, "shuffle but not in place", like reversed and sorted, shame they ignore prior
+  return sample(iterable, len(iterable))
 
-def first(it, default=None): # first item
-  return next(iter(it), default) 
+def lenfilter(iterable, pred=bool): # counts how many are true for a given predicate
+  return sum(1 for it in iterable if pred(it))
+
+def first(iterable, default=None): # first item
+  return next(iter(iterable), default) 
 
 def dotprod(A, B):
   return sum(a*b for a,b in zip(A,B))
@@ -57,7 +68,7 @@ def popcount(x: int): # 3.10 adds int.bit_count() so yay
 def bits(x): # because bin() has no option to drop the 0b or sign (shame no uint type)
   return bin(x)[2 if int(x) >= 0 else 3 :]
 
-def find(v, iterable: list, start: int, stop: int, missing = -1): # find v in interable, because it exists for strings but not lists...
+def find(v, iterable: list, start: int, stop: int, missing = -1): # find v in interable without exceptions
   try:
     return iterable.index(v, start, stop)
   except: # because if doesn't have .index then we couldn't find iterable
