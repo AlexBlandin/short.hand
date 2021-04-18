@@ -192,7 +192,15 @@ bool prime(u32 n) {
 
 /* just prints a newline */
 void println() {
-  printf("%n");
+  #ifdef COSMOPOLITAN_H_
+    printf("%n");
+  #else
+    #ifdef WIN32
+      printf("\r\n");
+    #else
+      printf("\n");
+    #endif
+  #endif
 }
 
 /* 2 u32s into a u64, `a` goes into "left" (higher) bits */
