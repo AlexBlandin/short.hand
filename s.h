@@ -57,12 +57,12 @@ typedef int8_t  s8;
 typedef double f64;
 typedef float f32;
 
-#if !defined(bool) && defined(_Bool)
-#define bool _Bool
-#endif
-
-#if !defined(bool) && !defined(_Bool)
-#define bool char
+#ifndef bool
+  #ifdef _Bool
+    #define bool _Bool
+  #else
+    #define bool char
+  #endif
 #endif
 
 /* personal preference */
@@ -156,7 +156,7 @@ u32 which_bit(u32 v) {
 /* toggle x's n'th bit */
 #define bs_toggle(x, n) ((x)[(n) / 8] ^= (1 << ((n) % 8)))
 
-#if !defined(bitcount)
+#ifndef bitcount
 i32 bitcount64(u64 v) { /* clang-10 favoured bc. 64 bit magic??? */
   i32 r = 0;
   while (v != 0) {
@@ -168,7 +168,7 @@ i32 bitcount64(u64 v) { /* clang-10 favoured bc. 64 bit magic??? */
 #endif
 
 /* from bit twiddling hacks (https://graphics.stanford.edu/~seander/bithacks.html) */
-#if !defined(bitcount32)
+#ifndef bitcount32
 i32 bitcount32(u32 v) { /* gcc favoured (clang converts to popcount, popcount is slower???) */
   v = v - ((v >> 1) & 0x55555555);
   v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
