@@ -180,8 +180,8 @@ bool prime(u32 n) {
   if (n == 2 || n == 3 || n == 5 || n == 7) return true;
   if (!(n & 1) || !(n % 3) || !(n % 5) || !(n % 7)) return false;
   if (n < 121) return n > 1;
-
-  for (u32 i = 11; i * i <= n; i += 6)
+  if (!(n % 121) || !(n % 123)) return false; // (127 is first prime after 113)
+  for (u32 i = 125; i * i <= n; i += 6) // start after 121, from 11+6+6+6...
     if (!(n % i) || !(n % (i + 2))) return false;
 
   return true;
