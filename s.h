@@ -5,6 +5,7 @@
 #ifndef COSMOPOLITAN_H_ /* proxy for "noncosmipolitan setup" */
 #include <assert.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,6 +61,7 @@ typedef int8_t  s8;
 typedef double f64;
 typedef float f32;
 
+/* fallback bool defs */
 #ifndef bool
   #ifdef _Bool
     #define bool _Bool
@@ -69,10 +71,19 @@ typedef float f32;
 #endif
 
 #ifndef true
-#define true 1
+  #define true 1
 #endif
 #ifndef false
-#define false 0
+  #define false 0
+#endif
+#ifndef and
+  #define and &&
+#endif
+#ifndef or
+  #define or ||
+#endif
+#ifndef not
+  #define not !
 #endif
 
 /* copy n bytes from src to dst */
