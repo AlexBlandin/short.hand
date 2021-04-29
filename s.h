@@ -17,8 +17,7 @@
 #include "cosmo/cosmopolitan.h" /* we assumed cosmipolitan above, this is just for linting etc. */
 #endif
 
-/* <iso646.h> for `and`, `or`, `not`, etc. */
-#include <iso646.h>
+typedef unsigned int uint;
 
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -76,6 +75,10 @@ typedef float f32;
 #ifndef false
   #define false 0
 #endif
+
+/* <iso646.h> for `and`, `or`, `not`, etc. */
+#include <iso646.h>
+/* fallback <iso646.h> */
 #ifndef and
   #define and &&
 #endif
