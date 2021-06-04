@@ -168,7 +168,7 @@ u32 which_bit(u32 v) {
 /* toggle x's n'th bit */
 #define bs_toggle(x, n) ((x)[(n) / 8] ^= (1 << ((n) % 8)))
 
-#ifndef bitcount
+#ifndef bitcount64
 i32 bitcount64(u64 v) { /* clang-10 favoured bc. 64 bit magic??? */
   i32 r = 0;
   while (v != 0) {
@@ -185,6 +185,26 @@ i32 bitcount32(u32 v) { /* gcc favoured (clang converts to popcount, popcount is
   v = v - ((v >> 1) & 0x55555555);
   v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
   return (((v + (v >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24;
+}
+#endif
+
+#ifndef ilog2
+i32 ilog2(u32 x) {
+  return 31 - __builtin_clz(x|1);
+}
+#endif
+
+#ifndef ilog10
+i32 ilog10(u32 x) { /* Lemire and Kendall Willets to the rescue https://lemire.me/blog/2021/06/03/computing-the-number-of-digits-of-an-integer-even-faster/  */
+  static uint64_t table[] = {
+      4294967296,  8589934582,  8589934582,  8589934582,  12884901788,
+      12884901788, 12884901788, 17179868184, 17179868184, 17179868184,
+      21474826480, 21474826480, 21474826480, 21474826480, 25769703776,
+      25769703776, 25769703776, 30063771072, 30063771072, 30063771072,
+      34349738368, 34349738368, 34349738368, 34349738368, 38554705664,
+      38554705664, 38554705664, 41949672960, 41949672960, 41949672960,
+      42949672960, 42949672960};
+  return (x + table[ilog2(x)]) >> 32;
 }
 #endif
 
