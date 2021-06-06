@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include <math.h>
 #include <time.h>
 #else
@@ -261,6 +262,31 @@ void seed_rng() {
     for (int i = 4; i--;) rng_state[i] = packu64(rand(), rand());
   }
   _unseeded = false;
+}
+
+/* Regehr and Cordes make this clean */
+static inline u32 rotl32(u32 n, u32 c) {
+  const u32 mask = (CHAR_BIT*sizeof(n) - 1);
+  c &= mask;
+  return (n << c) | (n >> ((-c)&mask));
+}
+
+static inline u32 rotr32(u32 n, u32 c) {
+  const u32 mask = (CHAR_BIT*sizeof(n) - 1);
+  c &= mask;
+  return (n >> c) | (n << ((-c)&mask));
+}
+
+static inline u64 rotl64(u64 n, u64 c) {
+  const u64 mask = (CHAR_BIT*sizeof(n) - 1);
+  c &= mask;
+  return (n << c) | (n >> ((-c)&mask));
+}
+
+static inline u64 rotr64(u64 n, u64 c) {
+  const u64 mask = (CHAR_BIT*sizeof(n) - 1);
+  c &= mask;
+  return (n >> c) | (n << ((-c)&mask));
 }
 
 /* Justine Tunney here to save the day https://justine.lol/endian.html */
