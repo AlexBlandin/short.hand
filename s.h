@@ -264,7 +264,7 @@ void seed_rng() {
   _unseeded = false;
 }
 
-/* Regehr and Cordes make this clean */
+/* Regehr and Cordes make this clean https://blog.regehr.org/archives/1063 https://stackoverflow.com/a/776523 */
 static inline u32 rotl32(u32 n, u32 c) {
   const u32 mask = (CHAR_BIT*sizeof(n) - 1);
   c &= mask;
