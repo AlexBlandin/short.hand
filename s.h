@@ -1,6 +1,6 @@
 /* (cosmo)short.hand */
-#ifndef SHORTHAND_H_INCLUDED
-#define SHORTHAND_H_INCLUDED
+#ifndef SHORTHAND_H
+#define SHORTHAND_H
 
 #ifndef COSMOPOLITAN_H_ /* proxy for "noncosmipolitan" setup */
 #include <assert.h>
@@ -13,6 +13,7 @@
 #include <limits.h>
 #include <math.h>
 #include <time.h>
+#include <iso646.h> /* <iso646.h> for `and`, `or`, `not`, etc. */
 #else
 /* trialing Cosmopolitan libc support, cosmopolitan.h has all the standard ones I use */
 #include "cosmo/cosmopolitan.h" /* we assumed cosmipolitan above, this is just for linting etc. */
@@ -77,8 +78,6 @@ typedef float f32;
   #define false 0
 #endif
 
-/* <iso646.h> for `and`, `or`, `not`, etc. */
-#include <iso646.h>
 /* fallback <iso646.h> */
 #ifndef and
   #define and &&
@@ -290,6 +289,7 @@ static inline u64 rotr64(u64 n, u64 c) {
 }
 
 /* Justine Tunney here to save the day https://justine.lol/endian.html */
+#ifndef COSMOPOLITAN_H_
 #define READ16LE(P) ((255 & (P)[1]) << 8 | (255 & (P)[0]))
 #define READ16BE(P) ((255 & (P)[0]) << 8 | (255 & (P)[1]))
 #define READ32LE(P)                                          \
@@ -343,6 +343,6 @@ static inline u64 rotr64(u64 n, u64 c) {
    (P)[5] = (0x0000000000FF0000 & (V)) >> 020, \
    (P)[6] = (0x000000000000FF00 & (V)) >> 010, \
    (P)[7] = (0x00000000000000FF & (V)) >> 000, (P) + 8)
+#endif
 
-
-#endif /* SHORTHAND_H_INCLUDED */
+#endif /* SHORTHAND_H */
