@@ -235,6 +235,8 @@ void println() {
   #endif
 }
 
+#define dclock() ((double) clock())
+
 /* 2 u32s into a u64, `a` goes into "left" (higher) bits */
 #define packu64(a, b) (((u64)(a)) << 32 | (b))
 
