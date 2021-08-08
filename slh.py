@@ -1,6 +1,8 @@
 # Santa's Little Helpers
 from dataclasses import dataclass
+from operator import itemgetter
 from functools import partial
+from datetime import datetime
 from itertools import chain
 from random import sample
 from math import log2
@@ -26,10 +28,16 @@ class data: # I recommend this pattern in general for POD, slightly more memory 
   def slots(self): # Rather helpful for introspection or debugging
     return {slot:self.__getattribute__(slot) for slot in self.__slots__}
 
+def sorted_dict_by_key(d, key=None): # sort a dict by key, with optional key
+  return dict(sorted(d.items(), key=itemgetter(0) if key is None else key(itemgetter(0))))
+
+def sorted_dict_by_val(d, key=None): # sort a dict by value, with optional key
+  return dict(sorted(d.items(), key=itemgetter(1) if key is None else key(itemgetter(1))))
+
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
 def to_bytes(x: int, nbytes=None, signed=None, byteorder=sys.byteorder) -> bytes:
   "int.to_bytes but with (sensible) default values, assumes unsigned if positive, signed if negative"
-  return x.to_bytes(((x.bit_length()+7)//8) if nbytes is None else nbytes, byteorder, signed=(abs(x)!=x) if signed is None else signed)
+  return x.to_bytes((nbytes or (x.bit_length()+7)//8), byteorder, signed=(abs(x)!=x) if signed is None else signed)
 
 def from_bytes(b: bytes, signed=False, byteorder=sys.byteorder) -> int:
   "int.from_bytes but sensible byteorder, you must say if it's signed"
@@ -41,7 +49,7 @@ def isqrt(n): # not as fast as int(sqrt) but works for all ints, not just those 
     x, y = y, (y + n//y)//2
   return x
 
-def isprime(n): # simple iterative version, faster than non-dynamic sieve for low N, no memory cost, not as fast as probablilistic one, you decide
+def isprime(n): # simple iterative one
   if n in {2, 3, 5, 7}:
     return True
   if not (n & 1) or not (n % 3) or not (n % 5) or not (n % 7):
@@ -75,7 +83,10 @@ def avg(iterable, start=0): # because x/0 = 0 in euclidean
 def minmax(*iterable): # get the minimum and maximum quickly
   return min(iterable),max(iterable) # min(*iterable) is only faster for len(iterable) == 2
 
-def shuffled(*iterable): # aka, "shuffle but not in place", like reversed and sorted, shame they ignore prior
+def minmax_ind(*iterable): # minmax but with indices, so ((i_a,min),(i_b,max))
+  return min(enumerate(iterable),key=itemgetter(1)),max(enumerate(iterable),key=itemgetter(1))
+
+def shuffled(*iterable): # aka, "shuffle but not in place", ie. reversed and sorted, but they ignored prior
   iterable = list(iterable) # this way we support sets
   return sample(iterable, len(iterable))
 
@@ -89,10 +100,16 @@ def dotprod(A, B):
   return sum(a*b for a,b in zip(A,B))
 
 def sample_set(s: set, k: int): # 3.9 was doing so many things right, this is just annoying
-  return sample(list(s), k) # if you really care about reproducibility (with known seeds) then sure, use sorted, I don't care so too bad!
+  return sample(list(s), k) # if you really care about reproducibility (with known seeds) then sure, use sorted()
+
+def now():
+  return f"{datetime.now():%Y-%m-%d-%H-%M-%S}"
 
 def human_time(t: float, seconds = True): # because nobody makes it humanly readable
-  return f"{int(t//60)}m {human_time((int(t)%60)+(t-int(t)), True)}" if t > 60 else f"{t:.3f}s" if t > 0.1 and seconds else f"{t*1000:.3f}ms" if t > 0.0001 else f"{t*1000000:.3f}us"
+  return f"{int(t//60)}m {human_time((int(t)%60)+(t-int(t)), True)}" if t > 60 else \
+         f"{t:.3f}s" if t > 0.1 and seconds else                                    \
+         f"{t*1000:.3f}ms" if t > 0.0001 else                                       \
+         f"{t*1000000:.3f}us"
 
 if sys.version_info.major >= 3 and sys.version_info.minor >= 10:
   def popcount(x: int):
@@ -109,3 +126,9 @@ def find(v, iterable: list, start = 0, stop = -1, missing = -1): # find v in int
     return iterable.index(v, start, stop)
   except: # because if doesn't have .index then we couldn't find iterable
     return missing
+
+def yesno(msg="", accept_return=True, replace_lists=False, yes_list=set(), no_list=set()):
+  while True:
+    reply = input(f"{msg} [y/N]: ").strip().lower()
+    if reply in (yes_list if replace_lists else {"y", "ye", "yes"} | yes_list) or (accept_return and reply == ""): return True
+    if reply in (no_list if replace_lists else {"n", "no"} | no_list): return False
