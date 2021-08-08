@@ -28,11 +28,11 @@ class data: # I recommend this pattern in general for POD, slightly more memory 
   def slots(self): # Rather helpful for introspection or debugging
     return {slot:self.__getattribute__(slot) for slot in self.__slots__}
 
-def sorted_dict_by_key(d, key=None): # sort a dict by key, with optional key
-  return dict(sorted(d.items(), key=itemgetter(0) if key is None else key(itemgetter(0))))
+def sorted_dict_by_key(d: dict): # sort a dict by key
+  return dict(sorted(d.items(), key=itemgetter(0)))
 
-def sorted_dict_by_val(d, key=None): # sort a dict by value, with optional key
-  return dict(sorted(d.items(), key=itemgetter(1) if key is None else key(itemgetter(1))))
+def sorted_dict_by_val(d: dict): # sort a dict by value
+  return dict(sorted(d.items(), key=itemgetter(1)))
 
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
 def to_bytes(x: int, nbytes=None, signed=None, byteorder=sys.byteorder) -> bytes:
@@ -43,13 +43,13 @@ def from_bytes(b: bytes, signed=False, byteorder=sys.byteorder) -> int:
   "int.from_bytes but sensible byteorder, you must say if it's signed"
   return int.from_bytes(b, byteorder, signed)
 
-def isqrt(n): # not as fast as int(sqrt) but works for all ints, not just those in f64 integer range
+def isqrt(n: int): # not as fast as int(sqrt) but works for all ints, not just those in f64 integer range
   x, y = n, (n + 1)//2
   while y < x:
     x, y = y, (y + n//y)//2
   return x
 
-def isprime(n): # simple iterative one
+def isprime(n: int): # simple iterative one
   if n in {2, 3, 5, 7}:
     return True
   if not (n & 1) or not (n % 3) or not (n % 5) or not (n % 7):
