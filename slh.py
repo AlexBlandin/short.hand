@@ -34,6 +34,19 @@ def sorted_dict_by_key(d: dict): # sort a dict by key
 def sorted_dict_by_val(d: dict): # sort a dict by value
   return dict(sorted(d.items(), key=itemgetter(1)))
 
+def sortas(first,second): # sorts the first list as if it was the second
+  return list(map(itemgetter(0), sorted(zip(first,second), key=itemgetter(1))))
+
+def bits(x: int): # because bin() has the annoying 0b, so slower but cleaner
+  return f"{x:b}"
+
+if sys.version_info.major >= 3 and sys.version_info.minor >= 10:
+  def popcount(x: int):
+    return x.bit_count() # yay
+else:
+  def popcount(x: int):
+    return bin(x).count("1")
+
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
 def to_bytes(x: int, nbytes=None, signed=None, byteorder=sys.byteorder) -> bytes:
   "int.to_bytes but with (sensible) default values, assumes unsigned if positive, signed if negative"
@@ -110,16 +123,6 @@ def human_time(t: float, seconds = True): # because nobody makes it humanly read
          f"{t:.3f}s" if t > 0.1 and seconds else                                    \
          f"{t*1000:.3f}ms" if t > 0.0001 else                                       \
          f"{t*1000000:.3f}us"
-
-if sys.version_info.major >= 3 and sys.version_info.minor >= 10:
-  def popcount(x: int):
-    return x.bit_count() # yay
-else:
-  def popcount(x: int):
-    return bin(x).count("1")
-
-def bits(x): # because bin() has no option to drop the 0b or sign (shame no uint type)
-  return bin(x)[2 if int(x) >= 0 else 3 :]
 
 def find(v, iterable: list, start = 0, stop = -1, missing = -1): # find v in interable without exceptions
   try:
