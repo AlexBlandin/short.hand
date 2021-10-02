@@ -6,6 +6,7 @@ from datetime import datetime
 from itertools import chain
 from random import sample
 from math import log2
+from time import time
 import sys
 
 if sys.version_info.major >= 3 and sys.version_info.minor >= 8:
@@ -25,7 +26,9 @@ class data: # I recommend this pattern in general for POD, slightly more memory 
   y: float
   z: float
   w: float
-  def slots(self): # Rather helpful for introspection or debugging
+  def slots(self): # rather helpful for introspection or debugging
+    return {slot:self.__getattribute__(slot) for slot in self.__slots__}
+  def __dict__(self): # if you can't add a method, vars(d)() == d.slots() if it has a __dict__ like this
     return {slot:self.__getattribute__(slot) for slot in self.__slots__}
 
 def sorted_dict_by_key(d: dict): # sort a dict by key
@@ -34,7 +37,7 @@ def sorted_dict_by_key(d: dict): # sort a dict by key
 def sorted_dict_by_val(d: dict): # sort a dict by value
   return dict(sorted(d.items(), key=itemgetter(1)))
 
-def sortas(first,second): # sorts the first list as if it was the second
+def sortas(first: list, second: list): # sorts the first as if it was the second
   return list(map(itemgetter(0), sorted(zip(first,second), key=itemgetter(1))))
 
 def bits(x: int): # because bin() has the annoying 0b, so slower but cleaner
@@ -117,6 +120,13 @@ def sample_set(s: set, k: int): # 3.9 was doing so many things right, this is ju
 
 def now():
   return f"{datetime.now():%Y-%m-%d-%H-%M-%S}"
+
+def tf(func, *args, **kwargs): # time func
+  start = time()
+  r = func(*args, **kwargs)
+  end = time()
+  print(func.__name__, human_time(end-start))
+  return r
 
 def human_time(t: float, seconds = True): # because nobody makes it humanly readable
   return f"{int(t//60)}m {human_time((int(t)%60)+(t-int(t)), True)}" if t > 60 else \
