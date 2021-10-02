@@ -28,7 +28,7 @@ class data: # I recommend this pattern in general for POD, slightly more memory 
   w: float
   def slots(self): # rather helpful for introspection or debugging
     return {slot:self.__getattribute__(slot) for slot in self.__slots__}
-  def __dict__(self): # if you can't add a method, vars(d)() == d.slots() if it has a __dict__ like this
+  def __dict__(self): # if you can't add a method, vars(d)() == d.slots(), slightly slower, only needs a __dict__
     return {slot:self.__getattribute__(slot) for slot in self.__slots__}
 
 def sorted_dict_by_key(d: dict): # sort a dict by key
