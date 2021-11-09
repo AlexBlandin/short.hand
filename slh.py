@@ -19,6 +19,9 @@ else:
 class dot(dict): # as in a "dot dict", a dict you can access by a "." # pretty inefficient bc. (dict), but convenient
   __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__
 
+def slots(self):
+  return {slot:self.__getattribute__(slot) for slot in self.__slots__}
+
 @dataclass
 class data: # I recommend this pattern in general for POD, slightly more memory with __slots__ but guarantees perf
   __slots__ = ["x", "y", "z", "w"]
@@ -28,8 +31,18 @@ class data: # I recommend this pattern in general for POD, slightly more memory 
   w: float
   def slots(self): # rather helpful for introspection or debugging
     return {slot:self.__getattribute__(slot) for slot in self.__slots__}
-  def __dict__(self): # if you can't add a method, vars(d)() == d.slots(), slightly slower, only needs a __dict__
+  def __dict__(self): # direct method isn't required, but faster, vars(d)() == d.slots()
     return {slot:self.__getattribute__(slot) for slot in self.__slots__}
+
+try: # 3.10+
+  @dataclass(slots=True)
+  class quickdata: # Nicer, linters don't yet realise __slots__ get autogen'd
+    x: float
+    y: float
+    z: float
+    w: float
+except:
+  pass
 
 def sorted_dict_by_key(d: dict): # sort a dict by key
   return dict(sorted(d.items(), key=itemgetter(0)))
@@ -125,7 +138,7 @@ def tf(func, *args, **kwargs): # time func
   start = time()
   r = func(*args, **kwargs)
   end = time()
-  print(func.__name__, human_time(end-start))
+  print(f"{func.__qualname__}({', '.join(list(map(str,args)) + [f'{k}={v}' for k,v in kwargs.items()])}) = {r}, took {human_time(end-start)}")
   return r
 
 def human_time(t: float, seconds = True): # because nobody makes it humanly readable
@@ -133,6 +146,22 @@ def human_time(t: float, seconds = True): # because nobody makes it humanly read
          f"{t:.3f}s" if t > 0.1 and seconds else                                    \
          f"{t*1000:.3f}ms" if t > 0.0001 else                                       \
          f"{t*1000000:.3f}us"
+
+def hours_minutes_seconds(t: float):
+  seconds = int(t)
+  print(f"{seconds}s")
+  minutes,seconds = seconds//60, seconds%60
+  print(f"{minutes}m{seconds}s")
+  if minutes >= 60:
+    hours, minutes = minutes//60, minutes%60
+    print(f"{hours}h{minutes}m{seconds}s")
+    if hours >= 24:
+      days, hours = hours//24, hours%24
+      print(f"{days}d{hours}h{minutes}m{seconds}s")
+      if days >= 7:
+        weeks, days = days//7, days%7
+        print(f"{weeks}w{days}d{hours}h{minutes}m{seconds}s")
+  print()
 
 def find(v, iterable: list, start = 0, stop = -1, missing = -1): # find v in interable without exceptions
   try:
