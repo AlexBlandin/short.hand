@@ -1,18 +1,17 @@
 # Santa's Little Helpers
+from functools import partial, reduce # just so they're on hand
 from dataclasses import dataclass
 from operator import itemgetter
-from functools import partial
 from datetime import datetime
 from itertools import chain
 from random import sample
-from math import log2
+from pathlib import Path
 from time import time
 import sys
 
 if sys.version_info.major >= 3 and sys.version_info.minor >= 8:
   from math import prod
 else:
-  from functools import reduce
   from operator import mul
   def prod(iterable, *, start=1): return reduce(mul, chain([start], iterable)) # not 3.8 (ie, pypy)
 
@@ -55,6 +54,9 @@ def sortas(first: list, second: list): # sorts the first as if it was the second
 
 def bits(x: int): # because bin() has the annoying 0b, so slower but cleaner
   return f"{x:b}"
+
+def ilog2(x): # integer log2, aka the position of the first bit
+  return x.bit_length()-1
 
 if sys.version_info.major >= 3 and sys.version_info.minor >= 10:
   def popcount(x: int):
@@ -174,3 +176,7 @@ def yesno(msg="", accept_return=True, replace_lists=False, yes_list=set(), no_li
     reply = input(f"{msg} [y/N]: ").strip().lower()
     if reply in (yes_list if replace_lists else {"y", "ye", "yes"} | yes_list) or (accept_return and reply == ""): return True
     if reply in (no_list if replace_lists else {"n", "no"} | no_list): return False
+
+def readlines(self: Path, hint=-1, encoding="utf8"): # just reads a line
+  with self.open(encoding=encoding) as f:
+    return f.readlines(hint)
