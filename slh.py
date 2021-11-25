@@ -7,13 +7,8 @@ from itertools import chain
 from random import sample
 from pathlib import Path
 from time import time
+from math import prod # to have on hand (now pypy supports 3.8)
 import sys
-
-if sys.version_info.major >= 3 and sys.version_info.minor >= 8:
-  from math import prod
-else:
-  from operator import mul
-  def prod(iterable, *, start=1): return reduce(mul, chain([start], iterable)) # not 3.8 (ie, pypy)
 
 class dot(dict): # as in a "dot dict", a dict you can access by a "." # pretty inefficient bc. (dict), but convenient
   __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__
@@ -35,7 +30,7 @@ class data: # I recommend this pattern in general for POD, slightly more memory 
 
 try: # 3.10+
   @dataclass(slots=True)
-  class quickdata: # Nicer, linters don't yet realise __slots__ get autogen'd
+  class quickdata: # Nicer, only some linters realise __slots__ get autogen'd
     x: float
     y: float
     z: float
