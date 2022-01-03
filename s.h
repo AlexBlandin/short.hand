@@ -14,8 +14,7 @@
 #include <math.h>
 #include <time.h>
 #include <iso646.h> /* <iso646.h> for `and`, `or`, `not`, etc. */
-#else
-/* trialing Cosmopolitan libc support, cosmopolitan.h has all the standard ones I use */
+#else /* trialing Cosmopolitan libc support, cosmopolitan.h has all the standard ones I use */
 #include "cosmo/cosmopolitan.h" /* we assumed cosmipolitan above, this is just for linting etc. */
 #endif
 
@@ -218,6 +217,46 @@ bool prime(u32 n) {
   for (u32 i = 125; i * i <= n; i += 6) // start after 121, from 11+6+6+6...
     if (!(n % i) || !(n % (i + 2))) return false;
 
+  return true;
+}
+#endif
+
+#ifndef fastprime
+bool sh__trial_composite(u64 a, u64 d, u64 n, u8 s) {
+  if (powmod(a, d, n) == 1) return false;
+  for (u8 i = 0; i < s; i++)
+    if (powmod(a, (1 << i) * d, n) == n - 1) return false;
+  return true;
+}
+
+/* Miller primality test, very very fast, use for u64 */
+bool fastprime(u64 n) {
+  if (n == 2 || n == 3 || n == 5 || n == 7) return true;
+  if (n == 0 || n == 1 || n%2 == 0 || n == 9) return false;
+
+  u8 s = 0;
+  u64 d = n - 1;
+  while (d % 2 == 0) {
+    d >>= 1;
+    s++;
+  }
+  assert(((1 << s) * d) == (n - 1));
+
+  u64 b[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37};
+  u8 bl = 12; // bl = 12 covers all u64
+  if (n < 2047) { bl = 1; }
+  else if (n < 1373653) { bl = 2; }
+  else if (n < 9080191) { b[0] = 31; b[1] = 73; bl = 2; }
+  else if (n < 25326001) { bl = 3; }
+  else if (n < 3215031751) { bl = 4; }
+  else if (n < 4759123141) { b[1] = 7; b[2] = 61; bl = 3; }
+  else if (n < 1122004669633) { b[1] = 13; b[2] = 23; b[3] = 1662803; bl = 4; }
+  else if (n < 2152302898747) { bl = 5; }
+  else if (n < 3474749660383) { bl = 6; }
+  else if (n < 341550071728321) { bl = 7; }
+
+  for (u8 i = 0; i < bl; i++)
+    if (sh__trial_composite(b[i], d, n, s)) return false;
   return true;
 }
 #endif
