@@ -1,10 +1,10 @@
 # Santa's Little Helpers
 from functools import partial, reduce # just so they're on hand
+from random import sample, randrange
 from dataclasses import dataclass
 from operator import itemgetter
 from datetime import datetime
 from itertools import chain
-from random import sample
 from pathlib import Path
 from time import time
 from math import prod # to have on hand (now pypy supports 3.8)
@@ -87,6 +87,49 @@ def isprime(n: int): # simple iterative one
   for i in range(11, sqrt, 6):
     if not (n % i) or not (n % (i + 2)):
       return False
+  return True
+
+def fastprime(n: int, trials=8):
+  """
+  Miller-Rabin primality test.
+
+  - Returns False when n is not prime.
+  - Returns True when n is a prime if n < 3317044064679887385961981, else when n is very likely a prime.
+  
+  Increase the number of trials to increase the confidence for n >= 3317044064679887385961981
+  """
+  
+  if n in {2, 3, 5, 7}: return True
+  if n in {0, 1, 4, 6, 8, 9} or n%2 == 0: return False
+  
+  s, d = 0, n-1
+  while d%2 == 0:
+    d >>= 1
+    s += 1
+  assert(2**s * d == n-1)
+  
+  def trial_composite(a):
+    if pow(a, d, n) == 1: return False
+    for i in range(s):
+      if pow(a, 2**i * d, n) == n-1: return False
+    return True
+  
+  if n < 2047: b = [2]
+  elif n < 1373653: b = [2, 3]
+  elif n < 9080191: b = [31, 73]
+  elif n < 25326001: b = [2, 3, 5]
+  elif n < 3215031751: b = [2, 3, 5, 7]
+  elif n < 4759123141: b = [2, 7, 61]
+  elif n < 1122004669633: b = [2, 13, 23, 1662803]
+  elif n < 2152302898747: b = [2, 3, 5, 7, 11]
+  elif n < 3474749660383: b = [2, 3, 5, 7, 11, 13]
+  elif n < 341550071728321: b = [2, 3, 5, 7, 11, 13, 17]
+  elif n < 318665857834031151167461: b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] # covers 64bit
+  elif n < 3317044064679887385961981: b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
+  else: b = [randrange(3,n,2) for _ in range(trials)]
+  
+  for a in b:
+    if trial_composite(a): return False
   return True
 
 flatten = chain.from_iterable
