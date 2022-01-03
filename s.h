@@ -221,6 +221,23 @@ bool prime(u32 n) {
 }
 #endif
 
+#ifndef powmod
+/* x to the y, mod n */
+u64 powmod(u64 x, u64 y, u64 n) {
+  u64 r = 1;
+  x = x % n;
+
+  if (x == 0) return 0;
+
+  while (y > 0) {
+    if ((y & 1) == 1) r = (r * x) % n;
+    y >>= 1;
+    x = (x * x) % n;
+  }
+  return r;
+}
+#endif
+
 #ifndef fastprime
 bool sh__trial_composite(u64 a, u64 d, u64 n, u8 s) {
   if (powmod(a, d, n) == 1) return false;
