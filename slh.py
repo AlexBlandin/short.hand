@@ -53,6 +53,10 @@ def bits(x: int): # because bin() has the annoying 0b, so slower but cleaner
 def ilog2(x): # integer log2, aka the position of the first bit
   return x.bit_length()-1
 
+# from gmpy2 import bit_scan1 as ctz
+def ctz(v): # count trailing zeroes
+  return (v & -v).bit_length()-1
+
 if sys.version_info.major >= 3 and sys.version_info.minor >= 10:
   def popcount(x: int):
     return x.bit_count() # yay
@@ -100,15 +104,15 @@ def fastprime(n: int, trials=8):
   """
   
   if n in {2, 3, 5, 7}: return True
-  if n in {0, 1, 4, 6, 8, 9} or n%2 == 0: return False
+  if not (n & 1) or not (n % 3) or not (n % 5) or not (n % 7): return False
+  if n < 121: return n > 1
   
-  s, d = 0, n-1
-  while d%2 == 0:
-    d >>= 1
-    s += 1
-  assert(2**s * d == n-1)
+  d = n-1
+  s = ctz(d)
+  d >>= s
+  # assert(2**s * d == n-1)
   
-  def trial_composite(a):
+  def witness(a):
     if pow(a, d, n) == 1: return False
     for i in range(s):
       if pow(a, 2**i * d, n) == n-1: return False
@@ -126,10 +130,10 @@ def fastprime(n: int, trials=8):
   elif n < 341550071728321: b = [2, 3, 5, 7, 11, 13, 17]
   elif n < 318665857834031151167461: b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] # covers 64bit
   elif n < 3317044064679887385961981: b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
-  else: b = [randrange(3,n,2) for _ in range(trials)]
+  else: b = [2] + [randrange(3,n,2) for _ in range(trials)]
   
   for a in b:
-    if trial_composite(a): return False
+    if witness(a): return False
   return True
 
 flatten = chain.from_iterable
