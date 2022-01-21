@@ -38,11 +38,13 @@ try: # 3.10+
 except:
   pass
 
-def sorted_dict_by_key(d: dict): # sort a dict by key
-  return dict(sorted(d.items(), key=itemgetter(0)))
+def sorted_dict_by_key(d: dict, reverse=False): # sort a dict by key
+  return dict(sorted(d.items(), key=itemgetter(0), reverse=reverse))
 
-def sorted_dict_by_val(d: dict): # sort a dict by value
-  return dict(sorted(d.items(), key=itemgetter(1)))
+def sorted_dict_by_val(d: dict, reverse=False): # sort a dict by value
+  return dict(sorted(d.items(), key=itemgetter(1), reverse=reverse))
+
+def sorted_dict(d, key=itemgetter(1), reverse=True): return dict(sorted(d.items(), key=key, reverse=reverse))
 
 def sortas(first: list, second: list): # sorts the first as if it was the second
   return list(map(itemgetter(0), sorted(zip(first,second), key=itemgetter(1))))
