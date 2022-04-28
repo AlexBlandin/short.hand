@@ -1,4 +1,4 @@
-# Santa's Little Helpers
+"Santa's Little Helpers"
 
 # Imports used here
 from operator import indexOf, itemgetter
@@ -14,16 +14,10 @@ from time import time
 ####################
 
 # when from slh import * is used
-from functools import partial, reduce # just so they're on hand
+from functools import partial, reduce, cache # just so they're on hand
 from math import prod, sqrt # good to have on hand (esp. now pypy supports 3.8)
 import itertools as it # for it.count() etc
 import sys, os
-from typing import Iterable # if you're writing something complex and don't need these, I'm impressed
-
-try: # another nice to have, currently locked behind 3.9 for "best" memoizing (cache is slightly faster than lru_cache)
-  from functools import cache
-except:
-  from functools import lru_cache as cache
 
 #################
 # POD Shorthand #
@@ -34,7 +28,7 @@ class dot(dict):
   __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__
 
 def slots(self):
-  return {slot:self.__getattribute__(slot) for slot in self.__slots__}
+  return {slot: self.__getattribute__(slot) for slot in self.__slots__}
 
 @dataclass
 class data:
@@ -44,15 +38,18 @@ class data:
   y: float
   z: float
   w: float
+  
   def slots(self):
     "rather helpful for introspection or debugging"
-    return {slot:self.__getattribute__(slot) for slot in self.__slots__}
+    return {slot: self.__getattribute__(slot) for slot in self.__slots__}
+  
   def __dict__(self):
     "direct method isn't required, but faster, vars(d)() == d.slots()"
-    return {slot:self.__getattribute__(slot) for slot in self.__slots__}
+    return {slot: self.__getattribute__(slot) for slot in self.__slots__}
 
 try: # 3.10+
-  @dataclass(slots=True)
+  
+  @dataclass(slots = True)
   class quickdata:
     "Nicer, only some linters realise __slots__ get autogen'd"
     x: float
@@ -70,19 +67,23 @@ flatten = chain.from_iterable
 
 def compose(*fs):
   "combine each function in fs; evaluates fs[0] first, and fs[-1] last, like fs[-1](fs[-2](...fs[0](*args, **kwargs)...))"
-  def comp(x): # for the sake of simplicity, it assumes an arity of 1 for every function, because it might want a tuple in, or vargs, who knows
+  def comp(x):
+    # for the sake of simplicity, it assumes an arity of 1 for every function, because it might want a tuple in, or vargs, who knows
     for f in fs:
       x = f(x)
     return x
+  
   return comp
 
 def mapcomp(iterable, *fs):
   "map(compose(*fs), iterable); evaluates fs[0] first, fs[-1] last, so acts like map(fs[-1], map(fs[-2], ... map(fs[0], iterable)...))"
-  def comp(fs: list): # not using compose() internally to avoid overhead, this is faster than list(map(compose(*fs), iterable))
+  def comp(fs: list):
+    # not using compose() internally to avoid overhead, this is faster than list(map(compose(*fs), iterable))
     if len(fs):
       f = fs.pop()
       return map(f, comp(fs))
     return iterable
+  
   return list(comp(list(fs)))
 
 def lmap(f, *args):
@@ -107,40 +108,40 @@ def minmax(*iterable):
 
 def minmax_ind(*iterable):
   "minmax but with indices, so ((i_a,min),(i_b,max))"
-  return min(enumerate(iterable), key=itemgetter(1)), max(enumerate(iterable),key=itemgetter(1))
+  return min(enumerate(iterable), key = itemgetter(1)), max(enumerate(iterable), key = itemgetter(1))
 
 def shuffled(*iterable):
   """aka, "shuffle but not in place", ie. reversed and sorted, but they ignored prior"""
   iterable = list(iterable) # this way we support sets
   return sample(iterable, len(iterable))
 
-def lenfilter(iterable, pred=bool):
+def lenfilter(iterable, pred = bool):
   "counts how many are true for a given predicate"
   return sum(1 for i in iterable if pred(i)) # better (esp in pypy) than len(filter()) since not constructing a list
 
-def first(iterable, default=None):
+def first(iterable, default = None):
   "the first item in iterable"
-  return next(iter(iterable), default) 
+  return next(iter(iterable), default)
 
 def sample_set(s: set, k: int):
   "sample a set because you just want some random elements and don't care (about reproducibility)"
   return sample(list(s), k) # if you really care about reproducibility (with known seeds) then sure, use sorted()
 
-def sorted_dict_by_key(d: dict, reverse=False):
+def sorted_dict_by_key(d: dict, reverse = False):
   "sort a dict by key"
-  return dict(sorted(d.items(), key=itemgetter(0), reverse=reverse))
+  return dict(sorted(d.items(), key = itemgetter(0), reverse = reverse))
 
-def sorted_dict_by_val(d: dict, reverse=False):
+def sorted_dict_by_val(d: dict, reverse = False):
   "sort a dict by value"
-  return dict(sorted(d.items(), key=itemgetter(1), reverse=reverse))
+  return dict(sorted(d.items(), key = itemgetter(1), reverse = reverse))
 
-def sorted_dict(d, key=itemgetter(1), reverse=False):
+def sorted_dict(d, key = itemgetter(1), reverse = False):
   "generic sorting, because it's something people kinda want"
-  return dict(sorted(d.items(), key=key, reverse=reverse))
+  return dict(sorted(d.items(), key = key, reverse = reverse))
 
 def sortas(first: list, second: list):
   "sorts the first as if it was the second"
-  return list(map(itemgetter(0), sorted(zip(first,second), key=itemgetter(1))))
+  return list(map(itemgetter(0), sorted(zip(first, second), key = itemgetter(1))))
 
 def find(v, iterable: list, start = 0, stop = -1, missing = -1):
   "find the first index of v in interable without raising exceptions"
@@ -158,12 +159,12 @@ def find(v, iterable: list, start = 0, stop = -1, missing = -1):
 # Maths Shorthand #
 ###################
 
-def avg(iterable, start=0):
+def avg(iterable, start = 0):
   "without exceptions, because x/0 = 0 in euclidean"
   return sum(iterable, start) / len(iterable) if len(iterable) else 0
 
 def dotprod(A, B):
-  return sum(a*b for a,b in zip(A,B))
+  return sum(a * b for a, b in zip(A, B))
 
 def bits(x: int):
   "because bin() has the annoying 0b, so slower but cleaner"
@@ -171,17 +172,19 @@ def bits(x: int):
 
 def ilog2(x):
   "integer log2, aka the position of the first bit"
-  return x.bit_length()-1
+  return x.bit_length() - 1
 
 # from gmpy2 import bit_scan1 as ctz # if you must go faster
 def ctz(v):
   "count trailing zeroes"
-  return (v & -v).bit_length()-1
+  return (v & -v).bit_length() - 1
 
 if sys.version_info.major >= 3 and sys.version_info.minor >= 10:
+  
   def popcount(x: int):
     return x.bit_count() # yay
 else:
+  
   def popcount(x: int):
     return bin(x).count("1")
 
@@ -190,9 +193,9 @@ def isqrt(n: int):
   if n < 2**52:
     return int(sqrt(n))
   n = int(n)
-  x, y = n, (n + 1)//2
+  x, y = n, (n + 1) // 2
   while y < x:
-    x, y = y, (y + n//y)//2
+    x, y = y, (y + n // y) // 2
   return x
 
 def isprime(n: int):
@@ -204,18 +207,18 @@ def isprime(n: int):
   if n < 121:
     return n > 1
   sqrt = isqrt(n)
-  assert(sqrt*sqrt <= n)
+  assert (sqrt * sqrt <= n)
   for i in range(11, sqrt, 6):
     if not (n % i) or not (n % (i + 2)):
       return False
   return True
 
-def fastprime(n: int, trials=8):
+def fastprime(n: int, trials = 8):
   """
   Miller-Rabin primality test.
 
   - Returns False when n is not prime.
-  - Returns True when n is a prime iff n < 3317044064679887385961981, else when n is very likely a prime.
+  - Returns True when n is a prime under 3317044064679887385961981, else when n is very likely a prime.
   
   Increase the number of trials to increase the confidence for n >= 3317044064679887385961981 at cost to performance
   """
@@ -224,15 +227,16 @@ def fastprime(n: int, trials=8):
   if not (n & 1) or not (n % 3) or not (n % 5) or not (n % 7): return False
   if n < 121: return n > 1
   
-  d = n-1
+  d = n - 1
   s = ctz(d)
   d >>= s
+  
   # assert(2**s * d == n-1) # not necessary, but go for it if you want
   
   def witness(a):
     if pow(a, d, n) == 1: return False
     for i in range(s):
-      if pow(a, 2**i * d, n) == n-1: return False
+      if pow(a, 2**i * d, n) == n - 1: return False
     return True
   
   if n < 2047: b = [2]
@@ -247,7 +251,7 @@ def fastprime(n: int, trials=8):
   elif n < 341550071728321: b = [2, 3, 5, 7, 11, 13, 17]
   elif n < 318665857834031151167461: b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] # covers 64bit
   elif n < 3317044064679887385961981: b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
-  else: b = [2] + [randrange(3,n,2) for _ in range(trials)]
+  else: b = [2] + [randrange(3, n, 2) for _ in range(trials)]
   
   for a in b:
     if witness(a): return False
@@ -261,15 +265,17 @@ def now():
   "Because sometimes I want the time now()"
   return f"{datetime.now():%Y-%m-%d-%H-%M-%S}"
 
-def tf(func, *args, pretty=True, **kwargs):
+def tf(func, *args, pretty = True, **kwargs):
   "time func func, as in, time the function func"
   start = time()
   r = func(*args, **kwargs)
   end = time()
   if pretty:
-    print(f"{func.__qualname__}({', '.join(list(map(str,args)) + [f'{k}={v}' for k,v in kwargs.items()])}) = {r}, took {human_time(end-start)}")
+    print(
+      f"{func.__qualname__}({', '.join(list(map(str,args)) + [f'{k}={v}' for k,v in kwargs.items()])}) = {r}, took {human_time(end-start)}"
+    )
   else:
-    print(human_time(end-start))
+    print(human_time(end - start))
   return r
 
 def human_time(t: float, seconds = True):
@@ -283,19 +289,19 @@ def hours_minutes_seconds(t: float):
   "from some number of seconds t, how many (years) (weeks) (days) (hours) minutes and seconds are there (filled in as needed)"
   seconds = int(t)
   print(f"{seconds}s")
-  minutes,seconds = seconds//60, seconds%60
+  minutes, seconds = seconds // 60, seconds % 60
   print(f"{minutes}m{seconds}s")
   if minutes >= 60:
-    hours, minutes = minutes//60, minutes%60
+    hours, minutes = minutes // 60, minutes % 60
     print(f"{hours}h{minutes}m{seconds}s")
     if hours >= 24:
-      days, hours = hours//24, hours%24
+      days, hours = hours // 24, hours % 24
       print(f"{days}d{hours}h{minutes}m{seconds}s")
       if days >= 7:
-        weeks, days = days//7, days%7
+        weeks, days = days // 7, days % 7
         print(f"{weeks}w{days}d{hours}h{minutes}m{seconds}s")
         if weeks >= 52:
-          years, weeks = weeks//52, weeks%52
+          years, weeks = weeks // 52, weeks % 52
           print(f"{years}y{weeks}w{days}d{hours}h{minutes}m{seconds}s")
   print()
 
@@ -303,19 +309,22 @@ def hours_minutes_seconds(t: float):
 # IO Shorthand #
 ################
 
-def yesno(msg="", accept_return=True, replace_lists=False, yes_list=set(), no_list=set()):
+def yesno(msg = "", accept_return = True, replace_lists = False, yes_list = set(), no_list = set()):
   "Keep asking until they say yes or no"
   while True:
     reply = input(f"{msg} [y/N]: ").strip().lower()
-    if reply in (yes_list if replace_lists else {"y", "ye", "yes"} | yes_list) or (accept_return and reply == ""): return True
+    if reply in (yes_list if replace_lists else {"y", "ye", "yes"} | yes_list) or (accept_return and reply == ""):
+      return True
     if reply in (no_list if replace_lists else {"n", "no"} | no_list): return False
 
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
-def to_bytes(x: int, nbytes=None, signed=None, byteorder=sys.byteorder) -> bytes:
+def to_bytes(x: int, nbytes = None, signed = None, byteorder = sys.byteorder) -> bytes:
   "int.to_bytes but with (sensible) default values, assumes unsigned if positive, signed if negative"
-  return x.to_bytes((nbytes or (x.bit_length()+7)//8), byteorder, signed=(abs(x)!=x) if signed is None else signed)
+  return x.to_bytes((nbytes or (x.bit_length() + 7) // 8),
+                    byteorder,
+                    signed = (abs(x) != x) if signed is None else signed)
 
-def from_bytes(b: bytes, signed=False, byteorder=sys.byteorder) -> int:
+def from_bytes(b: bytes, signed = False, byteorder = sys.byteorder) -> int:
   "int.from_bytes but sensible byteorder, you must say if it's signed"
   return int.from_bytes(b, byteorder, signed)
 
