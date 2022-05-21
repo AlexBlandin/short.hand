@@ -15,16 +15,25 @@ from time import time
 
 # when from slh import * is used
 from functools import partial, reduce, cache # just so they're on hand
-from math import prod, sqrt # good to have on hand (esp. now pypy supports 3.8)
+from math import prod, sqrt # good to have on hand
 import itertools as it # for it.count() etc
 import sys, os
+
+try:
+  from itertools import pairwise
+except:
+  
+  def pairwise(iterable):
+    a, b = it.tee(iterable)
+    next(b, None)
+    return zip(a, b)
 
 #################
 # POD Shorthand #
 #################
 
 class dot(dict):
-  """as in a "dot dict", a dict you can access by a "." # pretty inefficient bc. (dict), but convenient"""
+  """a "dot dict", a dict you can access by a "." # pretty inefficient bc. (dict), but convenient"""
   __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__
 
 def slots(self):
