@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 : # The "essentials"
+python -m pip install -U pip
 pip install -U pip
 pip install -U setuptools wheel virtualenv
 
@@ -13,7 +14,7 @@ pip install -U mypy yapf pylint pytest pdbpp psutil
 pip install -U attrs cffi fastcore humanize parse pendulum pylev rtoml py-ulid numpy pandas scipy
 
 : # Terminal stuff
-pip install -U colorama termcolor rich present tldr tqdm
+pip install -U colorama termcolor rich present tldr tqdm proselint
 
 : # Webstuff
 pip install -U aiohttp async-timeout beautifulsoup4 httpie soupsieve requests urllib3 websockets
@@ -25,9 +26,10 @@ pip install -U pypandoc rethinkdb yt-dlp
 pip install -U geocoder skyfield
 
 : # Images & GUIs
-pip install -U Pillow matplotlib mpl_plotter dearpygui
+pip install -U Pillow matplotlib dearpygui
 
-: # Optional stuff (ML, win32 wrapper, readline in python, etc)
+: # Optional stuff (ML, win32 wrapper, readline in python, high quality plots, etc)
 : # pip install -U pywin32 pyreadline
 : # pip install -U tensorflow scikit-image
 : # pip install -U torch torchvision torchaudio
+: # pip install -U mpl_plotter
