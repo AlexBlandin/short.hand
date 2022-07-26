@@ -11,7 +11,10 @@ pip install -U PyNaCl pyOpenSSL cryptography certifi
 pip install -U mypy yapf pylint pytest pdbpp psutil
 
 : # Useful tools
-pip install -U attrs cffi fastcore humanize parse pendulum pylev rtoml py-ulid numpy pandas scipy
+pip install -U attrs cffi fastcore humanize parse pendulum pylev 
+
+: # Numeric python
+pip install -U numpy pandas scipy
 
 : # Terminal stuff
 pip install -U colorama termcolor rich present tldr tqdm proselint
