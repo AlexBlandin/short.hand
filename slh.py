@@ -21,8 +21,7 @@ import sys, os
 
 try:
   from itertools import pairwise
-except:
-  
+except:  
   def pairwise(iterable):
     a, b = it.tee(iterable)
     next(b, None)
@@ -274,12 +273,12 @@ def now():
   "Because sometimes I want the time now()"
   return f"{datetime.now():%Y-%m-%d-%H-%M-%S}"
 
-def tf(func, *args, pretty = True, **kwargs):
+def tf(func, *args, __pretty_tf = True, **kwargs):
   "time func func, as in, time the function func"
   start = time()
   r = func(*args, **kwargs)
   end = time()
-  if pretty:
+  if __pretty_tf:
     print(
       f"{func.__qualname__}({', '.join(list(map(str,args)) + [f'{k}={v}' for k,v in kwargs.items()])}) = {r}, took {human_time(end-start)}"
     )
