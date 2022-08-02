@@ -17,7 +17,7 @@ pip install -U attrs cffi fastcore humanize parse pendulum pylev
 pip install -U numpy pandas scipy
 
 : # Terminal stuff
-pip install -U colorama termcolor rich present tldr tqdm proselint
+pip install -U colorama termcolor rich tldr tqdm proselint
 
 : # Webstuff
 pip install -U aiohttp async-timeout beautifulsoup4 httpie soupsieve requests urllib3 websockets
