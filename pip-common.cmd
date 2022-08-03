@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+
 : # The "essentials"
 python -m pip install -U pip
 pip install -U pip
@@ -12,6 +13,9 @@ pip install -U mypy yapf pylint pytest pdbpp psutil
 
 : # Useful tools
 pip install -U attrs cffi fastcore humanize parse pendulum pylev 
+
+: # Python notebook
+pip install -U jupyter notebook
 
 : # Numeric python
 pip install -U numpy pandas scipy
@@ -33,6 +37,6 @@ pip install -U Pillow matplotlib dearpygui
 
 : # Optional stuff (ML, win32 wrapper, readline in python, high quality plots, etc)
 : # pip install -U pywin32 pyreadline
-: # pip install -U tensorflow scikit-image
-: # pip install -U torch torchvision torchaudio
+: # pip install -U tensorflow torch
+: # pip install -U scikit-image torchvision torchaudio
 : # pip install -U mpl_plotter
