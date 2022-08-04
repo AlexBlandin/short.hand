@@ -26,8 +26,8 @@ pip install -U colorama termcolor rich tldr tqdm proselint
 : # Webstuff
 pip install -U aiohttp async-timeout beautifulsoup4 httpie soupsieve requests urllib3 websockets
 
-: # Wrappers around external tools (DBs, commandline programs, etc)
-pip install -U pypandoc rethinkdb yt-dlp
+: # Wrappers around external tools (CLIs, DBs, etc)
+pip install -U pypandoc rethinkdb yt-dlp mutagen
 
 : # Astronomy
 pip install -U geocoder skyfield
