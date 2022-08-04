@@ -17,7 +17,6 @@ from collections.abc import Iterable
 ####################
 # Import Shorthand #
 ####################
-
 """for when `from slh import *` is used"""
 from functools import partial, reduce, cache # just so they're on hand
 from math import prod, sqrt # good to have on hand
@@ -77,9 +76,9 @@ else:
 
 flatten = chain.from_iterable
 
-def unique_list(*lst): 
+def unique_list(*lst):
   """reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience"""
-  return list(dict(lst if len(lst)!=1 else lst[0], it.count()))
+  return list(dict(lst if len(lst) != 1 else lst[0], it.count()))
 
 def compose(*fs):
   """combine each function in fs; evaluates fs[0] first, and fs[-1] last, like fs[-1](fs[-2](...fs[0](*args, **kwargs)...))"""
@@ -196,9 +195,11 @@ def ctz(v):
   return (v & -v).bit_length() - 1
 
 if PY3_10:
+  
   def popcount(x: int):
     return x.bit_count() # yay
 else:
+  
   def popcount(x: int):
     return bin(x).count("1")
 
@@ -334,9 +335,7 @@ def yesno(msg = "", accept_return = True, replace_lists = False, yes_list = set(
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
 def to_bytes(x: int, nbytes = None, signed = None, byteorder = sys.byteorder) -> bytes:
   """int.to_bytes but with (sensible) default values, by default assumes unsigned if >=0, signed if <0"""
-  return x.to_bytes((nbytes or (x.bit_length() + 7) // 8),
-                    byteorder,
-                    signed = (x >= 0) if signed is None else signed)
+  return x.to_bytes((nbytes or (x.bit_length() + 7) // 8), byteorder, signed = (x >= 0) if signed is None else signed)
 
 def from_bytes(b: bytes, signed = False, byteorder = sys.byteorder) -> int:
   """int.from_bytes but sensible byteorder, you must say if it's signed"""
@@ -360,10 +359,18 @@ def readlinesmap(fp: str | Path, *fs, encoding = "utf8"):
   """readlines but map each function in fs to fp's lines in order (fs[0]: first, ..., fs[-1]: last)"""
   return mapcomp(Path(fp).read_text(encoding).splitlines(), *fs)
 
-def writelines(fp: str | Path, lines: str | list[str], encoding = "utf8", newline="\n"):
+def writelines(fp: str | Path, lines: str | list[str], encoding = "utf8", newline = "\n"):
   """just writes lines as you normally would want to"""
-  return Path(fp).write_text(lines if isinstance(lines, str) else newline.join(lines), encoding=encoding, newline=newline)
+  return Path(fp).write_text(
+    lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline
+  )
 
-def writelinesmap(fp: str | Path, lines: str | list[str], *fs, encoding = "utf8", newline="\n"):
+def writelinesmap(fp: str | Path, lines: str | list[str], *fs, encoding = "utf8", newline = "\n"):
   """writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)"""
-  return (Path(fp).write_text(newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs), encoding=encoding, newline=newline))
+  return (
+    Path(fp).write_text(
+      newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs),
+      encoding = encoding,
+      newline = newline
+    )
+  )
