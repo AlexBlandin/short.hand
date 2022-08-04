@@ -6,6 +6,7 @@ Santa's Little Helpers
 from operator import indexOf, itemgetter
 from random import sample, randrange
 from dataclasses import dataclass
+from collections import ChainMap
 from datetime import datetime
 from itertools import chain
 from pathlib import Path
@@ -169,6 +170,22 @@ def find(v, iterable: list, start = 0, stop = -1, missing = -1):
       except:
         pass
     return missing
+
+class DeepChainMap(ChainMap):
+  """Variant of ChainMap that allows direct updates to inner scopes"""
+  def __setitem__(self, key, value):
+    for mapping in self.maps:
+      if key in mapping:
+        mapping[key] = value
+        return
+    self.maps[0][key] = value
+  
+  def __delitem__(self, key):
+    for mapping in self.maps:
+      if key in mapping:
+        del mapping[key]
+        return
+    raise KeyError(key)
 
 ###################
 # Maths Shorthand #
