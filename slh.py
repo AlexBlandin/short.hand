@@ -79,7 +79,7 @@ flatten = chain.from_iterable
 
 def unique_list(*lst):
   """reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience"""
-  return list(dict(lst if len(lst) != 1 else lst[0], it.count()))
+  return list(dict(zip(lst if len(lst) != 1 else lst[0], it.count())))
 
 def compose(*fs):
   """combine each function in fs; evaluates fs[0] first, and fs[-1] last, like fs[-1](fs[-2](...fs[0](*args, **kwargs)...))"""
