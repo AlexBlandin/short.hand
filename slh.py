@@ -3,30 +3,30 @@ Santa's Little Helpers
 """
 
 # Imports used here
-from operator import indexOf, itemgetter
-from random import sample, randrange
 from dataclasses import dataclass
 from collections import ChainMap
-from datetime import datetime
 from itertools import chain
+from operator import itemgetter, indexOf
+from datetime import datetime
 from pathlib import Path
+from random import randrange, sample
 from time import time
-
-# Typing imports
-from collections.abc import Iterable
 
 ####################
 # Import Shorthand #
 ####################
 """for when `from slh import *` is used"""
-from functools import partial, reduce, cache # just so they're on hand
-from math import prod, sqrt # good to have on hand
-import itertools as it # for it.count() etc
-import sys, os
+from collections.abc import Iterable
+from functools import partial, reduce, cache
+from typing import Union, Any
+from math import sqrt, prod
+import itertools as it
+import sys
+import os
 
-PY3_10 = sys.version_info.major >= 3 and sys.version_info.minor >= 10
+PY3_10_PLUS = sys.version_info.major >= 3 and sys.version_info.minor >= 10
 
-if PY3_10:
+if PY3_10_PLUS:
   from itertools import pairwise
 else:
   def pairwise(iterable: Iterable):
@@ -60,10 +60,9 @@ class data:
     """direct method isn't required, but faster, vars(d)() == d.slots()"""
     return {slot: self.__getattribute__(slot) for slot in self.__slots__}
 
-if PY3_10: # 3.10+
+if PY3_10_PLUS:
   @dataclass(slots = True)
   class quickdata:
-    """cleaner, but only some linters realise __slots__ get autogen'd right now"""
     x: float
     y: float
     z: float
@@ -80,6 +79,13 @@ flatten = chain.from_iterable
 def unique_list(*lst):
   """reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience"""
   return list(dict(zip(lst if len(lst) != 1 else lst[0], it.count())))
+
+def unwrap(f, *args, **kwargs):
+  """because exceptions are bad"""
+  try:
+    return f(*args, **kwargs)
+  except:
+    return None
 
 def compose(*fs):
   """combine each function in fs; evaluates fs[0] first, and fs[-1] last, like fs[-1](fs[-2](...fs[0](*args, **kwargs)...))"""
@@ -211,7 +217,7 @@ def ctz(v):
   """count trailing zeroes"""
   return (v & -v).bit_length() - 1
 
-if PY3_10:
+if PY3_10_PLUS:
   
   def popcount(x: int):
     return x.bit_count() # yay
@@ -364,25 +370,25 @@ def from_bytes(b: bytes, signed = False, byteorder = sys.byteorder) -> int:
 
 # convenience functions to not write as much
 
-def resolve(path: str | Path):
+def resolve(path: Union[str, Path]):
   """resolve Path including "~" (bc Path(path) doesn't...)"""
   return Path(os.path.expanduser(path))
 
-def readlines(fp: str | Path, encoding = "utf8"):
+def readlines(fp: Union[str, Path], encoding = "utf8"):
   """just reads lines as you normally would want to"""
   return Path(fp).read_text(encoding).splitlines()
 
-def readlinesmap(fp: str | Path, *fs, encoding = "utf8"):
+def readlinesmap(fp: Union[str, Path], *fs, encoding = "utf8"):
   """readlines but map each function in fs to fp's lines in order (fs[0]: first, ..., fs[-1]: last)"""
   return mapcomp(Path(fp).read_text(encoding).splitlines(), *fs)
 
-def writelines(fp: str | Path, lines: str | list[str], encoding = "utf8", newline = "\n"):
+def writelines(fp: Union[str, Path], lines: Union[str, list[str]], encoding = "utf8", newline = "\n"):
   """just writes lines as you normally would want to"""
   return Path(fp).write_text(
     lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline
   )
 
-def writelinesmap(fp: str | Path, lines: str | list[str], *fs, encoding = "utf8", newline = "\n"):
+def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs, encoding = "utf8", newline = "\n"):
   """writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)"""
   return (
     Path(fp).write_text(
