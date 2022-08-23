@@ -50,7 +50,7 @@ def cls_to_tuple(cls):
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
 if PY3_10_PLUS:
-  # a demonstration of how to easily get great performance while reclaiming QoL methods
+  # a demonstration of how to easily get great performance while reclaiming quality of life
   @dataclass(slots = True)
   class Data:
     """recommend this pattern, slightly more memory footprint but consistently high performance"""
@@ -73,7 +73,7 @@ if PY3_10_PLUS:
       else: return list(map(self.__getattribute__, self.__slots__[n]))
     
     def asdict(self):
-      """generic __slots__ -> dict; helpful for introspection, DICT DOES NOT MODIFY THIS OBJECT"""
+      """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
       return {slot: self.__getattribute__(slot) for slot in self.__slots__}
     
     def _astuple(self):
