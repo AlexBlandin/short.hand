@@ -40,35 +40,34 @@ else:
 #################
 
 class dot(dict):
-  """a "dot dict", a dict you can access by a "." # pretty inefficient bc. (dict), but convenient"""
+  """a "dot dict", a dict you can access by a "." - inefficient vs dataclass, but convenient"""
   __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__
-
-@dataclass
-class data:
-  """I recommend this pattern in general for POD, slightly more memory with __slots__ but guarantees perf"""
-  __slots__ = ["x", "y", "z", "w"]
-  x: float
-  y: float
-  z: float
-  w: float
-  
-  def slots(self):
-    """reconstruct the __slots__ dict of a class; rather helpful for introspection or debugging"""
-    return {slot: self.__getattribute__(slot) for slot in self.__slots__}
-  
-  def __dict__(self):
-    """direct method isn't required, but faster, vars(d)() == d.slots()"""
-    return {slot: self.__getattribute__(slot) for slot in self.__slots__}
 
 if PY3_10_PLUS:
   @dataclass(slots = True)
-  class quickdata:
+  class data:
+    """I recommend this pattern for POD, slightly more memory but consistently high performance"""
     x: float
     y: float
     z: float
     w: float
+    
+    def slots(self):
+      """generic __slots__ -> dict; helpful for introspection or debugging"""
+      return {slot: self.__getattribute__(slot) for slot in self.__slots__}
 else:
-  pass
+  @dataclass
+  class data:
+    """I recommend this pattern for POD, slightly more memory but consistently high performance"""
+    __slots__ = ["x", "y", "z", "w"]
+    x: float
+    y: float
+    z: float
+    w: float
+    
+    def slots(self):
+      """generic __slots__ -> dict; helpful for introspection or debugging"""
+      return {slot: self.__getattribute__(slot) for slot in self.__slots__}
 
 #######################
 # Iterables Shorthand #
