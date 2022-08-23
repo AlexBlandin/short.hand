@@ -18,7 +18,7 @@ from time import time
 """for when `from slh import *` is used"""
 from collections.abc import Iterable
 from functools import partial, reduce, cache
-from typing import Union, Any
+from typing import NamedTuple, Union, Any
 from math import sqrt, prod
 import itertools as it
 import sys
@@ -29,6 +29,7 @@ PY3_10_PLUS = sys.version_info.major >= 3 and sys.version_info.minor >= 10
 if PY3_10_PLUS:
   from itertools import pairwise
 else:
+  # we have to make it ourselves
   def pairwise(iterable: Iterable):
     """return an iterator of overlapping pairs taken from the input iterator `pairwise([1,2,3,4]) -> [(1,2), (2,3), (3,4)]`"""
     a, b = it.tee(iterable)
@@ -43,31 +44,56 @@ class dot(dict):
   """a "dot dict", a dict you can access by a "." - inefficient vs dataclass, but convenient"""
   __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__
 
+@cache
+def cls_to_tuple(cls):
+  """this converts a class to a NamedTuple; cached because this is expensive!"""
+  return NamedTuple(cls.__name__, **cls.__annotations__)
+
 if PY3_10_PLUS:
+  # a demonstration of how to easily get great performance while reclaiming QoL methods
   @dataclass(slots = True)
-  class data:
-    """I recommend this pattern for POD, slightly more memory but consistently high performance"""
+  class Data:
+    """recommend this pattern, slightly more memory footprint but consistently high performance"""
     x: float
     y: float
-    z: float
-    w: float
+    s: str
+    a: list
     
-    def slots(self):
-      """generic __slots__ -> dict; helpful for introspection or debugging"""
+    def __iter__(self):
+      """iterating over the values, rather than the keys/__slots__"""
+      yield map(self.__getattribute__, self.__slots__)
+    
+    def __len__(self):
+      """how many slots there are, useful for slices, iteration, and reversing"""
+      return len(self.__slots__)
+    
+    def __getitem__(self, n: Union[int, slice]):
+      """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
+      if isinstance(n, int): return self.__getattribute__(self.__slots__[n])
+      else: return list(map(self.__getattribute__, self.__slots__[n]))
+    
+    def asdict(self):
+      """generic __slots__ -> dict; helpful for introspection, DICT DOES NOT MODIFY THIS OBJECT"""
       return {slot: self.__getattribute__(slot) for slot in self.__slots__}
+    
+    def _astuple(self):
+      """generic __slots__ -> tuple; super fast, low quality of life, tuple(d) may be faster"""
+      return tuple(map(self.__getattribute__, self.__slots__))
+    
+    def astuple(self):
+      """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
+      return cls_to_tuple(Data)._make(map(self.__getattribute__, self.__slots__))
+
 else:
+  # we need to manually specify it, dataclass didn't handle it then
   @dataclass
-  class data:
-    """I recommend this pattern for POD, slightly more memory but consistently high performance"""
+  class Data:
+    """the only difference prior to 3.10 is you need to manually specify __slots__"""
     __slots__ = ["x", "y", "z", "w"]
     x: float
     y: float
     z: float
     w: float
-    
-    def slots(self):
-      """generic __slots__ -> dict; helpful for introspection or debugging"""
-      return {slot: self.__getattribute__(slot) for slot in self.__slots__}
 
 #######################
 # Iterables Shorthand #
@@ -217,12 +243,14 @@ def ctz(v):
   return (v & -v).bit_length() - 1
 
 if PY3_10_PLUS:
-  
+  # we get the fast builtin!
   def popcount(x: int):
-    return x.bit_count() # yay
+    """Number of ones in the binary representation of the absolute value of self."""
+    return x.bit_count()
 else:
-  
+  # we use the slow string version
   def popcount(x: int):
+    """Number of ones in the binary representation of the absolute value of self."""
     return bin(x).count("1")
 
 def isqrt(n: int):
