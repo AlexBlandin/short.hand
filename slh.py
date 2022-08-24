@@ -49,10 +49,11 @@ def cls_to_tuple(cls):
   """this converts a class to a NamedTuple; cached because this is expensive!"""
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
+# with these POD patterns, the provided methods for iteration and conversion to dicts/tuples are there to aid performance, as dataclasses.astuple and dataclasses.asdict are an order of magnitude slower even with such a simple class, due to deepcopy semantics versus our shallow copies here
 if PY3_10_PLUS:
   # a demonstration of how to easily get great performance while reclaiming quality of life
   @dataclass(slots = True)
-  class Data:
+  class PlainOldDataPattern:
     """recommend this pattern, slightly more memory footprint but consistently high performance"""
     x: float
     y: float
@@ -72,28 +73,53 @@ if PY3_10_PLUS:
       if isinstance(n, int): return self.__getattribute__(self.__slots__[n])
       else: return list(map(self.__getattribute__, self.__slots__[n]))
     
-    def asdict(self):
-      """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
-      return {slot: self.__getattribute__(slot) for slot in self.__slots__}
-    
     def _astuple(self):
       """generic __slots__ -> tuple; super fast, low quality of life, tuple(d) may be faster"""
       return tuple(map(self.__getattribute__, self.__slots__))
     
+    def asdict(self):
+      """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
+      return {slot: self.__getattribute__(slot) for slot in self.__slots__}
+    
     def astuple(self):
       """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
-      return cls_to_tuple(Data)._make(map(self.__getattribute__, self.__slots__))
+      return cls_to_tuple(PlainOldDataPattern)._make(map(self.__getattribute__, self.__slots__))
 
 else:
-  # we need to manually specify it, dataclass didn't handle it then
+  # we need to manually specify it, dataclass didn't handle it before 3.10
   @dataclass
-  class Data:
+  class PlainOldDataPattern:
     """the only difference prior to 3.10 is you need to manually specify __slots__"""
     __slots__ = ["x", "y", "z", "w"]
     x: float
     y: float
     z: float
     w: float
+    
+    def __iter__(self):
+      """iterating over the values, rather than the keys/__slots__"""
+      yield map(self.__getattribute__, self.__slots__)
+    
+    def __len__(self):
+      """how many slots there are, useful for slices, iteration, and reversing"""
+      return len(self.__slots__)
+    
+    def __getitem__(self, n: Union[int, slice]):
+      """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
+      if isinstance(n, int): return self.__getattribute__(self.__slots__[n])
+      else: return list(map(self.__getattribute__, self.__slots__[n]))
+    
+    def _astuple(self):
+      """generic __slots__ -> tuple; super fast, low quality of life, tuple(d) may be faster"""
+      return tuple(map(self.__getattribute__, self.__slots__))
+    
+    def asdict(self):
+      """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
+      return {slot: self.__getattribute__(slot) for slot in self.__slots__}
+    
+    def astuple(self):
+      """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
+      return cls_to_tuple(PlainOldDataPattern)._make(map(self.__getattribute__, self.__slots__))
 
 #######################
 # Iterables Shorthand #
