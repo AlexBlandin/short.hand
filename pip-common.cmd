@@ -3,16 +3,20 @@
 : # The "essentials"
 python -m pip install -U pip
 pip install -U pip
-pip install -U setuptools wheel virtualenv
+pip install -U setuptools wheel
+pip install -U virtualenv pipx
+pipx ensurepath
+pipx install hatch
+pipx upgrade-all
 
 : # Cryptography
 pip install -U PyNaCl pyOpenSSL cryptography certifi
 
 : # Python tooling, style, typing, debugging, system info, etc
-pip install -U mypy yapf pylint pytest pdbpp psutil
+pip install -U mypy yapf pylint isort pyupgrade pre-commit pytest pdbpp psutil typing-extensions
 
 : # Useful tools
-pip install -U attrs cffi fastcore humanize parse pendulum pylev 
+pip install -U attrs toolz cffi fastcore pytomlpp humanize parse pendulum pylev langcodes
 
 : # Python notebook
 pip install -U jupyter notebook
