@@ -234,14 +234,14 @@ class DeepChainMap(ChainMap):
     for mapping in self.maps:
       if key in mapping:
         mapping[key] = value
-        return
+        return # we only modify the first match
     self.maps[0][key] = value
   
   def __delitem__(self, key):
     for mapping in self.maps:
       if key in mapping:
         del mapping[key]
-        return
+        return # we only modify the first match
     raise KeyError(key)
 
 ###################
@@ -424,27 +424,27 @@ def from_bytes(b: bytes, signed = False, byteorder = sys.byteorder) -> int:
 # convenience functions to not write as much
 
 def resolve(path: Union[str, Path]):
-  """resolve Path including "~" (bc Path(path) doesn't...)"""
-  return Path(os.path.expanduser(path))
+  """resolve a Path including "~" (bc Path(path) doesn't...)"""
+  return Path(path).expanduser()
 
 def readlines(fp: Union[str, Path], encoding = "utf8"):
   """just reads lines as you normally would want to"""
-  return Path(fp).read_text(encoding).splitlines()
+  return resolve(fp).read_text(encoding).splitlines()
 
 def readlinesmap(fp: Union[str, Path], *fs, encoding = "utf8"):
   """readlines but map each function in fs to fp's lines in order (fs[0]: first, ..., fs[-1]: last)"""
-  return mapcomp(Path(fp).read_text(encoding).splitlines(), *fs)
+  return mapcomp(resolve(fp).read_text(encoding).splitlines(), *fs)
 
 def writelines(fp: Union[str, Path], lines: Union[str, list[str]], encoding = "utf8", newline = "\n"):
   """just writes lines as you normally would want to"""
-  return Path(fp).write_text(
+  return resolve(fp).write_text(
     lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline
   )
 
 def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs, encoding = "utf8", newline = "\n"):
   """writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)"""
   return (
-    Path(fp).write_text(
+    resolve(fp).write_text(
       newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs),
       encoding = encoding,
       newline = newline
