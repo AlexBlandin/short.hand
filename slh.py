@@ -140,24 +140,24 @@ def unwrap(f, *args, **kwargs):
 
 def compose(*fs):
   """combine each function in fs; evaluates fs[0] first, and fs[-1] last, like fs[-1](fs[-2](...fs[0](*args, **kwargs)...))"""
-  def comp(x):
+  def _comp(x):
     # for the sake of simplicity, it assumes an arity of 1 for every function, because it might want a tuple in, or vargs, who knows
     for f in fs:
       x = f(x)
     return x
   
-  return comp
+  return _comp
 
 def mapcomp(iterable, *fs):
   """map(compose(*fs), iterable); evaluates fs[0] first, fs[-1] last, so acts like map(fs[-1], map(fs[-2], ... map(fs[0], iterable)...))"""
-  def comp(fs: list):
+  def _comp(fs: list):
     # not using compose() internally to avoid overhead, this is faster than list(map(compose(*fs), iterable))
     if len(fs):
       f = fs.pop()
       return map(f, comp(fs))
     return iterable
   
-  return list(comp(list(fs)))
+  return list(_comp(list(fs)))
 
 def lmap(f, *args):
   """because wrapping in list() all the time is awkward, saves abusing the slow `*a,=map(*args)`!"""
