@@ -154,7 +154,7 @@ def mapcomp(iterable, *fs):
     # not using compose() internally to avoid overhead, this is faster than list(map(compose(*fs), iterable))
     if len(fs):
       f = fs.pop()
-      return map(f, comp(fs))
+      return map(f, _comp(fs))
     return iterable
   
   return list(_comp(list(fs)))
