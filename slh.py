@@ -127,6 +127,13 @@ else:
 
 flatten = chain.from_iterable
 
+class Circular(list):
+  """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]"""
+  def __getitem__(self, x: int | slice):
+    if isinstance(x, slice):
+      return [self[x] for x in range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step)]
+    return super().__getitem__(x.__index__() % max(1, len(self)))
+
 def unique_list(*lst):
   """reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience"""
   return list(dict(zip(lst if len(lst) != 1 else lst[0], it.count())))
