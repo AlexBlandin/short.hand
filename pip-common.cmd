@@ -7,6 +7,7 @@ pip install -U setuptools wheel
 pip install -U virtualenv pipx
 pipx ensurepath
 pipx install hatch
+pipx install poetry
 pipx upgrade-all
 
 : # Cryptography
@@ -16,13 +17,13 @@ pip install -U PyNaCl pyOpenSSL cryptography certifi
 pip install -U mypy yapf pylint isort pyupgrade pre-commit pytest pdbpp psutil typing-extensions
 
 : # Useful tools
-pip install -U attrs toolz cffi fastcore pytomlpp humanize parse pendulum pylev langcodes
+pip install -U attrs icecream toolz cffi fastcore pytomlpp humanize parse pendulum pylev langcodes
 
 : # Python notebook
 pip install -U jupyter notebook
 
-: # Numeric python
-pip install -U numpy pandas scipy
+: # Numeric python : # Don't upgrade for a while, SHAP complains
+: # pip install -U numpy pandas scipy
 
 : # Terminal stuff
 pip install -U colorama termcolor rich tldr tqdm proselint
@@ -40,7 +41,7 @@ pip install -U geocoder skyfield
 pip install -U Pillow matplotlib dearpygui
 
 : # Optional stuff (ML, win32 wrapper, readline in python, high quality plots, etc)
-: # pip install -U pywin32 pyreadline
+: # pip install -U pywin32 pyreadline3
 : # pip install -U tensorflow torch
 : # pip install -U scikit-image torchvision torchaudio
 : # pip install -U mpl_plotter
