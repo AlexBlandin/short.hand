@@ -22,8 +22,8 @@ pip install -U attrs icecream toolz cffi fastcore pytomlpp humanize parse pendul
 : # Python notebook
 pip install -U jupyter notebook
 
-: # Numeric python : # Don't upgrade for a while, SHAP complains
-: # pip install -U numpy pandas scipy
+: # Numeric python
+pip install -U numpy pandas scipy
 
 : # Terminal stuff
 pip install -U colorama termcolor rich tldr tqdm proselint
