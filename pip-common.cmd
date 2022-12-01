@@ -6,6 +6,7 @@ pip install -U pip
 pip install -U setuptools wheel
 pip install -U virtualenv pipx
 pipx ensurepath
+pipx install tldr
 pipx install hatch
 pipx install poetry
 pipx upgrade-all
@@ -26,7 +27,7 @@ pip install -U jupyter notebook
 pip install -U numpy pandas scipy
 
 : # Terminal stuff
-pip install -U colorama termcolor rich tldr tqdm proselint
+pip install -U colorama termcolor rich tqdm proselint
 
 : # Webstuff
 pip install -U aiohttp async-timeout beautifulsoup4 httpie soupsieve requests urllib3 websockets
