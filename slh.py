@@ -16,9 +16,9 @@ from time import time
 # Import Shorthand #
 ####################
 """for when `from slh import *` is used"""
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from functools import partial, reduce, cache
-from typing import NamedTuple, SupportsIndex, Union, Any
+from typing import Callable, NamedTuple, Optional, SupportsIndex, Union, Any
 from math import sqrt, prod
 import itertools as it
 import sys
@@ -69,7 +69,7 @@ if PY3_10_PLUS:
       """how many slots there are, useful for slices, iteration, and reversing"""
       return len(self.__slots__)
     
-    def __getitem__(self, n: Union[int, slice]):
+    def __getitem__(self, n: int | slice):
       """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
       if isinstance(n, int): return self.__getattribute__(self.__slots__[n])
       else: return list(map(self.__getattribute__, self.__slots__[n]))
@@ -130,12 +130,12 @@ flatten = chain.from_iterable
 
 class Circular(list):
   """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]"""
-  def __getitem__(self, x: int | slice):
+  def __getitem__(self, x: Union[int, slice]):
     if isinstance(x, slice):
       return [self[x] for x in range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step)]
     return super().__getitem__(x.__index__() % max(1, len(self)))
   
-  def __setitem__(self, x: SupportsIndex | slice, val):
+  def __setitem__(self, x: Union[SupportsIndex, slice], val):
     if isinstance(x, slice) and (hasattr(val, "__iter__") or hasattr(val, "__getitem__")):
       m = max(1, len(self))
       for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step), val) if x.stop is None else zip(range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step), val):
@@ -143,7 +143,7 @@ class Circular(list):
     else:
       super().__setitem__(x.__index__() % max(1, len(self)), val)
 
-  def repeat(self, times: None | int = None):
+  def repeat(self, times: Optional[int] = None):
     if times is None:
       while True:
         yield from iter(self)
@@ -151,18 +151,18 @@ class Circular(list):
       for _ in range(times):
         yield from iter(self)
 
-def unique_list(*lst):
+def unique_list(xs: Sequence):
   """reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience"""
-  return list(dict(zip(lst if len(lst) != 1 else lst[0], it.count())))
+  return list(dict(zip(xs if len(xs) != 1 else xs[0], it.count())))
 
-def unwrap(f, *args, **kwargs):
+def unwrap(f: Callable, *args, **kwargs):
   """because exceptions are bad"""
   try:
     return f(*args, **kwargs)
   except:
     return None
 
-def compose(*fs):
+def compose(*fs: Callable):
   """combine each function in fs; evaluates fs[0] first, and fs[-1] last, like fs[-1](fs[-2](...fs[0](*args, **kwargs)...))"""
   def _comp(x):
     # for the sake of simplicity, it assumes an arity of 1 for every function, because it might want a tuple in, or vargs, who knows
@@ -172,18 +172,18 @@ def compose(*fs):
   
   return _comp
 
-def mapcomp(iterable, *fs):
+def mapcomp(xs: Iterable, *fs: Callable):
   """map(compose(*fs), iterable); evaluates fs[0] first, fs[-1] last, so acts like map(fs[-1], map(fs[-2], ... map(fs[0], iterable)...))"""
   def _comp(fs: list):
     # not using compose() internally to avoid overhead, this is faster than list(map(compose(*fs), iterable))
     if len(fs):
       f = fs.pop()
       return map(f, _comp(fs))
-    return iterable
+    return xs
   
   return list(_comp(list(fs)))
 
-def lmap(f, *args):
+def lmap(f: Callable, *args):
   """because wrapping in list() all the time is awkward, saves abusing the slow `*a,=map(*args)`!"""
   return list(map(f, *args))
 
@@ -191,38 +191,38 @@ def transpose(matrix: list[list]):
   """inefficient but elegant, so if it's a big matrix please don't use"""
   return lmap(list, zip(*matrix))
 
-def tmap(f, *args):
-  """for the versions of python with faster tuple lookups (TODO: PEP 590 vectorcalls affect this how?)"""
+def tmap(f: Callable, *args):
+  """for the versions of python with faster tuple lookups"""
   return tuple(map(f, *args))
 
-def join(iterable, sep = " "):
+def join(xs: Iterable, sep = " "):
   """because sep.join(iterable) doesn't convert to str(i) for i in iterable"""
-  return sep.join(map(str, iterable))
+  return sep.join(map(str, xs))
 
-def minmax(*iterable):
+def minmax(xs: Iterable):
   """get the minimum and maximum quickly"""
-  return min(iterable), max(iterable) # min(*iterable) is only faster for len(iterable) == 2
+  return min(xs), max(xs)
 
-def minmax_ind(*iterable):
-  """minmax but with indices, so ((i_a,min),(i_b,max))"""
-  return min(enumerate(iterable), key = itemgetter(1)), max(enumerate(iterable), key = itemgetter(1))
+def minmax_ind(xs: Iterable):
+  """minmax but with indices, so ((i_a, min), (i_b, max))"""
+  return min(enumerate(xs), key = itemgetter(1)), max(enumerate(xs), key = itemgetter(1))
 
-def shuffled(*iterable):
-  """aka, "shuffle but not in place", ie. reversed and sorted, but they ignored prior"""
-  iterable = list(iterable) # this way we support sets
-  return sample(iterable, len(iterable))
+def shuffled(xs: Iterable):
+  """aka, "shuffle but not in place", like reversed() and sorted()"""
+  xs = list(xs) # this way we support sets, without a sort, as sample doesn't anymore
+  return sample(xs, len(xs))
 
-def lenfilter(iterable, pred = bool):
+def lenfilter(xs: Iterable, pred = bool):
   """counts how many are true for a given predicate"""
-  return sum(1 for i in iterable if pred(i)) # better (esp in pypy) than len(filter()) since not constructing a list
+  return sum(1 for i in xs if pred(i)) # better (esp in pypy) than len(filter()) since not constructing a list
 
-def first(iterable, default = None):
+def first(xs: Iterable, default = None):
   """the first item in iterable"""
-  return next(iter(iterable), default)
+  return next(iter(xs), default)
 
 def sample_set(s: set, k: int):
   """sample a set because you just want some random elements and don't care (about reproducibility)"""
-  return sample(list(s), k) # if you really care about reproducibility (with known seeds) then sure, use sorted()
+  return sample(list(s), k) # if you care about reproducibility (with known seeds), sort prior
 
 def sorted_dict_by_key(d: dict, reverse = False):
   """sort a dict by key"""
@@ -232,24 +232,27 @@ def sorted_dict_by_val(d: dict, reverse = False):
   """sort a dict by value"""
   return dict(sorted(d.items(), key = itemgetter(1), reverse = reverse))
 
-def sorted_dict(d, key = itemgetter(1), reverse = False):
+def sorted_dict(d: dict, key = itemgetter(1), reverse = False):
   """generic sorting, because it's something people kinda want"""
   return dict(sorted(d.items(), key = key, reverse = reverse))
 
-def sortas(first: list, second: list):
+def sortas(first: Iterable, second: Iterable):
   """sorts the first as if it was the second"""
   return list(map(itemgetter(0), sorted(zip(first, second))))
 
-def find(v, iterable: list, start = 0, stop = -1, missing = -1):
+def find(v, xs: Union[list, Iterable], start: Optional[int] = None, stop: Optional[int] = None, missing = -1):
   """find the first index of v in interable without raising exceptions"""
   try:
-    return iterable.index(v, start, stop)
-  except: # because if doesn't have .index then we couldn't find iterable
-    if start == 0 and stop == -1: # unless we aren't messing with start and stop, we might have a chance
-      try:
-        indexOf(iterable, v)
-      except:
-        pass
+    return xs.index(v, start, stop)
+  except:
+    try:
+      if start == 0 and stop == -1:
+        return indexOf(xs, v)
+      else:
+        return list(xs).index(v, start, stop)
+    except:
+      return missing
+  finally:
     return missing
 
 class DeepChainMap(ChainMap):
@@ -272,23 +275,23 @@ class DeepChainMap(ChainMap):
 # Maths Shorthand #
 ###################
 
-def avg(iterable, start = 0):
-  """without exceptions, because x/0 = 0 in euclidean"""
-  return sum(iterable, start) / len(iterable) if len(iterable) else 0
+def avg(xs: Sequence, start = 0):
+  """no exceptions, because x/0 = 0 in euclidean"""
+  return sum(xs, start) / len(xs) if len(xs) else 0
 
-def dotprod(A, B):
+def dotprod(A: Iterable, B: Iterable):
   return sum(a * b for a, b in zip(A, B))
 
 def bits(x: int):
   """because bin() has the annoying 0b, so slower but cleaner"""
   return f"{x:b}"
 
-def ilog2(x):
+def ilog2(x: int):
   """integer log2, aka the position of the first bit"""
   return x.bit_length() - 1
 
 # from gmpy2 import bit_scan1 as ctz # if you must go faster
-def ctz(v):
+def ctz(v: int):
   """count trailing zeroes"""
   return (v & -v).bit_length() - 1
 
@@ -328,7 +331,7 @@ def isprime(n: int):
       return False
   return True
 
-def fastprime(n: int, trials = 8):
+def fastprime(n: int, trials: int = 8):
   """
   Miller-Rabin primality test.
 
@@ -380,7 +383,7 @@ def now():
   """because sometimes I want the time now()"""
   return f"{datetime.now():%Y-%m-%d-%H-%M-%S}"
 
-def tf(func, *args, __pretty_tf = True, **kwargs):
+def tf(func: Callable, *args, __pretty_tf = True, **kwargs):
   """time func func, as in, func to time the function func"""
   start = time()
   r = func(*args, **kwargs)
@@ -433,7 +436,7 @@ def yesno(msg = "", accept_return = True, replace_lists = False, yes_list = set(
     if reply in (no_list if replace_lists else {"n", "no"} | no_list): return False
 
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
-def to_bytes(x: int, nbytes = None, signed = None, byteorder = sys.byteorder) -> bytes:
+def to_bytes(x: int, nbytes: Optional[int] = None, signed: Optional[bool] = None, byteorder = sys.byteorder) -> bytes:
   """int.to_bytes but with (sensible) default values, by default assumes unsigned if >=0, signed if <0"""
   return x.to_bytes((nbytes or (x.bit_length() + 7) // 8), byteorder, signed = (x >= 0) if signed is None else signed)
 
@@ -455,7 +458,7 @@ def readlines(fp: Union[str, Path], encoding = "utf8"):
   """just reads lines as you normally would want to"""
   return resolve(fp).read_text(encoding).splitlines()
 
-def readlinesmap(fp: Union[str, Path], *fs, encoding = "utf8"):
+def readlinesmap(fp: Union[str, Path], *fs: Callable, encoding = "utf8"):
   """readlines but map each function in fs to fp's lines in order (fs[0]: first, ..., fs[-1]: last)"""
   return mapcomp(resolve(fp).read_text(encoding).splitlines(), *fs)
 
@@ -465,7 +468,7 @@ def writelines(fp: Union[str, Path], lines: Union[str, list[str]], encoding = "u
     lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline
   )
 
-def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs, encoding = "utf8", newline = "\n"):
+def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs: Callable, encoding = "utf8", newline = "\n"):
   """writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)"""
   return (
     resolve(fp).write_text(
