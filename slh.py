@@ -5,7 +5,7 @@ Santa's Little Helpers
 # Imports used here
 from dataclasses import dataclass
 from collections import ChainMap
-from itertools import chain
+from itertools import chain, count
 from operator import itemgetter, indexOf
 from datetime import datetime
 from pathlib import Path
@@ -18,13 +18,15 @@ from time import time
 """for when `from slh import *` is used"""
 from collections.abc import Iterable
 from functools import partial, reduce, cache
-from typing import NamedTuple, Union, Any
+from typing import NamedTuple, SupportsIndex, Union, Any
 from math import sqrt, prod
 import itertools as it
 import sys
 import os
 
-PY3_10_PLUS = sys.version_info.major >= 3 and sys.version_info.minor >= 10
+PY3 = sys.version_info.major >= 3
+PY3_10_PLUS = PY3 and sys.version_info.minor >= 10
+assert PY3
 
 if PY3_10_PLUS:
   from itertools import pairwise
@@ -133,6 +135,22 @@ class Circular(list):
     if isinstance(x, slice):
       return [self[x] for x in range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step)]
     return super().__getitem__(x.__index__() % max(1, len(self)))
+  
+  def __setitem__(self, x: SupportsIndex | slice, val):
+    if isinstance(x, slice) and (hasattr(val, "__iter__") or hasattr(val, "__getitem__")):
+      m = max(1, len(self))
+      for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step), val) if x.stop is None else zip(range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step), val):
+        super().__setitem__(i.__index__() % m, v)
+    else:
+      super().__setitem__(x.__index__() % max(1, len(self)), val)
+
+  def repeat(self, times: None | int = None):
+    if times is None:
+      while True:
+        yield from iter(self)
+    else:
+      for _ in range(times):
+        yield from iter(self)
 
 def unique_list(*lst):
   """reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience"""
@@ -221,7 +239,7 @@ def sorted_dict(d, key = itemgetter(1), reverse = False):
 
 def sortas(first: list, second: list):
   """sorts the first as if it was the second"""
-  return list(map(itemgetter(0), sorted(zip(first, second), key = itemgetter(1))))
+  return list(map(itemgetter(0), sorted(zip(first, second))))
 
 def find(v, iterable: list, start = 0, stop = -1, missing = -1):
   """find the first index of v in interable without raising exceptions"""
@@ -364,7 +382,7 @@ def now():
   return f"{datetime.now():%Y-%m-%d-%H-%M-%S}"
 
 def tf(func, *args, __pretty_tf = True, **kwargs):
-  """time func func, as in, time the function func"""
+  """time func func, as in, func to time the function func"""
   start = time()
   r = func(*args, **kwargs)
   end = time()
