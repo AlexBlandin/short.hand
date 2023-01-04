@@ -69,7 +69,7 @@ if PY3_10_PLUS:
       """how many slots there are, useful for slices, iteration, and reversing"""
       return len(self.__slots__)
     
-    def __getitem__(self, n: int | slice):
+    def __getitem__(self, n: Union[int, slice]):
       """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
       if isinstance(n, int): return self.__getattribute__(self.__slots__[n])
       else: return list(map(self.__getattribute__, self.__slots__[n]))
