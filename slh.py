@@ -26,7 +26,6 @@ import os
 
 PY3 = sys.version_info.major >= 3
 PY3_10_PLUS = PY3 and sys.version_info.minor >= 10
-assert PY3
 
 if PY3_10_PLUS:
   from itertools import pairwise
