@@ -15,7 +15,7 @@ pipx upgrade-all
 pip install -U PyNaCl pyOpenSSL cryptography certifi
 
 : # Python tooling, style, typing, debugging, system info, etc
-pip install -U mypy yapf pylint isort pyupgrade pytest pdbpp psutil typing-extensions
+pip install -U mypy yapf ruff pylint isort pyupgrade pytest pdbpp psutil typing-extensions
 
 : # Useful tools
 pip install -U attrs icecream sortedcontainers toolz cffi fastcore pytomlpp humanize parse pendulum pylev langcodes
