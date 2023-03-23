@@ -466,7 +466,9 @@ def resolve(path: Union[str, Path]):
   """resolve a Path including "~" (bc Path(path) doesn't...)"""
   return Path(path).expanduser()
 
+@cache
 def filedigest(path: Path, hash = "sha1"):
+  """fingerprint a file, caches so modified files bypass with filedigest.__wrapped__ or filedigest.cache_clear()"""
   with open(path, "rb") as f:
     return hashlib.file_digest(f, hash).hexdigest()
 
@@ -502,22 +504,19 @@ def lev(s1: str, s2: str) -> int:
   """calculate Levenshtein distance between inputs using iterative Wagner-Fischer"""
   if s1 == s2: return 0
   l1, l2 = len(s1), len(s2)
-  if l1 == 0: return l2
-  if l2 == 0: return l1
-  if l1 > l2:
-    s2, s1 = s1, s2
-    l2, l1 = l1, l2
+  if 0 in (l1, l2): return l1 or l2
+  if l1 > l2: s1, s2, l1, l2 = s2, s1, l2, l1
   d0, d1 = list(range(l2 + 1)), list(range(l2 + 1))
-  for i in range(l1):
+  for i, x in enumerate(s1):
     d1[0] = i + 1
-    for j in range(l2):
+    for j, y in enumerate(s2):
       cost = d0[j]
-      if s1[i] != s2[j]:
-        cost += 1 # subst
-        x_cost = d1[j] + 1 # ins
-        if x_cost < cost: cost = x_cost
-        y_cost = d0[j + 1] + 1 # del
-        if y_cost < cost: cost = y_cost
+      if x != y:
+        cost += 1
+        ins_cost = d1[j] + 1
+        del_cost = d0[j + 1] + 1
+        if ins_cost < cost: cost = ins_cost
+        if del_cost < cost: cost = del_cost
       d1[j + 1] = cost
     d0, d1 = d1, d0
   return d0[-1]
