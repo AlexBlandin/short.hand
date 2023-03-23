@@ -11,6 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from random import randrange, sample
 from time import time
+import hashlib
 
 ####################
 # Import Shorthand #
@@ -132,17 +133,28 @@ class Circular(list):
   """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]"""
   def __getitem__(self, x: Union[int, slice]):
     if isinstance(x, slice):
-      return [self[x] for x in range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step)]
+      return [
+        self[x] for x in range(
+          0 if x.start is None else x.start,
+          len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step
+        )
+      ]
     return super().__getitem__(x.__index__() % max(1, len(self)))
   
   def __setitem__(self, x: Union[SupportsIndex, slice], val):
     if isinstance(x, slice) and (hasattr(val, "__iter__") or hasattr(val, "__getitem__")):
       m = max(1, len(self))
-      for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step), val) if x.stop is None else zip(range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step), val):
+      for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step),
+                      val) if x.stop is None else zip(
+                        range(
+                          0 if x.start is None else x.start,
+                          len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step
+                        ), val
+                      ):
         super().__setitem__(i.__index__() % m, v)
     else:
       super().__setitem__(x.__index__() % max(1, len(self)), val)
-
+  
   def repeat(self, times: Optional[int] = None):
     if times is None:
       while True:
@@ -454,6 +466,10 @@ def resolve(path: Union[str, Path]):
   """resolve a Path including "~" (bc Path(path) doesn't...)"""
   return Path(path).expanduser()
 
+def filedigest(path: Path, hash = "sha1"):
+  with open(path, "rb") as f:
+    return hashlib.file_digest(f, hash).hexdigest()
+
 def readlines(fp: Union[str, Path], encoding = "utf8"):
   """just reads lines as you normally would want to"""
   return resolve(fp).read_text(encoding).splitlines()
@@ -477,3 +493,31 @@ def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs: Calla
       newline = newline
     )
   )
+
+####################
+# String Shorthand #
+####################
+
+def lev(s1: str, s2: str) -> int:
+  """calculate Levenshtein distance between inputs using iterative Wagner-Fischer"""
+  if s1 == s2: return 0
+  l1, l2 = len(s1), len(s2)
+  if l1 == 0: return l2
+  if l2 == 0: return l1
+  if l1 > l2:
+    s2, s1 = s1, s2
+    l2, l1 = l1, l2
+  d0, d1 = list(range(l2 + 1)), list(range(l2 + 1))
+  for i in range(l1):
+    d1[0] = i + 1
+    for j in range(l2):
+      cost = d0[j]
+      if s1[i] != s2[j]:
+        cost += 1 # subst
+        x_cost = d1[j] + 1 # ins
+        if x_cost < cost: cost = x_cost
+        y_cost = d0[j + 1] + 1 # del
+        if y_cost < cost: cost = y_cost
+      d1[j + 1] = cost
+    d0, d1 = d1, d0
+  return d0[-1]
