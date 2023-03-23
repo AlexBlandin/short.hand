@@ -501,7 +501,7 @@ def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs: Calla
 ####################
 
 def lev(s1: str, s2: str) -> int:
-  """calculate Levenshtein distance between inputs using iterative Wagner-Fischer"""
+  """calculate Levenshtein distance between strings"""
   if s1 == s2: return 0
   l1, l2 = len(s1), len(s2)
   if 0 in (l1, l2): return l1 or l2
