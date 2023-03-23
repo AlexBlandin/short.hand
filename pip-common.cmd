@@ -15,16 +15,16 @@ pipx upgrade-all
 pip install -U PyNaCl pyOpenSSL cryptography certifi
 
 : # Python tooling, style, typing, debugging, system info, etc
-pip install -U mypy yapf pylint isort pyupgrade pre-commit pytest pdbpp psutil typing-extensions
+pip install -U mypy yapf pylint isort pyupgrade pytest pdbpp psutil typing-extensions
 
 : # Useful tools
-pip install -U attrs icecream toolz cffi fastcore pytomlpp humanize parse pendulum pylev langcodes
+pip install -U attrs icecream sortedcontainers toolz cffi fastcore pytomlpp humanize parse pendulum pylev langcodes
 
 : # Python notebook
 pip install -U jupyter notebook
 
 : # Numeric python
-pip install -U numpy pandas scipy
+pip install -U numpy pandas scipy gmpy2
 
 : # Terminal stuff
 pip install -U colorama termcolor rich tqdm proselint
@@ -46,3 +46,4 @@ pip install -U Pillow matplotlib dearpygui
 : # pip install -U tensorflow torch
 : # pip install -U scikit-image torchvision torchaudio
 : # pip install -U mpl_plotter
+: # pip install -U pre-commit
