@@ -6,20 +6,23 @@ Santa's Little Helpers
 from dataclasses import dataclass
 from collections import ChainMap
 from itertools import chain, count
-from operator import itemgetter, indexOf
+from operator import attrgetter, itemgetter, indexOf
 from datetime import datetime
 from pathlib import Path
 from random import randrange, sample
 from time import time
+import dataclasses
 import hashlib
 
 ####################
 # Import Shorthand #
 ####################
 """for when `from slh import *` is used"""
+
+# ruff: noqa: E402 F401
 from collections.abc import Iterable, Sequence
 from functools import partial, reduce, cache
-from typing import Callable, NamedTuple, Optional, SupportsIndex, Union, Any
+from typing import Callable, Literal, NamedTuple, Optional, SupportsIndex, Union, Any
 from math import sqrt, prod
 import itertools as it
 import sys
@@ -27,9 +30,10 @@ import os
 
 PY3 = sys.version_info.major >= 3
 PY3_10_PLUS = PY3 and sys.version_info.minor >= 10
+PY3_11_PLUS = PY3 and sys.version_info.minor >= 11
 
 if PY3_10_PLUS:
-  from itertools import pairwise
+  from itertools import pairwise # type: ignore
 else:
   # we have to make it ourselves
   def pairwise(iterable: Iterable):
@@ -44,18 +48,20 @@ else:
 
 class dot(dict):
   """a "dot dict", a dict you can access by a "." - inefficient vs dataclass, but convenient"""
-  __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__
+  __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__ # type: ignore
 
 @cache
 def cls_to_tuple(cls):
   """this converts a class to a NamedTuple; cached because this is expensive!"""
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
-# with these POD patterns, the provided methods for iteration and conversion to dicts/tuples are there to aid performance, as dataclasses.astuple and dataclasses.asdict are an order of magnitude slower even with such a simple class, due to deepcopy semantics versus our shallow copies here
+# with these POD patterns, the provided methods for iteration and conversion to dicts/tuples are there to aid performance
+# as dataclasses.astuple and dataclasses.asdict are an order of magnitude slower even with such a simple class, its deepcopy semantics versus our shallow copies
+# also, as noted since 3.11, we should not be using .__slots__ due to base class issues, but for performance, we do anyway (use dataclasses.fields, see method)
 if PY3_10_PLUS:
   # a demonstration of how to easily get great performance while reclaiming quality of life
   @dataclass(slots = True)
-  class PlainOldDataPattern:
+  class PlainOldDataPattern: # type: ignore
     """recommend this pattern, slightly more memory footprint but consistently high performance"""
     x: float
     y: float
@@ -64,33 +70,78 @@ if PY3_10_PLUS:
     
     def __iter__(self):
       """iterating over the values, rather than the keys/__slots__"""
-      yield map(self.__getattribute__, self.__slots__)
+      yield map(self.__getattribute__, self.__slots__) # type: ignore
     
     def __len__(self):
       """how many slots there are, useful for slices, iteration, and reversing"""
-      return len(self.__slots__)
+      return len(self.__slots__) # type: ignore
     
     def __getitem__(self, n: Union[int, slice]):
       """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
-      if isinstance(n, int): return self.__getattribute__(self.__slots__[n])
-      else: return list(map(self.__getattribute__, self.__slots__[n]))
+      if isinstance(n, int):
+        return self.__getattribute__(self.__slots__[n]) # type: ignore
+      else:
+        return list(map(self.__getattribute__, self.__slots__[n])) # type: ignore
     
     def _astuple(self):
       """generic __slots__ -> tuple; super fast, low quality of life, tuple(d) may be faster"""
-      return tuple(map(self.__getattribute__, self.__slots__))
+      return tuple(map(self.__getattribute__, self.__slots__)) # type: ignore
     
     def asdict(self):
       """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
-      return {slot: self.__getattribute__(slot) for slot in self.__slots__}
+      return {slot: self.__getattribute__(slot) for slot in self.__slots__} # type: ignore
     
     def astuple(self):
       """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
-      return cls_to_tuple(PlainOldDataPattern)._make(map(self.__getattribute__, self.__slots__))
-
+      return cls_to_tuple(PlainOldDataPattern)._make(map(self.__getattribute__, self.__slots__)) # type: ignore
+    
+    def fields(self):
+      """__slots__ equivalent using the proper fields approach"""
+      return list(map(attrgetter("name"), dataclasses.fields(self)))
+elif PY3_11_PLUS:
+  # a demonstration of how to easily get great performance while reclaiming quality of life
+  @dataclass(slots = True)
+  class PlainOldDataPattern: # type: ignore
+    """recommend this pattern, slightly more memory footprint but consistently high performance"""
+    x: float
+    y: float
+    s: str
+    a: list
+    
+    def __iter__(self):
+      """iterating over the values, rather than the keys/__slots__"""
+      yield map(self.__getattribute__, self.fields())
+    
+    def __len__(self):
+      """how many slots there are, useful for slices, iteration, and reversing"""
+      return len(self.fields())
+    
+    def __getitem__(self, n: Union[int, slice]):
+      """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
+      if isinstance(n, int):
+        return self.__getattribute__(self.fields()[n])
+      else:
+        return list(map(self.__getattribute__, self.fields()[n]))
+    
+    def _astuple(self):
+      """generic __slots__ -> tuple; super fast, low quality of life, tuple(d) may be faster"""
+      return tuple(map(self.__getattribute__, self.fields()))
+    
+    def asdict(self):
+      """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
+      return {slot: self.__getattribute__(slot) for slot in self.fields()}
+    
+    def astuple(self):
+      """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
+      return cls_to_tuple(PlainOldDataPattern)._make(map(self.__getattribute__, self.fields()))
+    
+    def fields(self):
+      """__slots__ equivalent using the proper fields approach"""
+      return list(map(attrgetter("name"), dataclasses.fields(self)))
 else:
   # we need to manually specify it, dataclass didn't handle it before 3.10
   @dataclass
-  class PlainOldDataPattern:
+  class PlainOldDataPattern: # type: ignore
     """the only difference prior to 3.10 is you need to manually specify __slots__"""
     __slots__ = ["x", "y", "z", "w"]
     x: float
@@ -108,8 +159,10 @@ else:
     
     def __getitem__(self, n: Union[int, slice]):
       """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
-      if isinstance(n, int): return self.__getattribute__(self.__slots__[n])
-      else: return list(map(self.__getattribute__, self.__slots__[n]))
+      if isinstance(n, int):
+        return self.__getattribute__(self.__slots__[n])
+      else:
+        return list(map(self.__getattribute__, self.__slots__[n]))
     
     def _astuple(self):
       """generic __slots__ -> tuple; super fast, low quality of life, tuple(d) may be faster"""
@@ -133,27 +186,19 @@ class Circular(list):
   """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]"""
   def __getitem__(self, x: Union[int, slice]):
     if isinstance(x, slice):
-      return [
-        self[x] for x in range(
-          0 if x.start is None else x.start,
-          len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step
-        )
-      ]
+      return [self[x] for x in range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step)]
     return super().__getitem__(x.__index__() % max(1, len(self)))
   
   def __setitem__(self, x: Union[SupportsIndex, slice], val):
     if isinstance(x, slice) and (hasattr(val, "__iter__") or hasattr(val, "__getitem__")):
       m = max(1, len(self))
-      for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step),
-                      val) if x.stop is None else zip(
-                        range(
-                          0 if x.start is None else x.start,
-                          len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step
-                        ), val
-                      ):
+      for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step), val) if x.stop is None else zip(
+        range(0 if x.start is None else x.start,
+              len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step), val
+      ):
         super().__setitem__(i.__index__() % m, v)
     else:
-      super().__setitem__(x.__index__() % max(1, len(self)), val)
+      super().__setitem__(x.__index__() % max(1, len(self)), val) # type: ignore
   
   def repeat(self, times: Optional[int] = None):
     if times is None:
@@ -171,7 +216,7 @@ def unwrap(f: Callable, *args, **kwargs):
   """because exceptions are bad"""
   try:
     return f(*args, **kwargs)
-  except:
+  except Exception:
     return None
 
 def compose(*fs: Callable):
@@ -253,19 +298,17 @@ def sortas(first: Iterable, second: Iterable):
   return list(map(itemgetter(0), sorted(zip(first, second))))
 
 def find(v, xs: Union[list, Iterable], start: Optional[int] = None, stop: Optional[int] = None, missing = -1):
-  """find the first index of v in interable without raising exceptions"""
-  try:
-    return xs.index(v, start, stop)
-  except:
+  """find the first index of v in interable without raising exceptions, will consume iterables so be careful"""
+  if isinstance(xs, list):
+    return xs.index(v, start if start is not None else 0, stop if stop is not None else sys.maxsize)
+  else:
     try:
-      if start == 0 and stop == -1:
+      if (start is None or start == 0) and (stop is None or stop == -1):
         return indexOf(xs, v)
       else:
-        return list(xs).index(v, start, stop)
-    except:
+        return list(xs).index(v, start if start is not None else 0, stop if stop is not None else sys.maxsize)
+    except Exception:
       return missing
-  finally:
-    return missing
 
 class DeepChainMap(ChainMap):
   """Variant of ChainMap that allows direct updates to inner scopes"""
@@ -353,9 +396,12 @@ def fastprime(n: int, trials: int = 8):
   Increase the number of trials to increase the confidence for n >= 3317044064679887385961981 at cost to performance
   """
   
-  if n in {2, 3, 5, 7}: return True
-  if not (n & 1) or not (n % 3) or not (n % 5) or not (n % 7): return False
-  if n < 121: return n > 1
+  if n in {2, 3, 5, 7}:
+    return True
+  if not (n & 1) or not (n % 3) or not (n % 5) or not (n % 7):
+    return False
+  if n < 121:
+    return n > 1
   
   d = n - 1
   s = ctz(d)
@@ -364,27 +410,43 @@ def fastprime(n: int, trials: int = 8):
   # assert(2**s * d == n-1) # not necessary, but go for it if you want
   
   def witness(a):
-    if pow(a, d, n) == 1: return False
+    if pow(a, d, n) == 1:
+      return False
     for i in range(s):
-      if pow(a, 2**i * d, n) == n - 1: return False
+      if pow(a, 2**i * d, n) == n - 1:
+        return False
     return True
   
-  if n < 2047: b = [2]
-  elif n < 1373653: b = [2, 3]
-  elif n < 9080191: b = [31, 73]
-  elif n < 25326001: b = [2, 3, 5]
-  elif n < 3215031751: b = [2, 3, 5, 7]
-  elif n < 4759123141: b = [2, 7, 61]
-  elif n < 1122004669633: b = [2, 13, 23, 1662803]
-  elif n < 2152302898747: b = [2, 3, 5, 7, 11]
-  elif n < 3474749660383: b = [2, 3, 5, 7, 11, 13]
-  elif n < 341550071728321: b = [2, 3, 5, 7, 11, 13, 17]
-  elif n < 318665857834031151167461: b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] # covers 64bit
-  elif n < 3317044064679887385961981: b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
-  else: b = [2] + [randrange(3, n, 2) for _ in range(trials)]
+  if n < 2047:
+    b = [2]
+  elif n < 1373653:
+    b = [2, 3]
+  elif n < 9080191:
+    b = [31, 73]
+  elif n < 25326001:
+    b = [2, 3, 5]
+  elif n < 3215031751:
+    b = [2, 3, 5, 7]
+  elif n < 4759123141:
+    b = [2, 7, 61]
+  elif n < 1122004669633:
+    b = [2, 13, 23, 1662803]
+  elif n < 2152302898747:
+    b = [2, 3, 5, 7, 11]
+  elif n < 3474749660383:
+    b = [2, 3, 5, 7, 11, 13]
+  elif n < 341550071728321:
+    b = [2, 3, 5, 7, 11, 13, 17]
+  elif n < 318665857834031151167461:
+    b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] # covers 64bit
+  elif n < 3317044064679887385961981:
+    b = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
+  else:
+    b = [2] + [randrange(3, n, 2) for _ in range(trials)]
   
   for a in b:
-    if witness(a): return False
+    if witness(a):
+      return False
   return True
 
 ####################
@@ -401,19 +463,14 @@ def tf(func: Callable, *args, __pretty_tf = True, **kwargs):
   r = func(*args, **kwargs)
   end = time()
   if __pretty_tf:
-    print(
-      f"{func.__qualname__}({', '.join(list(map(str,args)) + [f'{k}={v}' for k,v in kwargs.items()])}) = {r}, took {human_time(end-start)}"
-    )
+    print(f"{func.__qualname__}({', '.join(list(map(str,args)) + [f'{k}={v}' for k,v in kwargs.items()])}) = {r}, took {human_time(end-start)}")
   else:
     print(human_time(end - start))
   return r
 
 def human_time(t: float, seconds = True):
   """because nobody makes it humanly readable"""
-  return f"{int(t//60)}m {human_time((int(t)%60)+(t-int(t)), True)}" if t > 60 else \
-         f"{t:.3f}s" if t > 0.1 and seconds else                                    \
-         f"{t*1000:.3f}ms" if t > 0.0001 else                                       \
-         f"{t*1000000:.3f}us"
+  return f"{t//60:.0f}m {t%60:.3f}s" if t > 60 else f"{t:.3f}s" if t > 0.1 and seconds else f"{t*1000:.3f}ms" if t > 0.0001 else f"{t*10**6:.3f}us"
 
 def hours_minutes_seconds(t: float):
   """from some number of seconds t, how many (years) (weeks) (days) (hours) minutes and seconds are there (filled in as needed)"""
@@ -445,16 +502,17 @@ def yesno(msg = "", accept_return = True, replace_lists = False, yes_list = set(
     reply = input(f"{msg} [y/N]: ").strip().lower()
     if reply in (yes_list if replace_lists else {"y", "ye", "yes"} | yes_list) or (accept_return and reply == ""):
       return True
-    if reply in (no_list if replace_lists else {"n", "no"} | no_list): return False
+    if reply in (no_list if replace_lists else {"n", "no"} | no_list):
+      return False
 
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
-def to_bytes(x: int, nbytes: Optional[int] = None, signed: Optional[bool] = None, byteorder = sys.byteorder) -> bytes:
+def to_bytes(x: int, nbytes: Optional[int] = None, signed: Optional[bool] = None, byteorder: Literal["little", "big"] = sys.byteorder) -> bytes:
   """int.to_bytes but with (sensible) default values, by default assumes unsigned if >=0, signed if <0"""
   return x.to_bytes((nbytes or (x.bit_length() + 7) // 8), byteorder, signed = (x >= 0) if signed is None else signed)
 
-def from_bytes(b: bytes, signed = False, byteorder = sys.byteorder) -> int:
+def from_bytes(b: bytes, signed: bool = False, byteorder: Literal["little", "big"] = sys.byteorder) -> int:
   """int.from_bytes but sensible byteorder, you must say if it's signed"""
-  return int.from_bytes(b, byteorder, signed)
+  return int.from_bytes(b, byteorder, signed = signed)
 
 ##################
 # Path Shorthand #
@@ -482,19 +540,11 @@ def readlinesmap(fp: Union[str, Path], *fs: Callable, encoding = "utf8"):
 
 def writelines(fp: Union[str, Path], lines: Union[str, list[str]], encoding = "utf8", newline = "\n"):
   """just writes lines as you normally would want to"""
-  return resolve(fp).write_text(
-    lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline
-  )
+  return resolve(fp).write_text(lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline)
 
 def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs: Callable, encoding = "utf8", newline = "\n"):
   """writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)"""
-  return (
-    resolve(fp).write_text(
-      newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs),
-      encoding = encoding,
-      newline = newline
-    )
-  )
+  return (resolve(fp).write_text(newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs), encoding = encoding, newline = newline))
 
 ####################
 # String Shorthand #
@@ -502,10 +552,13 @@ def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs: Calla
 
 def lev(s1: str, s2: str) -> int:
   """calculate Levenshtein distance between strings"""
-  if s1 == s2: return 0
+  if s1 == s2:
+    return 0
   l1, l2 = len(s1), len(s2)
-  if 0 in (l1, l2): return l1 or l2
-  if l1 > l2: s1, s2, l1, l2 = s2, s1, l2, l1
+  if 0 in (l1, l2):
+    return l1 or l2
+  if l1 > l2:
+    s1, s2, l1, l2 = s2, s1, l2, l1
   d0, d1 = list(range(l2 + 1)), list(range(l2 + 1))
   for i, x in enumerate(s1):
     d1[0] = i + 1
@@ -515,8 +568,10 @@ def lev(s1: str, s2: str) -> int:
         cost += 1
         ins_cost = d1[j] + 1
         del_cost = d0[j + 1] + 1
-        if ins_cost < cost: cost = ins_cost
-        if del_cost < cost: cost = del_cost
+        if ins_cost < cost:
+          cost = ins_cost
+        if del_cost < cost:
+          cost = del_cost
       d1[j + 1] = cost
     d0, d1 = d1, d0
   return d0[-1]
