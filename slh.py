@@ -27,6 +27,9 @@ from math import sqrt, prod
 import itertools as it
 import sys
 import os
+import re
+
+RE_HTTP = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", flags = re.I | re.M | re.U) # credit @stephenhay
 
 PY3 = sys.version_info.major >= 3
 PY3_10_PLUS = PY3 and sys.version_info.minor >= 10
@@ -463,7 +466,8 @@ def tf(func: Callable, *args, __pretty_tf = True, **kwargs):
   r = func(*args, **kwargs)
   end = time()
   if __pretty_tf:
-    print(f"{func.__qualname__}({', '.join(list(map(str,args)) + [f'{k}={v}' for k,v in kwargs.items()])}) = {r}, took {human_time(end-start)}")
+    fargs = list(map(str, map(lambda a: a.__name__ if hasattr(a, '__name__') else a, args))) + [f'{k}={v}' for k, v in kwargs.items()]
+    print(f"{func.__qualname__}({', '.join(fargs)}) = {r} ({human_time(end-start)})")
   else:
     print(human_time(end - start))
   return r
