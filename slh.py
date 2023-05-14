@@ -5,8 +5,8 @@ Santa's Little Helpers
 # Imports used here
 from dataclasses import dataclass
 from collections import ChainMap
-from itertools import chain, count
-from operator import attrgetter, itemgetter, indexOf
+from itertools import zip_longest, count, chain
+from operator import itemgetter, attrgetter, indexOf
 from datetime import datetime
 from pathlib import Path
 from random import randrange, sample
@@ -20,14 +20,14 @@ import hashlib
 """for when `from slh import *` is used"""
 
 # ruff: noqa: E402 F401
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence, Iterable
 from functools import partial, reduce, cache
-from typing import Callable, Literal, NamedTuple, Optional, SupportsIndex, Union, Any
+from typing import SupportsIndex, NamedTuple, Optional, Callable, Literal, Union, Any
 from math import sqrt, prod
 import itertools as it
 import sys
-import os
 import re
+import os
 
 RE_HTTP = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", flags = re.I | re.M | re.U) # credit @stephenhay
 
@@ -73,7 +73,7 @@ if PY3_10_PLUS:
     
     def __iter__(self):
       """iterating over the values, rather than the keys/__slots__"""
-      yield map(self.__getattribute__, self.__slots__) # type: ignore
+      yield from map(self.__getattribute__, self.__slots__) # type: ignore
     
     def __len__(self):
       """how many slots there are, useful for slices, iteration, and reversing"""
@@ -113,7 +113,7 @@ elif PY3_11_PLUS:
     
     def __iter__(self):
       """iterating over the values, rather than the keys/__slots__"""
-      yield map(self.__getattribute__, self.fields())
+      yield from map(self.__getattribute__, self.fields())
     
     def __len__(self):
       """how many slots there are, useful for slices, iteration, and reversing"""
@@ -154,7 +154,7 @@ else:
     
     def __iter__(self):
       """iterating over the values, rather than the keys/__slots__"""
-      yield map(self.__getattribute__, self.__slots__)
+      yield from map(self.__getattribute__, self.__slots__)
     
     def __len__(self):
       """how many slots there are, useful for slices, iteration, and reversing"""
@@ -299,6 +299,14 @@ def sorted_dict(d: dict, key = itemgetter(1), reverse = False):
 def sortas(first: Iterable, second: Iterable):
   """sorts the first as if it was the second"""
   return list(map(itemgetter(0), sorted(zip(first, second))))
+
+def dedupe(it):
+  """deduplicates an iterator, consumes memory to do so, non-blocking"""
+  s = set()
+  for i in it:
+    if i not in s:
+      s.add(i)
+      yield i
 
 def find(v, xs: Union[list, Iterable], start: Optional[int] = None, stop: Optional[int] = None, missing = -1):
   """find the first index of v in interable without raising exceptions, will consume iterables so be careful"""
@@ -518,6 +526,40 @@ def from_bytes(b: bytes, signed: bool = False, byteorder: Literal["little", "big
   """int.from_bytes but sensible byteorder, you must say if it's signed"""
   return int.from_bytes(b, byteorder, signed = signed)
 
+if PY3_11_PLUS:
+  file_digest = hashlib.file_digest # type: ignore
+else:
+  
+  def file_digest(fileobj, digest, /, *, _bufsize = 2**18):
+    """Hash the contents of a file-like object. Returns a digest object. Backport from 3.11"""
+    # On Linux we could use AF_ALG sockets and sendfile() to archive zero-copy
+    # hashing with hardware acceleration.
+    if isinstance(digest, str):
+      digestobj = hashlib.new(digest)
+    else:
+      digestobj = digest()
+    
+    if hasattr(fileobj, "getbuffer"):
+      # io.BytesIO object, use zero-copy buffer
+      digestobj.update(fileobj.getbuffer())
+      return digestobj
+    
+    # Only binary files implement readinto().
+    if not (hasattr(fileobj, "readinto") and hasattr(fileobj, "readable") and fileobj.readable()):
+      raise ValueError(f"'{fileobj!r}' is not a file-like object in binary reading mode.")
+    
+    # binary file, socket.SocketIO object
+    # Note: socket I/O uses different syscalls than file I/O.
+    buf = bytearray(_bufsize) # Reusable buffer to reduce allocations.
+    view = memoryview(buf)
+    while True:
+      size = fileobj.readinto(buf)
+      if size == 0:
+        break # EOF
+      digestobj.update(view[:size])
+    
+    return digestobj
+
 ##################
 # Path Shorthand #
 ##################
@@ -532,7 +574,7 @@ def resolve(path: Union[str, Path]):
 def filedigest(path: Path, hash = "sha1"):
   """fingerprint a file, caches so modified files bypass with filedigest.__wrapped__ or filedigest.cache_clear()"""
   with open(path, "rb") as f:
-    return hashlib.file_digest(f, hash).hexdigest()
+    return file_digest(f, hash).hexdigest()
 
 def readlines(fp: Union[str, Path], encoding = "utf8"):
   """just reads lines as you normally would want to"""
