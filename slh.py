@@ -1,5 +1,10 @@
 """
 Santa's Little Helpers
+---
+
+A series of useful shorthands originally devised during Advent of Code 2017.
+Star-importing this includes a few handy stdlib imports, great for the REPL.
+Here we collect useful functions and classes, which are often "fast enough".
 """
 
 # Imports used here
@@ -58,126 +63,87 @@ def cls_to_tuple(cls):
   """this converts a class to a NamedTuple; cached because this is expensive!"""
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
+TRY_SLOTS_TRUE = {"slots": True} if PY3_10_PLUS else {}
+"@dataclass(slots = True) only accessible in Python 3.10+"
+
 # with these POD patterns, the provided methods for iteration and conversion to dicts/tuples are there to aid performance
 # as dataclasses.astuple and dataclasses.asdict are an order of magnitude slower even with such a simple class, its deepcopy semantics versus our shallow copies
+# this demonstrates a way to easily get great performance while reclaiming quality of life, see the performance testing at the end for an example of usage
 # also, as noted since 3.11, we should not be using .__slots__ due to base class issues, but for performance, we do anyway (use dataclasses.fields, see method)
-if PY3_10_PLUS:
-  # a demonstration of how to easily get great performance while reclaiming quality of life
-  @dataclass(slots = True)
-  class PlainOldDataPattern: # type: ignore
-    """recommend this pattern, slightly more memory footprint but consistently high performance"""
-    x: float
-    y: float
-    s: str
-    a: list
-    
-    def __iter__(self):
-      """iterating over the values, rather than the keys/__slots__"""
-      yield from map(self.__getattribute__, self.__slots__) # type: ignore
-    
-    def __len__(self):
-      """how many slots there are, useful for slices, iteration, and reversing"""
-      return len(self.__slots__) # type: ignore
-    
-    def __getitem__(self, n: Union[int, slice]):
-      """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
-      if isinstance(n, int):
-        return self.__getattribute__(self.__slots__[n]) # type: ignore
-      else:
-        return list(map(self.__getattribute__, self.__slots__[n])) # type: ignore
-    
-    def _astuple(self):
-      """generic __slots__ -> tuple; super fast, low quality of life, tuple(d) may be faster"""
-      return tuple(map(self.__getattribute__, self.__slots__)) # type: ignore
-    
-    def asdict(self):
-      """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
-      return {slot: self.__getattribute__(slot) for slot in self.__slots__} # type: ignore
-    
-    def astuple(self):
-      """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
-      return cls_to_tuple(PlainOldDataPattern)._make(map(self.__getattribute__, self.__slots__)) # type: ignore
-    
-    def fields(self):
-      """__slots__ equivalent using the proper fields approach"""
-      return list(map(attrgetter("name"), dataclasses.fields(self)))
-elif PY3_11_PLUS:
-  # a demonstration of how to easily get great performance while reclaiming quality of life
-  @dataclass(slots = True)
-  class PlainOldDataPattern: # type: ignore
-    """recommend this pattern, slightly more memory footprint but consistently high performance"""
-    x: float
-    y: float
-    s: str
-    a: list
-    
-    def __iter__(self):
-      """iterating over the values, rather than the keys/__slots__"""
-      yield from map(self.__getattribute__, self.fields())
-    
-    def __len__(self):
-      """how many slots there are, useful for slices, iteration, and reversing"""
-      return len(self.fields())
-    
-    def __getitem__(self, n: Union[int, slice]):
-      """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
-      if isinstance(n, int):
-        return self.__getattribute__(self.fields()[n])
-      else:
-        return list(map(self.__getattribute__, self.fields()[n]))
-    
-    def _astuple(self):
-      """generic __slots__ -> tuple; super fast, low quality of life, tuple(d) may be faster"""
-      return tuple(map(self.__getattribute__, self.fields()))
-    
-    def asdict(self):
-      """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
-      return {slot: self.__getattribute__(slot) for slot in self.fields()}
-    
-    def astuple(self):
-      """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
-      return cls_to_tuple(PlainOldDataPattern)._make(map(self.__getattribute__, self.fields()))
-    
-    def fields(self):
-      """__slots__ equivalent using the proper fields approach"""
-      return list(map(attrgetter("name"), dataclasses.fields(self)))
-else:
-  # we need to manually specify it, dataclass didn't handle it before 3.10
-  @dataclass
-  class PlainOldDataPattern: # type: ignore
-    """the only difference prior to 3.10 is you need to manually specify __slots__"""
-    __slots__ = ["x", "y", "z", "w"]
-    x: float
-    y: float
-    z: float
-    w: float
-    
-    def __iter__(self):
-      """iterating over the values, rather than the keys/__slots__"""
-      yield from map(self.__getattribute__, self.__slots__)
-    
-    def __len__(self):
-      """how many slots there are, useful for slices, iteration, and reversing"""
-      return len(self.__slots__)
-    
-    def __getitem__(self, n: Union[int, slice]):
-      """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
-      if isinstance(n, int):
-        return self.__getattribute__(self.__slots__[n])
-      else:
-        return list(map(self.__getattribute__, self.__slots__[n]))
-    
-    def _astuple(self):
-      """generic __slots__ -> tuple; super fast, low quality of life, tuple(d) may be faster"""
-      return tuple(map(self.__getattribute__, self.__slots__))
-    
-    def asdict(self):
-      """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
-      return {slot: self.__getattribute__(slot) for slot in self.__slots__}
-    
-    def astuple(self):
-      """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
-      return cls_to_tuple(PlainOldDataPattern)._make(map(self.__getattribute__, self.__slots__))
+
+@dataclass(**TRY_SLOTS_TRUE)
+class Struct: # type: ignore
+  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use Struct if you need this"""
+  
+  def __iter__(self):
+    """iterating over the values, rather than the keys/__slots__"""
+    yield from map(self.__getattribute__, self.__slots__) # type: ignore
+  
+  def __len__(self):
+    """how many slots there are, useful for slices, iteration, and reversing"""
+    return len(self.__slots__) # type: ignore
+  
+  def __getitem__(self, n: Union[int, slice]):
+    """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
+    if isinstance(n, int):
+      return self.__getattribute__(self.__slots__[n]) # type: ignore
+    else:
+      return list(map(self.__getattribute__, self.__slots__[n])) # type: ignore
+  
+  def _astuple(self):
+    """generic __slots__ -> tuple; super fast, low quality of life"""
+    return tuple(map(self.__getattribute__, self.__slots__)) # type: ignore
+  
+  def aslist(self):
+    """generic __slots__ -> list; super fast, low quality of life, a shallow copy"""
+    return list(map(self.__getattribute__, self.__slots__)) # type: ignore
+  
+  def asdict(self):
+    """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
+    return {slot: self.__getattribute__(slot) for slot in self.__slots__} # type: ignore
+  
+  def astuple(self):
+    """generic __slots__ -> NamedTuple; a named shallow copy"""
+    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__)) # type: ignore
+
+@dataclass(**TRY_SLOTS_TRUE)
+class StructSubclassable: # type: ignore
+  """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed"""
+  
+  def __iter__(self):
+    """iterating over the values, rather than the keys/__slots__"""
+    yield from map(self.__getattribute__, self.fields())
+  
+  def __len__(self):
+    """how many slots there are, useful for slices, iteration, and reversing"""
+    return len(self.fields())
+  
+  def __getitem__(self, n: Union[int, slice]):
+    """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
+    if isinstance(n, int):
+      return self.__getattribute__(self.fields()[n])
+    else:
+      return list(map(self.__getattribute__, self.fields()[n]))
+  
+  def _astuple(self):
+    """generic __slots__ -> tuple; super fast, low quality of life, a shallow copy"""
+    return tuple(map(self.__getattribute__, self.fields()))
+  
+  def aslist(self):
+    """generic __slots__ -> list; super fast, low quality of life, a shallow copy"""
+    return list(map(self.__getattribute__, self.fields()))
+  
+  def asdict(self):
+    """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging, a shallow copy"""
+    return {slot: self.__getattribute__(slot) for slot in self.fields()}
+  
+  def astuple(self):
+    """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
+    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.fields()))
+  
+  def fields(self):
+    """__slots__ equivalent using the proper fields approach"""
+    return list(map(attrgetter("name"), dataclasses.fields(self)))
 
 #######################
 # Iterables Shorthand #
@@ -189,16 +155,24 @@ class Circular(list):
   """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]"""
   def __getitem__(self, x: Union[int, slice]):
     if isinstance(x, slice):
-      return [self[x] for x in range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step)]
+      return [
+        self[x] for x in range(
+          0 if x.start is None else x.start,
+          len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step
+        )
+      ]
     return super().__getitem__(x.__index__() % max(1, len(self)))
   
   def __setitem__(self, x: Union[SupportsIndex, slice], val):
     if isinstance(x, slice) and (hasattr(val, "__iter__") or hasattr(val, "__getitem__")):
       m = max(1, len(self))
-      for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step), val) if x.stop is None else zip(
-        range(0 if x.start is None else x.start,
-              len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step), val
-      ):
+      for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step),
+                      val) if x.stop is None else zip(
+                        range(
+                          0 if x.start is None else x.start,
+                          len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step
+                        ), val
+                      ):
         super().__setitem__(i.__index__() % m, v)
     else:
       super().__setitem__(x.__index__() % max(1, len(self)), val) # type: ignore
@@ -474,7 +448,8 @@ def tf(func: Callable, *args, __pretty_tf = True, **kwargs):
   r = func(*args, **kwargs)
   end = time()
   if __pretty_tf:
-    fargs = list(map(str, map(lambda a: a.__name__ if hasattr(a, '__name__') else a, args))) + [f'{k}={v}' for k, v in kwargs.items()]
+    fargs = list(map(str, map(lambda a: a.__name__
+                              if hasattr(a, '__name__') else a, args))) + [f'{k}={v}' for k, v in kwargs.items()]
     print(f"{func.__qualname__}({', '.join(fargs)}) = {r} ({human_time(end-start)})")
   else:
     print(human_time(end - start))
@@ -518,7 +493,12 @@ def yesno(msg = "", accept_return = True, replace_lists = False, yes_list = set(
       return False
 
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
-def to_bytes(x: int, nbytes: Optional[int] = None, signed: Optional[bool] = None, byteorder: Literal["little", "big"] = sys.byteorder) -> bytes:
+def to_bytes(
+  x: int,
+  nbytes: Optional[int] = None,
+  signed: Optional[bool] = None,
+  byteorder: Literal["little", "big"] = sys.byteorder
+) -> bytes:
   """int.to_bytes but with (sensible) default values, by default assumes unsigned if >=0, signed if <0"""
   return x.to_bytes((nbytes or (x.bit_length() + 7) // 8), byteorder, signed = (x >= 0) if signed is None else signed)
 
@@ -586,11 +566,19 @@ def readlinesmap(fp: Union[str, Path], *fs: Callable, encoding = "utf8"):
 
 def writelines(fp: Union[str, Path], lines: Union[str, list[str]], encoding = "utf8", newline = "\n"):
   """just writes lines as you normally would want to"""
-  return resolve(fp).write_text(lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline)
+  return resolve(fp).write_text(
+    lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline
+  )
 
 def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs: Callable, encoding = "utf8", newline = "\n"):
   """writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)"""
-  return (resolve(fp).write_text(newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs), encoding = encoding, newline = newline))
+  return (
+    resolve(fp).write_text(
+      newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs),
+      encoding = encoding,
+      newline = newline
+    )
+  )
 
 ####################
 # String Shorthand #
@@ -629,23 +617,43 @@ def lev(s1: str, s2: str) -> int:
 if __name__ == "__main__":
   from dataclasses import astuple, asdict # noqa: F401
   from timeit import repeat
+  
   N_RUNS, N_ITERATIONS = 10, 10**6
-
-  d = PlainOldDataPattern(1.2, 3.4, 5.6, 7.8) # type: ignore  # noqa: F405
-  tests = [
-    "tuple(d)", # py 0.576s pypy 0.119s # tuple around __iter__
-    "astuple(d)", # py 8.595s pypy 0.648s # dataclasses.astuple # MUCH slower than our examples
-    "d._astuple()", # py 0.429s pypy 0.106s # shallow copy version of dataclasses.astuple
-    "asdict(d)", # py 8.411s pypy 0.806s # dataclasses.asdict # MUCH slower than our examples
-    "d.asdict()", # py 0.698s pypy 0.181s # shallow copy version of dataclasses.asdict
-    "d.astuple()", # py 0.753s pypy 0.257s # _astuple but returns a namedtuple
-    "d[0]", # py 0.213s pypy 0.011s
-    "d[-1]", # py 0.197s pypy 0.011s
-    "d[:]", # py 0.527s pypy 0.102s
-    "list(d)", # py 0.558s pypy 0.106s
-    "d[::-1]", # py 0.539s pypy 0.119s
-    "d[:1]", # py 0.446s pypy 0.052s
-  ]
-
-  for code in tests: # actual run
-    print(f"{code} * {N_RUNS} = {min(repeat(code, number = N_ITERATIONS, repeat = N_RUNS, globals = globals())):0.3f}s")
+  
+  for Base in Struct, StructSubclassable:
+    if PY3_10_PLUS:
+      @dataclass(slots = True)
+      class Vec4(Base): # type: ignore
+        x: float
+        y: float
+        z: float
+        w: float
+    else: # you must manually specify __slots__ as @dataclass(slots = True) was only added in 3.10
+      @dataclass
+      class Vec4(Base): # type: ignore
+        __slots__ = ["x", "y", "z", "w"]
+        x: float
+        y: float
+        z: float
+        w: float
+    
+    d = Vec4(1.2, 3.4, 5.6, 7.8) # type: ignore  # noqa: F405
+    tests = [
+      "tuple(d)    ", # FastStruct: py 0.527s pypy 0.119s, Struct: py 2.379s pypy 0.469s # tuple around .__iter__
+      "astuple(d)  ", # FastStruct: py 4.539s pypy 0.631s, Struct: py 4.604s pypy 0.632s # dataclasses.astuple
+      "d._astuple()", # FastStruct: py 0.340s pypy 0.106s, Struct: py 1.310s pypy 0.407s # shallow copy version of dataclasses.astuple
+      "d.astuple() ", # FastStruct: py 0.602s pypy 0.248s, Struct: py 1.651s pypy 0.582s # d._astuple() but returns a namedtuple of d
+      "asdict(d)   ", # FastStruct: py 4.838s pypy 0.775s, Struct: py 5.404s pypy 0.784s # dataclasses.asdict
+      "d.asdict()  ", # FastStruct: py 0.519s pypy 0.175s, Struct: py 1.565s pypy 0.463s # shallow copy version of dataclasses.asdict
+      "d[0]        ", # FastStruct: py 0.147s pypy 0.010s, Struct: py 1.160s pypy 0.285s # typical operator
+      "d[-1]       ", # FastStruct: py 0.147s pypy 0.011s, Struct: py 1.168s pypy 0.286s # typical operator
+      "d[:]        ", # FastStruct: py 0.423s pypy 0.098s, Struct: py 1.400s pypy 0.396s # typical operator
+      "list(d)     ", # FastStruct: py 0.558s pypy 0.106s, Struct: py 3.300s pypy 0.715s # much slower than the [:] operator
+      "d.aslist()  ", # FastStruct: py 0.350s pypy 0.082s, Struct: py 1.427s pypy 0.409s # comparable to the [:] operator
+      "d[::-1]     ", # FastStruct: py 0.454s pypy 0.107s, Struct: py 1.403s pypy 0.403s # typical operator
+      "d[:1]       ", # FastStruct: py 0.342s pypy 0.043s, Struct: py 1.332s pypy 0.330s # typical operator
+    ]
+    
+    print(f"{Base.__name__} ({N_RUNS} runs):")
+    for code in tests: # actual run
+      print(f"  {code} # {min(repeat(code, number = N_ITERATIONS, repeat = N_RUNS, globals = globals())):0.3f}s")
