@@ -494,28 +494,21 @@ def from_bytes(b: bytes, signed: bool = False, byteorder: Literal["little", "big
 if PY3_11_PLUS:
   file_digest = hashlib.file_digest # type: ignore
 else:
-  
   def file_digest(fileobj, digest, /, *, _bufsize = 2**18):
-    """Hash the contents of a file-like object. Returns a digest object. Backport from 3.11"""
-    # On Linux we could use AF_ALG sockets and sendfile() to archive zero-copy
-    # hashing with hardware acceleration.
+    """Hash the contents of a file-like object. Returns a digest object. Backport from 3.11."""
     if isinstance(digest, str):
       digestobj = hashlib.new(digest)
     else:
       digestobj = digest()
     
     if hasattr(fileobj, "getbuffer"):
-      # io.BytesIO object, use zero-copy buffer
       digestobj.update(fileobj.getbuffer())
       return digestobj
     
-    # Only binary files implement readinto().
     if not (hasattr(fileobj, "readinto") and hasattr(fileobj, "readable") and fileobj.readable()):
       raise ValueError(f"'{fileobj!r}' is not a file-like object in binary reading mode.")
     
-    # binary file, socket.SocketIO object
-    # Note: socket I/O uses different syscalls than file I/O.
-    buf = bytearray(_bufsize) # Reusable buffer to reduce allocations.
+    buf = bytearray(_bufsize)
     view = memoryview(buf)
     while True:
       size = fileobj.readinto(buf)
