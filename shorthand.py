@@ -54,7 +54,7 @@ else:
 #################
 
 class dot(dict):
-  """a "dot dict", a dict you can access by a "." - inefficient vs dataclass, but convenient"""
+  """a "dot dict", a dict you can access by a `.` - inefficient vs dataclass, but convenient"""
   __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__ # type: ignore
 
 @cache
@@ -75,7 +75,7 @@ class Struct:
   """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that"""
   
   def __iter__(self):
-    """iterating over the values, rather than the keys/__slots__"""
+    """iterating over the values, rather than the __slots__"""
     yield from map(self.__getattribute__, self.__slots__) # type: ignore
   
   def __len__(self):
@@ -110,7 +110,7 @@ class StructSubclassable:
   """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed"""
   
   def __iter__(self):
-    """iterating over the values, rather than the keys/__slots__"""
+    """iterating over the values, rather than the __slots__"""
     yield from map(self.__getattribute__, self.fields())
   
   def __len__(self):
