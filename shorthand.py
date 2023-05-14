@@ -1,10 +1,9 @@
 """
-Santa's Little Helpers
+short.hand
 ---
 
-A series of useful shorthands originally devised during Advent of Code 2017.
-Star-importing this includes a few handy stdlib imports, great for the REPL.
 Here we collect useful functions and classes, which are often "fast enough".
+Star-importing this includes a few handy stdlib imports, great for the REPL.
 """
 
 # Imports used here
