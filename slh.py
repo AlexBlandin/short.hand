@@ -73,7 +73,7 @@ TRY_SLOTS_TRUE = {"slots": True} if PY3_10_PLUS else {}
 
 @dataclass(**TRY_SLOTS_TRUE)
 class Struct: # type: ignore
-  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use Struct if you need this"""
+  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that"""
   
   def __iter__(self):
     """iterating over the values, rather than the keys/__slots__"""
