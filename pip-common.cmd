@@ -9,10 +9,11 @@ pipx ensurepath
 pipx install tldr
 pipx install hatch
 pipx install poetry
+pipx install asciinema
 pipx upgrade-all
 
 : # Cryptography
-pip install -U PyNaCl pyOpenSSL cryptography certifi
+pip install -U PyNaCl pyOpenSSL cryptography certifi blake3
 
 : # Python tooling, style, typing, debugging, system info, etc
 pip install -U mypy yapf ruff pylint isort pyupgrade pytest pdbpp psutil typing-extensions
@@ -35,11 +36,14 @@ pip install -U aiohttp async-timeout beautifulsoup4 httpie soupsieve requests ur
 : # Wrappers around external tools (CLIs, DBs, etc)
 pip install -U pypandoc rethinkdb yt-dlp mutagen
 
-: # Astronomy
-pip install -U geocoder skyfield
+: # Astronomy & Cartography
+pip install -U geocoder skyfield geopandas
 
 : # Images & GUIs
 pip install -U Pillow matplotlib dearpygui
+
+: # Temporary
+pip install pillow-avif-plugin
 
 : # Optional stuff (ML, win32 wrapper, readline in python, high quality plots, etc)
 : # pip install -U pywin32 pyreadline3
