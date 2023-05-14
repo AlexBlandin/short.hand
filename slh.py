@@ -155,24 +155,16 @@ class Circular(list):
   """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]"""
   def __getitem__(self, x: Union[int, slice]):
     if isinstance(x, slice):
-      return [
-        self[x] for x in range(
-          0 if x.start is None else x.start,
-          len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step
-        )
-      ]
+      return [self[x] for x in range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step)]
     return super().__getitem__(x.__index__() % max(1, len(self)))
   
   def __setitem__(self, x: Union[SupportsIndex, slice], val):
     if isinstance(x, slice) and (hasattr(val, "__iter__") or hasattr(val, "__getitem__")):
       m = max(1, len(self))
-      for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step),
-                      val) if x.stop is None else zip(
-                        range(
-                          0 if x.start is None else x.start,
-                          len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step
-                        ), val
-                      ):
+      for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step), val) if x.stop is None else zip(
+        range(0 if x.start is None else x.start,
+              len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step), val
+      ):
         super().__setitem__(i.__index__() % m, v)
     else:
       super().__setitem__(x.__index__() % max(1, len(self)), val) # type: ignore
@@ -448,8 +440,7 @@ def tf(func: Callable, *args, __pretty_tf = True, **kwargs):
   r = func(*args, **kwargs)
   end = time()
   if __pretty_tf:
-    fargs = list(map(str, map(lambda a: a.__name__
-                              if hasattr(a, '__name__') else a, args))) + [f'{k}={v}' for k, v in kwargs.items()]
+    fargs = list(map(str, map(lambda a: a.__name__ if hasattr(a, '__name__') else a, args))) + [f'{k}={v}' for k, v in kwargs.items()]
     print(f"{func.__qualname__}({', '.join(fargs)}) = {r} ({human_time(end-start)})")
   else:
     print(human_time(end - start))
@@ -493,12 +484,7 @@ def yesno(msg = "", accept_return = True, replace_lists = False, yes_list = set(
       return False
 
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
-def to_bytes(
-  x: int,
-  nbytes: Optional[int] = None,
-  signed: Optional[bool] = None,
-  byteorder: Literal["little", "big"] = sys.byteorder
-) -> bytes:
+def to_bytes(x: int, nbytes: Optional[int] = None, signed: Optional[bool] = None, byteorder: Literal["little", "big"] = sys.byteorder) -> bytes:
   """int.to_bytes but with (sensible) default values, by default assumes unsigned if >=0, signed if <0"""
   return x.to_bytes((nbytes or (x.bit_length() + 7) // 8), byteorder, signed = (x >= 0) if signed is None else signed)
 
@@ -566,19 +552,11 @@ def readlinesmap(fp: Union[str, Path], *fs: Callable, encoding = "utf8"):
 
 def writelines(fp: Union[str, Path], lines: Union[str, list[str]], encoding = "utf8", newline = "\n"):
   """just writes lines as you normally would want to"""
-  return resolve(fp).write_text(
-    lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline
-  )
+  return resolve(fp).write_text(lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline)
 
 def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs: Callable, encoding = "utf8", newline = "\n"):
   """writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)"""
-  return (
-    resolve(fp).write_text(
-      newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs),
-      encoding = encoding,
-      newline = newline
-    )
-  )
+  return (resolve(fp).write_text(newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs), encoding = encoding, newline = newline))
 
 ####################
 # String Shorthand #
@@ -622,6 +600,7 @@ if __name__ == "__main__":
   
   for Base in Struct, StructSubclassable:
     if PY3_10_PLUS:
+      
       @dataclass(slots = True)
       class Vec4(Base): # type: ignore
         x: float
@@ -629,6 +608,7 @@ if __name__ == "__main__":
         z: float
         w: float
     else: # you must manually specify __slots__ as @dataclass(slots = True) was only added in 3.10
+      
       @dataclass
       class Vec4(Base): # type: ignore
         __slots__ = ["x", "y", "z", "w"]
