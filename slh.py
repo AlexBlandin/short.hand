@@ -621,3 +621,31 @@ def lev(s1: str, s2: str) -> int:
       d1[j + 1] = cost
     d0, d1 = d1, d0
   return d0[-1]
+
+#########################
+# Performance & Testing #
+#########################
+
+if __name__ == "__main__":
+  from dataclasses import astuple, asdict # noqa: F401
+  from timeit import repeat
+  N_RUNS, N_ITERATIONS = 10, 10**6
+
+  d = PlainOldDataPattern(1.2, 3.4, 5.6, 7.8) # type: ignore  # noqa: F405
+  tests = [
+    "tuple(d)", # py 0.576s pypy 0.119s # tuple around __iter__
+    # "astuple(d)", # py 8.595s pypy 0.678s # dataclasses.astuple # MUCH slower than our examples
+    "d._astuple()", # py 0.429s pypy 0.168s # shallow copy version of dataclasses.astuple
+    # "asdict(d)", # py 8.411s pypy 0.958s # dataclasses.asdict # MUCH slower than our examples
+    "d.asdict()", # py 0.698s pypy 0.205s # shallow copy version of dataclasses.asdict
+    "d.astuple()", # py 0.753s pypy 0.389s # _astuple but returns a namedtuple
+    "d[0]", # py 0.218s pypy 0.011s
+    "d[-1]", # py 0.212s pypy 0.012s
+    "d[:]", # py 0.527s pypy 0.231s
+    "list(d)", # py 0.558s pypy 0.106s
+    "d[::-1]", # py 0.551s pypy 0.198s
+    "d[:1]", # py 0.455s pypy 0.101s
+  ]
+
+  for code in tests: # actual run
+    print(f"{code} * {N_RUNS} = {min(repeat(code, number = N_ITERATIONS, repeat = N_RUNS, globals = globals())):0.3f}s")
