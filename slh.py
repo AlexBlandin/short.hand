@@ -634,17 +634,17 @@ if __name__ == "__main__":
   d = PlainOldDataPattern(1.2, 3.4, 5.6, 7.8) # type: ignore  # noqa: F405
   tests = [
     "tuple(d)", # py 0.576s pypy 0.119s # tuple around __iter__
-    # "astuple(d)", # py 8.595s pypy 0.678s # dataclasses.astuple # MUCH slower than our examples
-    "d._astuple()", # py 0.429s pypy 0.168s # shallow copy version of dataclasses.astuple
-    # "asdict(d)", # py 8.411s pypy 0.958s # dataclasses.asdict # MUCH slower than our examples
-    "d.asdict()", # py 0.698s pypy 0.205s # shallow copy version of dataclasses.asdict
-    "d.astuple()", # py 0.753s pypy 0.389s # _astuple but returns a namedtuple
-    "d[0]", # py 0.218s pypy 0.011s
-    "d[-1]", # py 0.212s pypy 0.012s
-    "d[:]", # py 0.527s pypy 0.231s
+    "astuple(d)", # py 8.595s pypy 0.648s # dataclasses.astuple # MUCH slower than our examples
+    "d._astuple()", # py 0.429s pypy 0.106s # shallow copy version of dataclasses.astuple
+    "asdict(d)", # py 8.411s pypy 0.806s # dataclasses.asdict # MUCH slower than our examples
+    "d.asdict()", # py 0.698s pypy 0.181s # shallow copy version of dataclasses.asdict
+    "d.astuple()", # py 0.753s pypy 0.257s # _astuple but returns a namedtuple
+    "d[0]", # py 0.213s pypy 0.011s
+    "d[-1]", # py 0.197s pypy 0.011s
+    "d[:]", # py 0.527s pypy 0.102s
     "list(d)", # py 0.558s pypy 0.106s
-    "d[::-1]", # py 0.551s pypy 0.198s
-    "d[:1]", # py 0.455s pypy 0.101s
+    "d[::-1]", # py 0.539s pypy 0.119s
+    "d[:1]", # py 0.446s pypy 0.052s
   ]
 
   for code in tests: # actual run
