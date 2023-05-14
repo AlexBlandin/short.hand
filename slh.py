@@ -72,7 +72,7 @@ TRY_SLOTS_TRUE = {"slots": True} if PY3_10_PLUS else {}
 # also, as noted since 3.11, we should not be using .__slots__ due to base class issues, but for performance, we do anyway (use dataclasses.fields, see method)
 
 @dataclass(**TRY_SLOTS_TRUE)
-class Struct: # type: ignore
+class Struct:
   """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that"""
   
   def __iter__(self):
@@ -107,7 +107,7 @@ class Struct: # type: ignore
     return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__)) # type: ignore
 
 @dataclass(**TRY_SLOTS_TRUE)
-class StructSubclassable: # type: ignore
+class StructSubclassable:
   """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed"""
   
   def __iter__(self):
