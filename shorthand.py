@@ -155,18 +155,29 @@ class Circular(list):
   def __getitem__(self, x: Union[int, slice]):
     if isinstance(x, slice):
       return [self[x] for x in range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step)]
-    return super().__getitem__(x.__index__() % max(1, len(self)))
+    return super().__getitem__(x % max(1, len(self)))
   
-  def __setitem__(self, x: Union[SupportsIndex, slice], val):
+  def __setitem__(self, x: Union[int, float, slice], val: Union[Sequence[Any], Any]):
     if isinstance(x, slice) and (hasattr(val, "__iter__") or hasattr(val, "__getitem__")):
       m = max(1, len(self))
-      for i, v in zip(count(0 if x.start is None else x.start, 1 if x.step is None else x.step), val) if x.stop is None else zip(
-        range(0 if x.start is None else x.start,
-              len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step), val
-      ):
-        super().__setitem__(i.__index__() % m, v)
+      start = 0 if x.start is None else x.start
+      stop = len(self) if x.stop is None else x.stop
+      step = 1 if x.step is None else x.step
+      if not (isinstance(start, int) and isinstance(stop, int) and isinstance(step, int)):
+        raise TypeError("Slice values must be integers")
+      indices = count(start, step) if x.stop is None else range(start, stop, step)
+      if hasattr(val, "__iter__"):
+        for i, v in zip(indices, val):
+          super().__setitem__(i % m, v)
+      else:
+        for i in indices:
+          super().__setitem__(i % m, val[i])
+    elif isinstance(x, int):
+      super().__setitem__(x % max(1, len(self)), val)
+    elif isinstance(x, slice):
+      raise TypeError("When assigning to a slice, the assigned values must be provided in an interable or sequence")
     else:
-      super().__setitem__(x.__index__() % max(1, len(self)), val) # type: ignore
+      raise TypeError("You can only index using integers or slice objects")
   
   def repeat(self, times: Optional[int] = None):
     if times is None:
@@ -311,7 +322,7 @@ def avg(xs: Sequence, start = 0):
   return sum(xs, start) / len(xs) if len(xs) else 0
 
 def dotprod(A: Iterable, B: Iterable):
-  return sum(a * b for a, b in zip(A, B))
+  return sum(a * b for a, b in zip(A, B)) # type: ignore
 
 def bits(x: int):
   """because bin() has the annoying 0b, so slower but cleaner"""
@@ -494,6 +505,7 @@ def from_bytes(b: bytes, signed: bool = False, byteorder: Literal["little", "big
 if PY3_11_PLUS:
   file_digest = hashlib.file_digest # type: ignore
 else:
+  
   def file_digest(fileobj, digest, /, *, _bufsize = 2**18):
     """Hash the contents of a file-like object. Returns a digest object. Backport from 3.11."""
     if isinstance(digest, str):
