@@ -54,4 +54,4 @@ pip install pillow-avif-plugin
 
 : # The pypy shortlist version
 : # pypy -m ensurepip
-: # pypy -m pip install pip setuptools wheel PyNaCl pyOpenSSL cryptography certifi mypy yapf ruff pylint isort pyupgrade pytest pdbpp psutil typing-extensions attrs icecream cffi humanize parse pendulum pylev langcodes numpy pandas scipy gmpy2 tqdm
+: # pypy -m pip install pip setuptools wheel mypy yapf ruff pylint isort pyupgrade pytest pdbpp psutil typing-extensions attrs icecream cffi humanize parse pendulum pylev langcodes numpy tqdm
