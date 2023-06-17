@@ -621,21 +621,21 @@ if __name__ == "__main__":
         z: float
         w: float
     
-    d = Vec4(1.2, 3.4, 5.6, 7.8) # type: ignore  # noqa: F405
-    tests = [
-      "tuple(d)    ", # FastStruct: py 0.527s pypy 0.119s, Struct: py 2.379s pypy 0.469s # tuple around .__iter__
-      "astuple(d)  ", # FastStruct: py 4.539s pypy 0.631s, Struct: py 4.604s pypy 0.632s # dataclasses.astuple
-      "d._astuple()", # FastStruct: py 0.340s pypy 0.106s, Struct: py 1.310s pypy 0.407s # shallow copy version of dataclasses.astuple
-      "d.astuple() ", # FastStruct: py 0.602s pypy 0.248s, Struct: py 1.651s pypy 0.582s # d._astuple() but returns a namedtuple of d
-      "asdict(d)   ", # FastStruct: py 4.838s pypy 0.775s, Struct: py 5.404s pypy 0.784s # dataclasses.asdict
-      "d.asdict()  ", # FastStruct: py 0.519s pypy 0.175s, Struct: py 1.565s pypy 0.463s # shallow copy version of dataclasses.asdict
-      "d[0]        ", # FastStruct: py 0.147s pypy 0.010s, Struct: py 1.160s pypy 0.285s # typical operator
-      "d[-1]       ", # FastStruct: py 0.147s pypy 0.011s, Struct: py 1.168s pypy 0.286s # typical operator
-      "d[:]        ", # FastStruct: py 0.423s pypy 0.098s, Struct: py 1.400s pypy 0.396s # typical operator
-      "list(d)     ", # FastStruct: py 0.558s pypy 0.106s, Struct: py 3.300s pypy 0.715s # much slower than the [:] operator
-      "d.aslist()  ", # FastStruct: py 0.350s pypy 0.082s, Struct: py 1.427s pypy 0.409s # comparable to the [:] operator
-      "d[::-1]     ", # FastStruct: py 0.454s pypy 0.107s, Struct: py 1.403s pypy 0.403s # typical operator
-      "d[:1]       ", # FastStruct: py 0.342s pypy 0.043s, Struct: py 1.332s pypy 0.330s # typical operator
+    d = Vec4(1.2, 3.4, 5.6, 7.8) # type: ignore # noqa: F405
+    tests = [ # run on a 7980HS (ROG Flow X13, "Asteria", CPython 3.10.11, PyPy 3.10.12/7.3.12)
+      "tuple(d)    ", # Struct: py 0.314s pypy 0.099s, StructSubclassable: py 1.634s pypy 0.270s # tuple around .__iter__
+      "astuple(d)  ", # Struct: py 2.850s pypy 0.349s, StructSubclassable: py 2.850s pypy 0.361s # dataclasses.astuple
+      "d._astuple()", # Struct: py 0.209s pypy 0.069s, StructSubclassable: py 0.852s pypy 0.298s # shallow copy dataclasses.astuple
+      "d.astuple() ", # Struct: py 0.398s pypy 0.177s, StructSubclassable: py 1.102s pypy 0.441s # namedtuple d._astuple()
+      "asdict(d)   ", # Struct: py 3.013s pypy 0.623s, StructSubclassable: py 3.015s pypy 0.466s # dataclasses.asdict
+      "d.asdict()  ", # Struct: py 0.311s pypy 0.135s, StructSubclassable: py 0.996s pypy 0.290s # shallow copy dataclasses.asdict
+      "d[0]        ", # Struct: py 0.090s pypy 0.001s, StructSubclassable: py 0.719s pypy 0.231s # typical operator
+      "d[-1]       ", # Struct: py 0.090s pypy 0.001s, StructSubclassable: py 0.723s pypy 0.171s # typical operator
+      "d[:]        ", # Struct: py 0.260s pypy 0.075s, StructSubclassable: py 0.954s pypy 0.236s # typical operator
+      "list(d)     ", # Struct: py 0.352s pypy 0.102s, StructSubclassable: py 1.828s pypy 0.429s # much slower than the [:] operator
+      "d.aslist()  ", # Struct: py 0.199s pypy 0.069s, StructSubclassable: py 0.829s pypy 0.227s # comparable to the [:] operator
+      "d[::-1]     ", # Struct: py 0.263s pypy 0.062s, StructSubclassable: py 0.910s pypy 0.265s # typical operator
+      "d[:1]       ", # Struct: py 0.194s pypy 0.027s, StructSubclassable: py 0.832s pypy 0.239s # typical operator
     ]
     
     print(f"{Base.__name__} ({N_RUNS} runs):")
