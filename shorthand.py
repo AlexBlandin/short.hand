@@ -21,7 +21,7 @@ import hashlib
 ####################
 # Import Shorthand #
 ####################
-"""for when `from slh import *` is used"""
+"""for when `from shorthand import *` is used"""
 
 # ruff: noqa: E402 F401
 from collections.abc import Sequence, Iterable
