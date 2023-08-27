@@ -1,3 +1,4 @@
+alias ls="lsd"
 alias python="python3"
 alias py="python3"
 alias wdiff="git diff --no-index --word-diff"
@@ -83,3 +84,5 @@ set -x fish_greeting "Today is "(date +%A)" the "(date +%d)(day_suffix)" of "(da
 
 # status is-login; and pyenv init --path | source
 # pyenv init - | source
+
+starship init fish | source
