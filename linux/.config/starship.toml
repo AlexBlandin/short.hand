@@ -17,9 +17,10 @@ $java\
 $julia\
 $nodejs\
 $nim\
+$python\
 $rust\
 $scala\
-$python\
+$zig\
 [](fg:#86BBD8 bg:#06969A)\
 $docker_context\
 [](fg:#06969A bg:#33658A)\
@@ -32,8 +33,6 @@ add_newline = false
 
 command_timeout = 1000
 
-# You can also replace your username with a neat symbol like   or disable this
-# and use the os module below
 [username]
 show_always = true
 style_user = "bg:#9A348E"
@@ -135,6 +134,11 @@ format = '[ $symbol ($version) ]($style)'
 
 [scala]
 symbol = " "
+style = "bg:#86BBD8"
+format = '[ $symbol ($version) ]($style)'
+
+[zig]
+symbol = " "
 style = "bg:#86BBD8"
 format = '[ $symbol ($version) ]($style)'
 
