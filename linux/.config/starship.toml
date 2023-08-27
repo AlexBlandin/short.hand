@@ -141,6 +141,7 @@ format = '[ $symbol ($version) ]($style)'
 symbol = " "
 style = "bg:#86BBD8"
 format = '[ $symbol ($version) ]($style)'
+version_format = 'v${major}.${minor}.${patch}' # ${raw} includes v0.12.0-dev.170+750998eef, this stops at v0.12.0
 
 [time]
 disabled = false
