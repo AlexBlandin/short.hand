@@ -19,7 +19,7 @@ pip install -U PyNaCl pyOpenSSL cryptography certifi blake3
 pip install -U mypy yapf ruff pylint isort pyupgrade pytest pdbpp psutil typing-extensions
 
 : # Useful tools
-pip install -U attrs icecream sortedcontainers toolz cffi fastcore pytomlpp humanize parse pendulum pylev langcodes
+pip install -U attrs icecream sortedcontainers toolz cffi fastcore pytomlpp humanize parse regex pendulum pylev langcodes
 
 : # Python notebook
 pip install -U jupyter notebook
@@ -43,7 +43,7 @@ pip install -U geocoder skyfield geopandas
 pip install -U Pillow matplotlib dearpygui
 
 : # Temporary
-pip install pillow-avif-plugin
+pip install pillow-avif-plugin acoustid
 
 : # Optional stuff (ML, win32 wrapper, readline in python, high quality plots, etc)
 : # pip install -U pywin32 pyreadline3
