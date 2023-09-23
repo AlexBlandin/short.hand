@@ -622,7 +622,7 @@ if __name__ == "__main__":
         w: float
     
     d = Vec4(1.2, 3.4, 5.6, 7.8) # type: ignore # noqa: F405
-    tests = [ # 10 runs, 10**6 iterations, 7980HS (ROG Flow X13, "Asteria"), CPython 3.11.5, PyPy 3.10.12/7.3.12
+    tests = [ # min time for 10**6 iterations, 7980HS (ROG Flow X13, "Asteria"), CPython 3.11.5, PyPy 3.10.12/7.3.12
       "tuple(d)    ", # Struct: py 0.314s pypy 0.099s, StructSubclassable: py 1.586s pypy 0.255s # tuple around .__iter__
       "astuple(d)  ", # Struct: py 2.465s pypy 0.330s, StructSubclassable: py 2.476s pypy 0.345s # dataclasses.astuple
       "d._astuple()", # Struct: py 0.209s pypy 0.069s, StructSubclassable: py 0.836s pypy 0.228s # shallow copy dataclasses.astuple
