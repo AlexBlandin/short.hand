@@ -622,22 +622,22 @@ if __name__ == "__main__":
         w: float
     
     d = Vec4(1.2, 3.4, 5.6, 7.8) # type: ignore # noqa: F405
-    tests = [ # run on a 7980HS (ROG Flow X13, "Asteria", CPython 3.10.11, PyPy 3.10.12/7.3.12)
-      "tuple(d)    ", # Struct: py 0.314s pypy 0.099s, StructSubclassable: py 1.634s pypy 0.255s # tuple around .__iter__
-      "astuple(d)  ", # Struct: py 2.850s pypy 0.330s, StructSubclassable: py 2.850s pypy 0.345s # dataclasses.astuple
-      "d._astuple()", # Struct: py 0.209s pypy 0.069s, StructSubclassable: py 0.852s pypy 0.228s # shallow copy dataclasses.astuple
-      "d.astuple() ", # Struct: py 0.398s pypy 0.164s, StructSubclassable: py 1.102s pypy 0.345s # namedtuple d._astuple()
-      "asdict(d)   ", # Struct: py 3.013s pypy 0.456s, StructSubclassable: py 3.015s pypy 0.456s # dataclasses.asdict
-      "d.asdict()  ", # Struct: py 0.311s pypy 0.110s, StructSubclassable: py 0.996s pypy 0.285s # shallow copy dataclasses.asdict
-      "d[0]        ", # Struct: py 0.090s pypy 0.001s, StructSubclassable: py 0.719s pypy 0.163s # typical operator
+    tests = [ # 10 runs, 10**6 iterations, 7980HS (ROG Flow X13, "Asteria"), CPython 3.11.5, PyPy 3.10.12/7.3.12
+      "tuple(d)    ", # Struct: py 0.314s pypy 0.099s, StructSubclassable: py 1.586s pypy 0.255s # tuple around .__iter__
+      "astuple(d)  ", # Struct: py 2.465s pypy 0.330s, StructSubclassable: py 2.476s pypy 0.345s # dataclasses.astuple
+      "d._astuple()", # Struct: py 0.209s pypy 0.069s, StructSubclassable: py 0.836s pypy 0.228s # shallow copy dataclasses.astuple
+      "d.astuple() ", # Struct: py 0.398s pypy 0.164s, StructSubclassable: py 1.077s pypy 0.345s # namedtuple d._astuple()
+      "asdict(d)   ", # Struct: py 2.638s pypy 0.456s, StructSubclassable: py 2.611s pypy 0.456s # dataclasses.asdict
+      "d.asdict()  ", # Struct: py 0.311s pypy 0.110s, StructSubclassable: py 0.990s pypy 0.285s # shallow copy dataclasses.asdict
+      "d[0]        ", # Struct: py 0.090s pypy 0.001s, StructSubclassable: py 0.708s pypy 0.163s # typical operator
       "d[-1]       ", # Struct: py 0.090s pypy 0.001s, StructSubclassable: py 0.723s pypy 0.162s # typical operator
       "d[:1]       ", # Struct: py 0.194s pypy 0.027s, StructSubclassable: py 0.832s pypy 0.183s # typical operator
-      "d[:]        ", # Struct: py 0.260s pypy 0.057s, StructSubclassable: py 0.954s pypy 0.226s # typical operator
-      "list(d)     ", # Struct: py 0.352s pypy 0.083s, StructSubclassable: py 1.828s pypy 0.403s # much slower than the [:] operator
-      "d.aslist()  ", # Struct: py 0.199s pypy 0.055s, StructSubclassable: py 0.829s pypy 0.220s # comparable to the [:] operator
+      "d[:]        ", # Struct: py 0.260s pypy 0.057s, StructSubclassable: py 0.926s pypy 0.226s # typical operator
+      "list(d)     ", # Struct: py 0.352s pypy 0.083s, StructSubclassable: py 1.617s pypy 0.403s # much slower than the [:] operator
+      "d.aslist()  ", # Struct: py 0.199s pypy 0.055s, StructSubclassable: py 0.812s pypy 0.220s # comparable to the [:] operator
       "d[::-1]     ", # Struct: py 0.263s pypy 0.062s, StructSubclassable: py 0.910s pypy 0.238s # typical operator
     ]
     
     print(f"{Base.__name__} ({N_RUNS} runs):")
-    for code in tests: # actual run
+    for code in tests:
       print(f"  {code} # {min(repeat(code, number = N_ITERATIONS, repeat = N_RUNS, globals = globals())):0.3f}s")
