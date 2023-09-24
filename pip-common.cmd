@@ -43,7 +43,7 @@ pip install -U geocoder skyfield geopandas
 pip install -U Pillow matplotlib dearpygui
 
 : # Temporary
-pip install pillow-avif-plugin acoustid
+pip install pillow-avif-plugin
 
 : # Optional stuff (ML, win32 wrapper, readline in python, high quality plots, etc)
 : # pip install -U pywin32 pyreadline3
@@ -51,6 +51,7 @@ pip install pillow-avif-plugin acoustid
 : # pip install -U scikit-image torchvision torchaudio
 : # pip install -U mpl_plotter
 : # pip install -U pre-commit
+: # pip install -U acoustid
 
 : # The pypy shortlist version
 : # pypy -m ensurepip
