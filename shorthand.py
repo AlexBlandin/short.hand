@@ -189,7 +189,7 @@ class Circular(list):
 
 def unique_list(xs: Sequence):
   """reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience"""
-  return list(dict(zip(xs if len(xs) != 1 else xs[0], it.count())))
+  return list(dict(zip(xs if len(xs) != 1 else xs[0], it.repeat(0))))
 
 def unwrap(f: Callable, *args, **kwargs):
   """because exceptions are bad"""
