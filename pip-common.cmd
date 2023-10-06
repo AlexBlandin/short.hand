@@ -19,31 +19,36 @@ pip install -U PyNaCl pyOpenSSL cryptography certifi blake3
 pip install -U mypy yapf ruff pylint isort pyupgrade pytest pdbpp psutil typing-extensions
 
 : # Useful tools
-pip install -U attrs icecream sortedcontainers toolz cffi fastcore pytomlpp humanize parse regex pendulum pylev langcodes
+pip install -U attrs icecream sortedcontainers toolz cffi fastcore pytomlpp humanize parse regex  pylev langcodes
+: # pendulum
 
 : # Python notebook
 pip install -U jupyter notebook
 
 : # Numeric python
-pip install -U numpy pandas scipy gmpy2
+pip install -U numpy pandas scipy
+: # gmpy2
 
 : # Terminal stuff
 pip install -U colorama termcolor rich tqdm proselint
 
 : # Webstuff
-pip install -U aiohttp async-timeout beautifulsoup4 httpie soupsieve requests urllib3 websockets
+pip install -U  async-timeout beautifulsoup4 httpie soupsieve requests urllib3 websockets
+: # aiohttp
 
 : # Wrappers around external tools (CLIs, DBs, etc)
 pip install -U pypandoc rethinkdb yt-dlp mutagen
 
 : # Astronomy & Cartography
-pip install -U geocoder skyfield geopandas
+pip install -U geocoder skyfield
+: # geopandas
 
 : # Images & GUIs
-pip install -U Pillow matplotlib dearpygui
+pip install -U Pillow matplotlib
+: # dearpygui
 
 : # Temporary
-pip install pillow-avif-plugin
+: # pip install pillow-avif-plugin
 
 : # Optional stuff (ML, win32 wrapper, readline in python, high quality plots, etc)
 : # pip install -U pywin32 pyreadline3

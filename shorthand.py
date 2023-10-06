@@ -622,22 +622,86 @@ if __name__ == "__main__":
         w: float
     
     d = Vec4(1.2, 3.4, 5.6, 7.8) # type: ignore # noqa: F405
-    tests = [ # min time for 10**6 iterations, 7980HS (ROG Flow X13, "Asteria"), CPython 3.11.5, PyPy 3.10.12/7.3.12
-      "tuple(d)    ", # Struct: py 0.314s pypy 0.099s, StructSubclassable: py 1.586s pypy 0.255s # tuple around .__iter__
-      "astuple(d)  ", # Struct: py 2.465s pypy 0.330s, StructSubclassable: py 2.476s pypy 0.345s # dataclasses.astuple
-      "d._astuple()", # Struct: py 0.209s pypy 0.069s, StructSubclassable: py 0.836s pypy 0.228s # shallow copy dataclasses.astuple
-      "d.astuple() ", # Struct: py 0.398s pypy 0.164s, StructSubclassable: py 1.077s pypy 0.345s # namedtuple d._astuple()
-      "asdict(d)   ", # Struct: py 2.638s pypy 0.456s, StructSubclassable: py 2.611s pypy 0.456s # dataclasses.asdict
-      "d.asdict()  ", # Struct: py 0.311s pypy 0.110s, StructSubclassable: py 0.990s pypy 0.285s # shallow copy dataclasses.asdict
-      "d[0]        ", # Struct: py 0.090s pypy 0.001s, StructSubclassable: py 0.708s pypy 0.163s # typical operator
+    tests = [ # min time for 10**6 iterations, 7980HS (ROG Flow X13, "Asteria"), CPython 3.12.0, PyPy 3.10.13/7.3.13
+      "tuple(d)    ", # Struct: py 0.314s pypy 0.097s, StructSubclassable: py 1.586s pypy 0.255s # tuple around .__iter__
+      "astuple(d)  ", # Struct: py 0.978s pypy 0.330s, StructSubclassable: py 1.167s pypy 0.345s # dataclasses.astuple
+      "d._astuple()", # Struct: py 0.209s pypy 0.067s, StructSubclassable: py 0.836s pypy 0.228s # shallow copy dataclasses.astuple
+      "d.astuple() ", # Struct: py 0.398s pypy 0.154s, StructSubclassable: py 1.077s pypy 0.333s # namedtuple d._astuple()
+      "asdict(d)   ", # Struct: py 1.000s pypy 0.456s, StructSubclassable: py 0.996s pypy 0.456s # dataclasses.asdict
+      "d.asdict()  ", # Struct: py 0.304s pypy 0.105s, StructSubclassable: py 0.983s pypy 0.277s # shallow copy dataclasses.asdict
+      "d[0]        ", # Struct: py 0.088s pypy 0.001s, StructSubclassable: py 0.708s pypy 0.163s # typical operator
       "d[-1]       ", # Struct: py 0.090s pypy 0.001s, StructSubclassable: py 0.723s pypy 0.162s # typical operator
-      "d[:1]       ", # Struct: py 0.194s pypy 0.027s, StructSubclassable: py 0.832s pypy 0.183s # typical operator
+      "d[:1]       ", # Struct: py 0.194s pypy 0.025s, StructSubclassable: py 0.832s pypy 0.181s # typical operator
       "d[:]        ", # Struct: py 0.260s pypy 0.057s, StructSubclassable: py 0.926s pypy 0.226s # typical operator
       "list(d)     ", # Struct: py 0.352s pypy 0.083s, StructSubclassable: py 1.617s pypy 0.403s # much slower than the [:] operator
       "d.aslist()  ", # Struct: py 0.199s pypy 0.055s, StructSubclassable: py 0.812s pypy 0.220s # comparable to the [:] operator
-      "d[::-1]     ", # Struct: py 0.263s pypy 0.062s, StructSubclassable: py 0.910s pypy 0.238s # typical operator
+      "d[::-1]     ", # Struct: py 0.263s pypy 0.061s, StructSubclassable: py 0.910s pypy 0.238s # typical operator
     ]
     
     print(f"{Base.__name__} ({N_RUNS} runs):")
     for code in tests:
       print(f"  {code} # {min(repeat(code, number = N_ITERATIONS, repeat = N_RUNS, globals = globals())):0.3f}s")
+
+"""
+hot damn there's some tasty speedups in 3.12
+
+8700k (Midtower, "Jarvis"), CPython, 3.12.0
+Struct (10 runs):
+  tuple(d)     # 0.739s
+  astuple(d)   # 1.620s
+  d._astuple() # 0.454s
+  d.astuple()  # 0.780s
+  asdict(d)    # 1.694s
+  d.asdict()   # 0.518s
+  d[0]         # 0.150s
+  d[-1]        # 0.160s
+  d[:1]        # 0.463s
+  d[:]         # 0.546s
+  list(d)      # 0.772s
+  d.aslist()   # 0.438s
+  d[::-1]      # 0.556s
+StructSubclassable (10 runs):
+  tuple(d)     # 3.074s
+  astuple(d)   # 1.665s
+  d._astuple() # 1.550s
+  d.astuple()  # 1.947s
+  asdict(d)    # 1.634s
+  d.asdict()   # 1.637s
+  d[0]         # 1.255s
+  d[-1]        # 1.226s
+  d[:1]        # 1.549s
+  d[:]         # 1.682s
+  list(d)      # 2.957s
+  d.aslist()   # 1.498s
+  d[::-1]      # 1.659s
+
+7980HS (ROG Flow X13, "Asteria"), CPython 3.12.0, PyPy 3.10.13/7.3.13
+Struct (10 runs):
+  tuple(d)     # py 0.401s pypy 0.097s
+  astuple(d)   # py 0.978s pypy 0.354s
+  d._astuple() # py 0.256s pypy 0.067s
+  d.astuple()  # py 0.462s pypy 0.154s
+  asdict(d)    # py 1.000s pypy 0.459s
+  d.asdict()   # py 0.304s pypy 0.105s
+  d[0]         # py 0.088s pypy 0.001s
+  d[-1]        # py 0.092s pypy 0.001s
+  d[:1]        # py 0.237s pypy 0.025s
+  d[:]         # py 0.295s pypy 0.057s
+  list(d)      # py 0.437s pypy 0.085s
+  d.aslist()   # py 0.242s pypy 0.055s
+  d[::-1]      # py 0.290s pypy 0.061s
+StructSubclassable (10 runs):
+  tuple(d)     # py 1.845s pypy 0.269s
+  astuple(d)   # py 1.167s pypy 0.366s
+  d._astuple() # py 0.927s pypy 0.236s
+  d.astuple()  # py 1.222s pypy 0.333s
+  asdict(d)    # py 0.996s pypy 0.470s
+  d.asdict()   # py 0.983s pypy 0.277s
+  d[0]         # py 0.786s pypy 0.165s
+  d[-1]        # py 0.755s pypy 0.193s
+  d[:1]        # py 0.959s pypy 0.181s
+  d[:]         # py 1.030s pypy 0.294s
+  list(d)      # py 1.806s pypy 0.410s
+  d.aslist()   # py 0.892s pypy 0.231s
+  d[::-1]      # py 1.021s pypy 0.239s
+"""
