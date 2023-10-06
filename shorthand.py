@@ -450,7 +450,7 @@ def tf(func: Callable, *args, __pretty_tf = True, **kwargs):
   r = func(*args, **kwargs)
   end = time()
   if __pretty_tf:
-    fargs = list(map(str, map(lambda a: a.__name__ if hasattr(a, '__name__') else a, args))) + [f'{k}={v}' for k, v in kwargs.items()]
+    fargs = list(map(str, map(lambda a: a.__name__ if hasattr(a, "__name__") else a, args))) + [f"{k}={v}" for k, v in kwargs.items()]
     print(f"{func.__qualname__}({", ".join(fargs)}) = {r} ({human_time(end-start)})")
   else:
     print(human_time(end - start))
