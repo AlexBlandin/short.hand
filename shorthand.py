@@ -73,7 +73,6 @@ TRY_SLOTS_TRUE = {"slots": True} if PY3_10_PLUS else {}
 @dataclass(**TRY_SLOTS_TRUE)
 class Struct:
   """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that"""
-  
   def __iter__(self):
     """iterating over the values, rather than the __slots__"""
     yield from map(self.__getattribute__, self.__slots__) # type: ignore
@@ -108,7 +107,6 @@ class Struct:
 @dataclass(**TRY_SLOTS_TRUE)
 class StructSubclassable:
   """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed"""
-  
   def __iter__(self):
     """iterating over the values, rather than the __slots__"""
     yield from map(self.__getattribute__, self.fields())
