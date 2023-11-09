@@ -12,6 +12,7 @@ pipx ensurepath
 pipx install tldr
 pipx install hatch
 pipx install poetry
+pipx inject poetry poetry-plugin-export
 pipx install asciinema
 pipx upgrade-all
 

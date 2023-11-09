@@ -6,16 +6,18 @@ Here we collect useful functions and classes, which are often "fast enough".
 Star-importing this includes a few handy stdlib imports, great for the REPL.
 """
 
-# Imports used here
 from dataclasses import dataclass
-from collections import ChainMap, defaultdict
+from collections import defaultdict, ChainMap
 from itertools import count, chain
 from operator import itemgetter, attrgetter, indexOf
 from datetime import datetime
 from pathlib import Path
 from random import randrange, sample
 from time import time
+
+# Imports used here
 import dataclasses
+import platform
 import hashlib
 
 ####################
@@ -23,13 +25,14 @@ import hashlib
 ####################
 """for when `from shorthand import *` is used"""
 
-# ruff: noqa: E402 F401
-from collections.abc import Sequence, Iterable
+from collections.abc import Sequence, Iterator, Iterable, Callable
 from functools import partial, reduce, cache
-from typing import SupportsIndex, NamedTuple, Optional, Literal, Union, Any, TypeVar
-from collections.abc import Iterator, Callable
+from typing import SupportsIndex, NamedTuple, Optional, TypeVar, Literal, Union, Any
 from math import sqrt, prod
+
+# ruff: noqa: E402 F401
 import itertools
+import math
 import sys
 import re
 import os
@@ -42,6 +45,8 @@ RE_HTTP = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", flags = re.I | re.M | re.U
 PY3 = sys.version_info.major >= 3
 PY3_10_PLUS = PY3 and sys.version_info.minor >= 10
 PY3_11_PLUS = PY3 and sys.version_info.minor >= 11
+CPYTHON = sys.implementation.name == "cpython"
+PYPY = sys.implementation.name == "pypy"
 
 if PY3_10_PLUS:
   from itertools import pairwise # type: ignore
@@ -73,7 +78,7 @@ def cls_to_tuple(cls):
 
 @dataclass
 class Struct:
-  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that"""
+  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use SubStruct if you need that"""
   __slots__ = ()
   
   def __iter__(self):
@@ -88,8 +93,21 @@ class Struct:
     """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
     if isinstance(n, int):
       return self.__getattribute__(self.__slots__[n])
-    else:
+    elif isinstance(n, slice):
       return list(map(self.__getattribute__, self.__slots__[n]))
+    else:
+      raise IndexTypeError
+  
+  def __setitem__(self, n: int | slice, val: Any | Iterable[Any]):
+    """generic __slots__[n] = val, because subscripting (and slicing) is handy at times"""
+    if isinstance(n, int):
+      self.__setattr__(self.__slots__[n], val)
+    elif isinstance(n, slice) and isinstance(val, Iterable):
+      list(map(self.__setattr__, self.__slots__[n], val))
+    elif not isinstance(val, Iterable):
+      raise SliceAssignmentTypeError
+    else:
+      raise IndexTypeError
   
   def _astuple(self):
     """generic __slots__ -> tuple; super fast, low quality of life"""
@@ -108,42 +126,56 @@ class Struct:
     return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__))
 
 @dataclass
-class StructSubclassable:
-  """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed"""
+class SubStruct:
+  """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can also be subclassed"""
   def __iter__(self):
     """iterating over the values, rather than the __slots__"""
-    yield from map(self.__getattribute__, self.fields())
+    yield from map(self.__getattribute__, self.fields)
   
   def __len__(self):
     """how many slots there are, useful for slices, iteration, and reversing"""
-    return len(self.fields())
+    return len(self.fields)
   
   def __getitem__(self, n: int | slice):
     """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
     if isinstance(n, int):
-      return self.__getattribute__(self.fields()[n])
+      return self.__getattribute__(self.fields[n])
+    elif isinstance(n, slice):
+      return list(map(self.__getattribute__, self.fields[n]))
     else:
-      return list(map(self.__getattribute__, self.fields()[n]))
+      raise IndexTypeError
+  
+  def __setitem__(self, n: int | slice, val: Any | Iterable[Any]):
+    """generic __slots__[n] = val, because subscripting (and slicing) is handy at times"""
+    if isinstance(n, int):
+      self.__setattr__(self.fields[n], val)
+    elif isinstance(n, slice) and isinstance(val, Iterable):
+      list(map(self.__setattr__, self.fields[n], val))
+    elif not isinstance(val, Iterable):
+      raise SliceAssignmentTypeError
+    else:
+      raise IndexTypeError
   
   def _astuple(self):
     """generic __slots__ -> tuple; super fast, low quality of life, a shallow copy"""
-    return tuple(map(self.__getattribute__, self.fields()))
+    return tuple(map(self.__getattribute__, self.fields))
   
   def aslist(self):
     """generic __slots__ -> list; super fast, low quality of life, a shallow copy"""
-    return list(map(self.__getattribute__, self.fields()))
+    return list(map(self.__getattribute__, self.fields))
   
   def asdict(self):
     """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging, a shallow copy"""
-    return {slot: self.__getattribute__(slot) for slot in self.fields()}
+    return {slot: self.__getattribute__(slot) for slot in self.fields}
   
   def astuple(self):
     """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
-    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.fields()))
+    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.fields))
   
+  @property
   def fields(self):
     """__slots__ equivalent using the proper fields approach"""
-    return list(map(attrgetter("name"), dataclasses.fields(self)))
+    return tuple(map(attrgetter("name"), dataclasses.fields(self)))
 
 #######################
 # Iterables Shorthand #
@@ -181,21 +213,6 @@ def groupdict(xs: Iterable[_T1], key: Callable[[_T1], _T2] | None = None) -> dic
   for k, v in itertools.groupby(xs, key = key):
     d[k].extend(list(v))
   return dict(d.items())
-
-class NonIntegerSliceBoundsTypeError(TypeError):
-  """Slice values must be integers"""
-  def __init__(self):
-    super().__init__(self.__doc__)
-
-class SliceAssignmentTypeError(TypeError):
-  """When assigning to a slice, the assigned values must be provided in an interable or sequence"""
-  def __init__(self):
-    super().__init__(self.__doc__)
-
-class IndexTypeError(TypeError):
-  """Inappropriate index type. You can only index using integers or slice objects."""
-  def __init__(self):
-    super().__init__(self.__doc__)
 
 class Circular(list):
   """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]"""
@@ -489,7 +506,7 @@ def tf(func: Callable, *args, __pretty_tf = True, **kwargs):
   end = time()
   if __pretty_tf:
     fargs = list(map(str, map(lambda a: a.__name__ if hasattr(a, "__name__") else a, args))) + [f"{k}={v}" for k, v in kwargs.items()]
-    print(f"{func.__qualname__}({", ".join(fargs)}) = {r} ({human_time(end-start)})")
+    print(f"{func.__qualname__}({', '.join(fargs)}) = {r} ({human_time(end-start)})")
   else:
     print(human_time(end - start))
   return r
@@ -553,7 +570,7 @@ else:
     def __init__(self, fileobj):
       super().__init__(f"'{fileobj!r}' is not a file-like object in binary reading mode.")
   
-  def file_digest(fileobj, digest: str | Callable[[], hashlib._Hash], /, *, _bufsize = 2**18) -> hashlib._Hash:
+  def file_digest(fileobj, digest: str | Callable[[], Any], /, *, _bufsize = 2**18) -> Any: # Any = hashlib._Hash
     """Hash the contents of a file-like object. Returns a digest object. Backport from 3.11."""
     digestobj = hashlib.new(digest) if isinstance(digest, str) else digest()
     
@@ -636,6 +653,25 @@ def lev(s1: str, s2: str) -> int:
     d0, d1 = d1, d0
   return d0[-1]
 
+########################
+# Exceptions Shorthand #
+########################
+
+class NonIntegerSliceBoundsTypeError(TypeError):
+  """Slice values must be integers"""
+  def __init__(self):
+    super().__init__(self.__doc__)
+
+class SliceAssignmentTypeError(TypeError):
+  """When assigning to a slice, the assigned values must be provided in an interable or sequence"""
+  def __init__(self):
+    super().__init__(self.__doc__)
+
+class IndexTypeError(TypeError):
+  """Inappropriate index type. You can only index using integers or slice objects."""
+  def __init__(self):
+    super().__init__(self.__doc__)
+
 #########################
 # Performance & Testing #
 #########################
@@ -647,37 +683,107 @@ if __name__ == "__main__":
   N_RUNS, N_ITERATIONS = 10, 10**6
   
   @dataclass(slots = True)
-  class Vec4Stuct(Struct):
+  class Vec4Struct(Struct):
     x: float
     y: float
     z: float
     w: float
   
   @dataclass(slots = True)
-  class Vec4StructSub(StructSubclassable):
+  class Vec4SubStruct(SubStruct):
     x: float
     y: float
     z: float
     w: float
   
-  for Vec4, Base in (Vec4Stuct, Struct), (Vec4StructSub, StructSubclassable):
-    d = Vec4(1.2, 3.4, 5.6, 7.8)
-    tests = [ # min time for 10**6 iterations, 7980HS (ROG Flow X13, "Asteria"), CPython 3.12.0, PyPy 3.10.13/7.3.13
-      "tuple(d)    ", # Struct: py 0.314s pypy 0.097s, StructSubclassable: py 1.586s pypy 0.255s # tuple around .__iter__
-      "astuple(d)  ", # Struct: py 0.978s pypy 0.330s, StructSubclassable: py 1.167s pypy 0.345s # dataclasses.astuple
-      "d._astuple()", # Struct: py 0.209s pypy 0.067s, StructSubclassable: py 0.836s pypy 0.228s # shallow copy dataclasses.astuple
-      "d.astuple() ", # Struct: py 0.398s pypy 0.154s, StructSubclassable: py 1.077s pypy 0.333s # namedtuple d._astuple()
-      "asdict(d)   ", # Struct: py 1.000s pypy 0.456s, StructSubclassable: py 0.996s pypy 0.456s # dataclasses.asdict
-      "d.asdict()  ", # Struct: py 0.304s pypy 0.105s, StructSubclassable: py 0.983s pypy 0.277s # shallow copy dataclasses.asdict
-      "d[0]        ", # Struct: py 0.088s pypy 0.001s, StructSubclassable: py 0.708s pypy 0.163s # typical operator
-      "d[-1]       ", # Struct: py 0.090s pypy 0.001s, StructSubclassable: py 0.723s pypy 0.162s # typical operator
-      "d[:1]       ", # Struct: py 0.194s pypy 0.025s, StructSubclassable: py 0.832s pypy 0.181s # typical operator
-      "d[:]        ", # Struct: py 0.260s pypy 0.057s, StructSubclassable: py 0.926s pypy 0.226s # typical operator
-      "list(d)     ", # Struct: py 0.352s pypy 0.083s, StructSubclassable: py 1.617s pypy 0.403s # much slower than the [:] operator
-      "d.aslist()  ", # Struct: py 0.199s pypy 0.055s, StructSubclassable: py 0.812s pypy 0.220s # comparable to the [:] operator
-      "d[::-1]     ", # Struct: py 0.263s pypy 0.061s, StructSubclassable: py 0.910s pypy 0.238s # typical operator
-    ]
+  @dataclass(slots = True)
+  class BestTime:
+    cpython: float | None = None
+    pypy: float | None = None
     
-    print(f"{Base.__name__} ({N_RUNS} runs):")
-    for code in tests:
-      print(f"  {code} # {min(repeat(code, number = N_ITERATIONS, repeat = N_RUNS, globals = globals())):0.3f}s")
+    def log_time(self, x: float):
+      if CPYTHON:
+        self.cpython = min(self.cpython, x) if self.cpython else x
+      elif PYPY:
+        self.pypy = min(self.pypy, x) if self.pypy else x
+      else:
+        raise NotImplementedError
+    
+    @classmethod
+    def new(cls, x: float):
+      self = cls()
+      if CPYTHON:
+        self.cpython = x
+      elif PYPY:
+        self.pypy = x
+      else:
+        raise NotImplementedError
+      return self
+    
+    def __repr__(self):
+      return f"BestTime({self.cpython:.6f}, {self.pypy:.6f})"
+    
+    def __str__(self):
+      return human_time(self.cpython or self.pypy or 10.0) if self.cpython or self.pypy else "??????"
+  
+  @dataclass(slots = True)
+  class TimingRow:
+    code: str
+    struct: BestTime
+    substruct: BestTime
+    comment: str
+    
+    def __repr__(self):
+      return f'    TimingRow("{self.code}", {self.struct!r}, {self.substruct!r}, "{self.comment}"),'
+    
+    def __str__(self):
+      return f"{self.code} | {self.struct} \t | {self.substruct} \t | {self.comment}"
+  
+  # python -m pip install -U py-cpuinfo
+  # If I really want portability, then hey, there it is
+  # But for now, I can just use my own table of my devices
+  
+  table = defaultdict(platform.processor) # otherwise just report that back
+  table.update({
+    "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel": "Intel 8700k",
+    "AMD64 Family 25 Model 116 Stepping 1, AuthenticAMD": "AMD 7980HS",
+  })
+  CPU = table[platform.processor()]
+  device = f"{platform.node()} (ROG Flow X13) w/ {CPU}" if CPU == "AMD 7980HS" else f"{platform.node()} w/ {CPU}"
+  
+  print(sys.version)
+  print(f"Benchmarked on {device} using {'CPython' if CPYTHON else 'PyPy' if PYPY else 'Python'}")
+  print(f"Lowest time over {N_RUNS} runs of {N_ITERATIONS} iterations of each microbench: ")
+  
+  tests = [ # best times for N_ITERATIONS = 10**6 is still on Asteria (ROG Flow X13) w/ 7980HS using CPython 3.12.0, PyPy 3.10.13/7.3.13
+    TimingRow("tuple(d)      ", BestTime(0.314000, 0.095916), BestTime(1.586000, 0.249744), "a tuple around .__iter__"),
+    TimingRow("astuple(d)    ", BestTime(0.978000, 0.330000), BestTime(0.983568, 0.345000), "a dataclasses.astuple"),
+    TimingRow("d._astuple()  ", BestTime(0.209000, 0.065952), BestTime(0.836000, 0.227647), "a shallow copy dataclasses.astuple"),
+    TimingRow("d.astuple()   ", BestTime(0.398000, 0.154000), BestTime(1.077000, 0.328403), "a namedtuple d._astuple()"),
+    TimingRow("asdict(d)     ", BestTime(0.984542, 0.447809), BestTime(0.982506, 0.456000), "a dataclasses.asdict"),
+    TimingRow("d.asdict()    ", BestTime(0.289112, 0.105000), BestTime(0.983000, 0.267000), "a shallow copy dataclasses.asdict"),
+    TimingRow("d.x           ", BestTime(0.010484, 0.000585), BestTime(0.010416, 0.000585), "a typical operator"),
+    TimingRow("d[0]          ", BestTime(0.083811, 0.000594), BestTime(0.708000, 0.155892), "a typical operator"),
+    TimingRow("d[-1]         ", BestTime(0.088118, 0.000591), BestTime(0.723000, 0.154042), "a typical operator"),
+    TimingRow("d[:1]         ", BestTime(0.194000, 0.025000), BestTime(0.832000, 0.170620), "a typical operator"),
+    TimingRow("d[:]          ", BestTime(0.260000, 0.057000), BestTime(0.926000, 0.225085), "a typical operator"),
+    TimingRow("list(d)       ", BestTime(0.352000, 0.080535), BestTime(1.617000, 0.386774), "much slower than the [:] operator"),
+    TimingRow("d.aslist()    ", BestTime(0.199000, 0.055000), BestTime(0.812000, 0.212589), "comparable to the [:] operator"),
+    TimingRow("d[::-1]       ", BestTime(0.263000, 0.061000), BestTime(0.910000, 0.223778), "a typical operator"),
+    TimingRow("d.x = 0.1     ", BestTime(0.010197, 0.000591), BestTime(0.010249, 0.000588), "a typical operator"),
+    TimingRow("d[0] = 0.1    ", BestTime(0.114828, 0.000599), BestTime(0.839096, 0.154319), "a typical operator"),
+    TimingRow("d[0:1] = [0.1]", BestTime(0.454736, 0.069207), BestTime(1.222534, 0.219911), "a typical operator"),
+  ]
+  
+  base_data = [1.2, 3.4, 5.6, 7.8]
+  print("code           | struct \t | substruct \t | comment")
+  for test in tests:
+    struct_time = min(repeat(test.code, "d = Vec4Struct(*base_data)", number = N_ITERATIONS, repeat = N_RUNS, globals = globals()))
+    substruct_time = min(repeat(test.code, "d = Vec4SubStruct(*base_data)", number = N_ITERATIONS, repeat = N_RUNS, globals = globals()))
+    print(TimingRow(test.code, BestTime.new(struct_time), BestTime.new(substruct_time), test.comment), flush = True)
+    test.struct.log_time(struct_time)
+    test.substruct.log_time(substruct_time)
+  print()
+  print("The best times now stand at:")
+  for test in tests:
+    print(repr(test))
