@@ -33,9 +33,8 @@ import sys
 import re
 import os
 
-TypeA = TypeVar("TypeA")
-TypeB = TypeVar("TypeB")
-TypeC = TypeVar("TypeC")
+_T1 = TypeVar("_T1")
+_T2 = TypeVar("_T2")
 
 RE_HTTP = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", flags = re.I | re.M | re.U) # credit @stephenhay
 
@@ -47,7 +46,7 @@ if PY3_10_PLUS:
   from itertools import pairwise # type: ignore
 else:
   # we have to make it ourselves
-  def pairwise(iterable: Iterable):
+  def pairwise(iterable: Iterable[_T1]) -> zip[tuple[_T1, _T1]]:
     """return an iterator of overlapping pairs taken from the input iterator `pairwise([1,2,3,4]) -> [(1,2), (2,3), (3,4)]`"""
     a, b = itertools.tee(iterable)
     next(b, None)
@@ -152,22 +151,22 @@ class StructSubclassable:
 
 flatten = chain.from_iterable
 
-def head(xs: Iterable[TypeA]) -> TypeA:
+def head(xs: Iterable[_T1]) -> _T1:
   """the first item"""
   return next(iter(xs))
 
-def tail(xs: Iterable[TypeA]) -> Iterator[TypeA]:
+def tail(xs: Iterable[_T1]) -> Iterator[_T1]:
   """everything but the first item (as an iterable)"""
   ixs = iter(xs)
   _ = next(ixs)
   return ixs
 
-def headtail(xs: Iterable[TypeA]) -> tuple[TypeA, Iterator[TypeA]]:
+def headtail(xs: Iterable[_T1]) -> tuple[_T1, Iterator[_T1]]:
   """the (head, everything else), with everything but the first item as an iterable"""
   ixs = iter(xs)
   return next(ixs), ixs
 
-def groupdict(xs: Iterable[TypeA], key: Callable[[TypeA], TypeB] | None = None) -> dict[TypeB, list[TypeA]]:
+def groupdict(xs: Iterable[_T1], key: Callable[[_T1], _T2] | None = None) -> dict[_T2, list[_T1]]:
   """
   make a dict that maps keys and consecutive groups from the iterable
 
@@ -178,7 +177,7 @@ def groupdict(xs: Iterable[TypeA], key: Callable[[TypeA], TypeB] | None = None) 
   Returns:
   - `dict[a, list[a]]`; Keys mapped to their groups
   """
-  d: defaultdict[TypeB, list[TypeA]] = defaultdict(list)
+  d: defaultdict[_T2, list[_T1]] = defaultdict(list)
   for k, v in itertools.groupby(xs, key = key):
     d[k].extend(list(v))
   return dict(d.items())
@@ -224,7 +223,7 @@ def unique_list(xs: Sequence):
   """reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience"""
   return list(dict(zip(xs if len(xs) != 1 else xs[0], itertools.repeat(0))))
 
-def unwrap(f: Callable[[TypeA, TypeA], TypeB], *args: TypeA, **kwargs: TypeA) -> TypeB | None:
+def unwrap(f: Callable[[_T1, _T1], _T2], *args: _T1, **kwargs: _T1) -> _T2 | None:
   """because exceptions are bad, but in general you should use `contextlib.suppress` instead of this, this is just a functional version that turns it into `Unknown | None`"""
   try:
     return f(*args, **kwargs)
