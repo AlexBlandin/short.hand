@@ -23,8 +23,8 @@ target-version = "py310"
 line-length = 160
 
 [tool.ruff.lint]
-select = ["F", "E", "W", "I", "N", "D", "UP", "B", "SIM", "TRY", "FLY", "RUF"]
-ignore = [] # ignore SIM105 **only** when it's performance critical
+select = ["F", "E", "W", "N", "UP", "B", "SIM", "TRY", "FLY", "RUF"]
+ignore = ["W293"] # ignore SIM105 **only** when it's performance critical
 
 [tool.yapf]
 based_on_style = "pep8"

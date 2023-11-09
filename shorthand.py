@@ -23,10 +23,11 @@ import hashlib
 ####################
 """for when `from shorthand import *` is used"""
 
-# noqa: E402 F401
+# ruff: noqa: E402 F401
 from collections.abc import Sequence, Iterable
 from functools import partial, reduce, cache
-from typing import Iterator, SupportsIndex, NamedTuple, Optional, Callable, Literal, Union, Any, TypeVar
+from typing import SupportsIndex, NamedTuple, Optional, Literal, Union, Any, TypeVar
+from collections.abc import Iterator, Callable
 from math import sqrt, prod
 import itertools
 import sys
@@ -50,13 +51,13 @@ else:
     """return an iterator of overlapping pairs taken from the input iterator `pairwise([1,2,3,4]) -> [(1,2), (2,3), (3,4)]`"""
     a, b = itertools.tee(iterable)
     next(b, None)
-    return zip(a, b)
+    return zip(a, b, strict = True)
 
 #################
 # POD Shorthand #
 #################
 
-class dot(dict):
+class Dot(dict):
   """a "dot dict", a dict you can access by a `.` - inefficient vs dataclass, but convenient"""
   __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__ # type: ignore
 
@@ -65,49 +66,48 @@ def cls_to_tuple(cls):
   """this converts a class to a NamedTuple; cached because this is expensive!"""
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
-TRY_SLOTS_TRUE = {"slots": True} if PY3_10_PLUS else {}
-"@dataclass(slots = True) only accessible in Python 3.10+"
-
 # with these POD patterns, the provided methods for iteration and conversion to dicts/tuples are there to aid performance
 # as dataclasses.astuple and dataclasses.asdict are an order of magnitude slower even with such a simple class, its deepcopy semantics versus our shallow copies
 # this demonstrates a way to easily get great performance while reclaiming quality of life, see the performance testing at the end for an example of usage
 # also, as noted since 3.11, we should not be using .__slots__ due to base class issues, but for performance, we do anyway (use dataclasses.fields, see method)
 
-@dataclass(**TRY_SLOTS_TRUE)
+@dataclass
 class Struct:
   """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that"""
+  __slots__ = ()
+  
   def __iter__(self):
     """iterating over the values, rather than the __slots__"""
-    yield from map(self.__getattribute__, self.__slots__) # type: ignore
+    yield from map(self.__getattribute__, self.__slots__)
   
   def __len__(self):
     """how many slots there are, useful for slices, iteration, and reversing"""
-    return len(self.__slots__) # type: ignore
+    return len(self.__slots__)
   
-  def __getitem__(self, n: Union[int, slice]):
+  def __getitem__(self, n: int | slice):
     """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
     if isinstance(n, int):
-      return self.__getattribute__(self.__slots__[n]) # type: ignore
+      return self.__getattribute__(self.__slots__[n])
     else:
-      return list(map(self.__getattribute__, self.__slots__[n])) # type: ignore
+      return list(map(self.__getattribute__, self.__slots__[n]))
   
   def _astuple(self):
     """generic __slots__ -> tuple; super fast, low quality of life"""
-    return tuple(map(self.__getattribute__, self.__slots__)) # type: ignore
+    return tuple(map(self.__getattribute__, self.__slots__))
   
   def aslist(self):
     """generic __slots__ -> list; super fast, low quality of life, a shallow copy"""
-    return list(map(self.__getattribute__, self.__slots__)) # type: ignore
+    return list(map(self.__getattribute__, self.__slots__))
   
   def asdict(self):
     """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
-    return {slot: self.__getattribute__(slot) for slot in self.__slots__} # type: ignore
+    return {slot: self.__getattribute__(slot) for slot in self.__slots__}
   
   def astuple(self):
     """generic __slots__ -> NamedTuple; a named shallow copy"""
-    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__)) # type: ignore
+    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__))
 
-@dataclass(**TRY_SLOTS_TRUE)
+@dataclass
 class StructSubclassable:
   """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed"""
   def __iter__(self):
@@ -118,7 +118,7 @@ class StructSubclassable:
     """how many slots there are, useful for slices, iteration, and reversing"""
     return len(self.fields())
   
-  def __getitem__(self, n: Union[int, slice]):
+  def __getitem__(self, n: int | slice):
     """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
     if isinstance(n, int):
       return self.__getattribute__(self.fields()[n])
@@ -172,7 +172,7 @@ def groupdict(xs: Iterable[_T1], key: Callable[[_T1], _T2] | None = None) -> dic
 
   Parameters:
   - `xs: Iterable`; Elements to divide into groups according to the key function
-  - `key: ((a) -> a) | None = None`; A function for computing the group category for each element. If the key function is not specified or is `None`, the element itself is used for grouping.
+  - `key: ((a) -> a) | None = None`; A function for computing the group category for each element. If `None`, the element itself is used for grouping.
 
   Returns:
   - `dict[a, list[a]]`; Keys mapped to their groups
@@ -182,24 +182,39 @@ def groupdict(xs: Iterable[_T1], key: Callable[[_T1], _T2] | None = None) -> dic
     d[k].extend(list(v))
   return dict(d.items())
 
+class NonIntegerSliceBoundsTypeError(TypeError):
+  """Slice values must be integers"""
+  def __init__(self):
+    super().__init__(self.__doc__)
+
+class SliceAssignmentTypeError(TypeError):
+  """When assigning to a slice, the assigned values must be provided in an interable or sequence"""
+  def __init__(self):
+    super().__init__(self.__doc__)
+
+class IndexTypeError(TypeError):
+  """Inappropriate index type. You can only index using integers or slice objects."""
+  def __init__(self):
+    super().__init__(self.__doc__)
+
 class Circular(list):
   """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]"""
-  def __getitem__(self, x: Union[int, slice]):
+  def __getitem__(self, x: int | slice):
     if isinstance(x, slice):
       return [self[x] for x in range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step)]
     return super().__getitem__(x % max(1, len(self)))
   
-  def __setitem__(self, x: Union[int, float, slice], val: Union[Sequence[Any], Any]):
+  def __setitem__(self, x: int | (float | slice), val: Sequence[Any] | Any):
     if isinstance(x, slice) and (hasattr(val, "__iter__") or hasattr(val, "__getitem__")):
       m = max(1, len(self))
       start = 0 if x.start is None else x.start
       stop = len(self) if x.stop is None else x.stop
       step = 1 if x.step is None else x.step
       if not (isinstance(start, int) and isinstance(stop, int) and isinstance(step, int)):
-        raise TypeError("Slice values must be integers")
+        raise NonIntegerSliceBoundsTypeError
       indices = count(start, step) if x.stop is None else range(start, stop, step)
       if hasattr(val, "__iter__"):
-        for i, v in zip(indices, val):
+        for i, v in zip(indices, val, strict = False):
           super().__setitem__(i % m, v)
       else:
         for i in indices:
@@ -207,11 +222,11 @@ class Circular(list):
     elif isinstance(x, int):
       super().__setitem__(x % max(1, len(self)), val)
     elif isinstance(x, slice):
-      raise TypeError("When assigning to a slice, the assigned values must be provided in an interable or sequence")
+      raise SliceAssignmentTypeError
     else:
-      raise TypeError("You can only index using integers or slice objects")
+      raise IndexTypeError
   
-  def repeat(self, times: Optional[int] = None):
+  def repeat(self, times: int | None = None):
     if times is None:
       while True:
         yield from iter(self)
@@ -224,7 +239,7 @@ def unique_list(xs: Sequence):
   return list(dict(zip(xs if len(xs) != 1 else xs[0], itertools.repeat(0))))
 
 def unwrap(f: Callable[[_T1, _T1], _T2], *args: _T1, **kwargs: _T1) -> _T2 | None:
-  """because exceptions are bad, but in general you should use `contextlib.suppress` instead of this, this is just a functional version that turns it into `Unknown | None`"""
+  """because exceptions are bad, in general you should use `contextlib.suppress` instead of this"""
   try:
     return f(*args, **kwargs)
   except Exception:
@@ -257,7 +272,7 @@ def lmap(f: Callable, *args):
 
 def transpose(matrix: list[list]):
   """inefficient but elegant, so if it's a big matrix please don't use"""
-  return lmap(list, zip(*matrix))
+  return lmap(list, zip(*matrix, strict = True))
 
 def tmap(f: Callable, *args):
   """for the versions of python with faster tuple lookups"""
@@ -306,7 +321,7 @@ def sorted_dict(d: dict, key = itemgetter(1), reverse = False):
 
 def sortas(first: Iterable, second: Iterable):
   """sorts the first as if it was the second"""
-  return list(map(itemgetter(0), sorted(zip(first, second))))
+  return list(map(itemgetter(0), sorted(zip(first, second, strict = True))))
 
 def dedupe(it):
   """deduplicates an iterator, consumes memory to do so, non-blocking"""
@@ -316,7 +331,7 @@ def dedupe(it):
       s.add(i)
       yield i
 
-def find(v, xs: Union[list, Iterable], start: Optional[int] = None, stop: Optional[int] = None, missing = -1):
+def find(v, xs: list | Iterable, start: int | None = None, stop: int | None = None, missing = -1):
   """find the first index of v in interable without raising exceptions, will consume iterables so be careful"""
   if isinstance(xs, list):
     return xs.index(v, start if start is not None else 0, stop if stop is not None else sys.maxsize)
@@ -353,8 +368,8 @@ def avg(xs: Sequence, start = 0):
   """no exceptions, because x/0 = 0 in euclidean"""
   return sum(xs, start) / len(xs) if len(xs) else 0
 
-def dotprod(A: Iterable, B: Iterable):
-  return sum(a * b for a, b in zip(A, B)) # type: ignore
+def dotprod(vec_a: Iterable, vec_b: Iterable):
+  return sum(a * b for a, b in zip(vec_a, vec_b, strict = True))
 
 def bits(x: int):
   """because bin() has the annoying 0b, so slower but cleaner"""
@@ -400,10 +415,7 @@ def isprime(n: int):
     return n > 1
   sqrt = isqrt(n)
   assert (sqrt * sqrt <= n)
-  for i in range(11, sqrt, 6):
-    if not (n % i) or not (n % (i + 2)):
-      return False
-  return True
+  return all(not (not n % i or not n % (i + 2)) for i in range(11, sqrt, 6))
 
 def fastprime(n: int, trials: int = 8):
   """
@@ -431,10 +443,7 @@ def fastprime(n: int, trials: int = 8):
   def witness(a):
     if pow(a, d, n) == 1:
       return False
-    for i in range(s):
-      if pow(a, 2**i * d, n) == n - 1:
-        return False
-    return True
+    return all(pow(a, 2**i * d, n) != n - 1 for i in range(s))
   
   if n < 2047:
     b = [2]
@@ -463,10 +472,7 @@ def fastprime(n: int, trials: int = 8):
   else:
     b = [2] + [randrange(3, n, 2) for _ in range(trials)]
   
-  for a in b:
-    if witness(a):
-      return False
-  return True
+  return all(not witness(a) for a in b)
 
 ####################
 # Timing Shorthand #
@@ -516,17 +522,21 @@ def hours_minutes_seconds(t: float):
 # IO Shorthand #
 ################
 
-def yesno(msg = "", accept_return = True, replace_lists = False, yes_list = set(), no_list = set()):
+def yesno(msg = "", accept_return = True, replace_lists = False, yes_group: set[str] | None = None, no_group: set[str] | None = None):
   """keep asking until they say yes or no"""
+  if no_group is None:
+    no_group = set()
+  if yes_group is None:
+    yes_group = set()
   while True:
     reply = input(f"{msg} [y/N]: ").strip().lower()
-    if reply in (yes_list if replace_lists else {"y", "ye", "yes"} | yes_list) or (accept_return and reply == ""):
+    if reply in (yes_group if replace_lists else {"y", "ye", "yes"} | yes_group) or (accept_return and reply == ""):
       return True
-    if reply in (no_list if replace_lists else {"n", "no"} | no_list):
+    if reply in (no_group if replace_lists else {"n", "no"} | no_group):
       return False
 
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
-def to_bytes(x: int, nbytes: Optional[int] = None, signed: Optional[bool] = None, byteorder: Literal["little", "big"] = sys.byteorder) -> bytes:
+def to_bytes(x: int, nbytes: int | None = None, signed: bool | None = None, byteorder: Literal["little", "big"] = sys.byteorder) -> bytes:
   """int.to_bytes but with (sensible) default values, by default assumes unsigned if >=0, signed if <0"""
   return x.to_bytes((nbytes or (x.bit_length() + 7) // 8), byteorder, signed = (x >= 0) if signed is None else signed)
 
@@ -538,19 +548,21 @@ if PY3_11_PLUS:
   file_digest = hashlib.file_digest # type: ignore
 else:
   
-  def file_digest(fileobj, digest, /, *, _bufsize = 2**18):
+  class NotInBinaryReadModeError(ValueError):
+    """'{fileobj}' is not a file-like object in binary reading mode."""
+    def __init__(self, fileobj):
+      super().__init__(f"'{fileobj!r}' is not a file-like object in binary reading mode.")
+  
+  def file_digest(fileobj, digest: str | Callable[[], hashlib._Hash], /, *, _bufsize = 2**18) -> hashlib._Hash:
     """Hash the contents of a file-like object. Returns a digest object. Backport from 3.11."""
-    if isinstance(digest, str):
-      digestobj = hashlib.new(digest)
-    else:
-      digestobj = digest()
+    digestobj = hashlib.new(digest) if isinstance(digest, str) else digest()
     
     if hasattr(fileobj, "getbuffer"):
       digestobj.update(fileobj.getbuffer())
       return digestobj
     
     if not (hasattr(fileobj, "readinto") and hasattr(fileobj, "readable") and fileobj.readable()):
-      raise ValueError(f"'{fileobj!r}' is not a file-like object in binary reading mode.")
+      raise NotInBinaryReadModeError(fileobj)
     
     buf = bytearray(_bufsize)
     view = memoryview(buf)
@@ -568,7 +580,7 @@ else:
 
 # convenience functions to not write as much
 
-def resolve(path: Union[str, Path]):
+def resolve(path: str | Path):
   """resolve a Path including "~" (bc Path(path) doesn't...)"""
   return Path(path).expanduser()
 
@@ -578,19 +590,19 @@ def filedigest(path: Path, hash = "sha1"):
   with open(path, "rb") as f:
     return file_digest(f, hash).hexdigest()
 
-def readlines(fp: Union[str, Path], encoding = "utf8"):
+def readlines(fp: str | Path, encoding = "utf8"):
   """just reads lines as you normally would want to"""
   return resolve(fp).read_text(encoding).splitlines()
 
-def readlinesmap(fp: Union[str, Path], *fs: Callable, encoding = "utf8"):
+def readlinesmap(fp: str | Path, *fs: Callable, encoding = "utf8"):
   """readlines but map each function in fs to fp's lines in order (fs[0]: first, ..., fs[-1]: last)"""
   return mapcomp(resolve(fp).read_text(encoding).splitlines(), *fs)
 
-def writelines(fp: Union[str, Path], lines: Union[str, list[str]], encoding = "utf8", newline = "\n"):
+def writelines(fp: str | Path, lines: str | list[str], encoding = "utf8", newline = "\n"):
   """just writes lines as you normally would want to"""
   return resolve(fp).write_text(lines if isinstance(lines, str) else newline.join(lines), encoding = encoding, newline = newline)
 
-def writelinesmap(fp: Union[str, Path], lines: Union[str, list[str]], *fs: Callable, encoding = "utf8", newline = "\n"):
+def writelinesmap(fp: str | Path, lines: str | list[str], *fs: Callable, encoding = "utf8", newline = "\n"):
   """writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)"""
   return (resolve(fp).write_text(newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs), encoding = encoding, newline = newline))
 
@@ -629,31 +641,27 @@ def lev(s1: str, s2: str) -> int:
 #########################
 
 if __name__ == "__main__":
-  from dataclasses import astuple, asdict # noqa: F401
+  from dataclasses import astuple, asdict
   from timeit import repeat
   
   N_RUNS, N_ITERATIONS = 10, 10**6
   
-  for Base in Struct, StructSubclassable:
-    if PY3_10_PLUS:
-      
-      @dataclass(slots = True)
-      class Vec4(Base): # type: ignore
-        x: float
-        y: float
-        z: float
-        w: float
-    else: # you must manually specify __slots__ as @dataclass(slots = True) was only added in 3.10
-      
-      @dataclass
-      class Vec4(Base): # type: ignore
-        __slots__ = ["x", "y", "z", "w"]
-        x: float
-        y: float
-        z: float
-        w: float
-    
-    d = Vec4(1.2, 3.4, 5.6, 7.8) # type: ignore # noqa: F405
+  @dataclass(slots = True)
+  class Vec4Stuct(Struct):
+    x: float
+    y: float
+    z: float
+    w: float
+  
+  @dataclass(slots = True)
+  class Vec4StructSub(StructSubclassable):
+    x: float
+    y: float
+    z: float
+    w: float
+  
+  for Vec4, Base in (Vec4Stuct, Struct), (Vec4StructSub, StructSubclassable):
+    d = Vec4(1.2, 3.4, 5.6, 7.8)
     tests = [ # min time for 10**6 iterations, 7980HS (ROG Flow X13, "Asteria"), CPython 3.12.0, PyPy 3.10.13/7.3.13
       "tuple(d)    ", # Struct: py 0.314s pypy 0.097s, StructSubclassable: py 1.586s pypy 0.255s # tuple around .__iter__
       "astuple(d)  ", # Struct: py 0.978s pypy 0.330s, StructSubclassable: py 1.167s pypy 0.345s # dataclasses.astuple
