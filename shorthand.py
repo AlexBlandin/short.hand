@@ -8,7 +8,7 @@ Star-importing this includes a few handy stdlib imports, great for the REPL.
 
 # Imports used here
 from dataclasses import dataclass
-from collections import ChainMap
+from collections import ChainMap, defaultdict
 from itertools import count, chain
 from operator import itemgetter, attrgetter, indexOf
 from datetime import datetime
@@ -23,15 +23,19 @@ import hashlib
 ####################
 """for when `from shorthand import *` is used"""
 
-# ruff: noqa: E402 F401
+# noqa: E402 F401
 from collections.abc import Sequence, Iterable
 from functools import partial, reduce, cache
-from typing import SupportsIndex, NamedTuple, Optional, Callable, Literal, Union, Any
+from typing import Iterator, SupportsIndex, NamedTuple, Optional, Callable, Literal, Union, Any, TypeVar
 from math import sqrt, prod
-import itertools as it
+import itertools
 import sys
 import re
 import os
+
+TypeA = TypeVar("TypeA")
+TypeB = TypeVar("TypeB")
+TypeC = TypeVar("TypeC")
 
 RE_HTTP = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", flags = re.I | re.M | re.U) # credit @stephenhay
 
@@ -45,7 +49,7 @@ else:
   # we have to make it ourselves
   def pairwise(iterable: Iterable):
     """return an iterator of overlapping pairs taken from the input iterator `pairwise([1,2,3,4]) -> [(1,2), (2,3), (3,4)]`"""
-    a, b = it.tee(iterable)
+    a, b = itertools.tee(iterable)
     next(b, None)
     return zip(a, b)
 
@@ -148,6 +152,37 @@ class StructSubclassable:
 
 flatten = chain.from_iterable
 
+def head(xs: Iterable[TypeA]) -> TypeA:
+  """the first item"""
+  return next(iter(xs))
+
+def tail(xs: Iterable[TypeA]) -> Iterator[TypeA]:
+  """everything but the first item (as an iterable)"""
+  ixs = iter(xs)
+  _ = next(ixs)
+  return ixs
+
+def headtail(xs: Iterable[TypeA]) -> tuple[TypeA, Iterator[TypeA]]:
+  """the (head, everything else), with everything but the first item as an iterable"""
+  ixs = iter(xs)
+  return next(ixs), ixs
+
+def groupdict(xs: Iterable[TypeA], key: Callable[[TypeA], TypeB] | None = None) -> dict[TypeB, list[TypeA]]:
+  """
+  make a dict that maps keys and consecutive groups from the iterable
+
+  Parameters:
+  - `xs: Iterable`; Elements to divide into groups according to the key function
+  - `key: ((a) -> a) | None = None`; A function for computing the group category for each element. If the key function is not specified or is `None`, the element itself is used for grouping.
+
+  Returns:
+  - `dict[a, list[a]]`; Keys mapped to their groups
+  """
+  d: defaultdict[TypeB, list[TypeA]] = defaultdict(list)
+  for k, v in itertools.groupby(xs, key = key):
+    d[k].extend(list(v))
+  return dict(d.items())
+
 class Circular(list):
   """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]"""
   def __getitem__(self, x: Union[int, slice]):
@@ -187,10 +222,10 @@ class Circular(list):
 
 def unique_list(xs: Sequence):
   """reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience"""
-  return list(dict(zip(xs if len(xs) != 1 else xs[0], it.repeat(0))))
+  return list(dict(zip(xs if len(xs) != 1 else xs[0], itertools.repeat(0))))
 
-def unwrap(f: Callable, *args, **kwargs):
-  """because exceptions are bad"""
+def unwrap(f: Callable[[TypeA, TypeA], TypeB], *args: TypeA, **kwargs: TypeA) -> TypeB | None:
+  """because exceptions are bad, but in general you should use `contextlib.suppress` instead of this, this is just a functional version that turns it into `Unknown | None`"""
   try:
     return f(*args, **kwargs)
   except Exception:
