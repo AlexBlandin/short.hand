@@ -1,5 +1,5 @@
 
-sudo sed -i 's/previous/newdebian/g' /etc/apt/sources.list
+: # sudo sed -i 's/previous/newdebian/g' /etc/apt/sources.list
 
 sudo apt update -qy
 sudo apt full-upgrade -qy

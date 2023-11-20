@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
 : # The "python-essentials" (for debian)
-sudo apt-get install python3-full python3-dev pipx
-sudo apt-get install python3-pip python3-setuptools python3-wheel
+sudo apt-get install -y python3-full python3-dev
+sudo apt-get install -y python3-pip python3-setuptools python3-wheel pipx
 
 : # The "essentials"
 python -m pip install -qqq -U pip
@@ -41,9 +41,7 @@ pip install -U colorama termcolor rich tqdm proselint --user --break-system-pack
 : # pip install -U "plotext[image]" pytermgui textual textual-dev
 
 : # Webstuff
-pip install -U  async-timeout beautifulsoup4 httpie soupsieve requests urllib3 websockets --user --break-system-packages
-pip install aiohttp==3.9.0b0 --user --break-system-packages
-: # aioHTTP is prepping for a large 3.9 release, currently a beta rc, there are some issues but I don't use this heavily so "should" be okay for now
+pip install -U aiohttp async-timeout beautifulsoup4 httpie soupsieve requests urllib3 websockets --user --break-system-packages
 
 : # Wrappers around external tools (CLIs, DBs, etc)
 pip install -U pypandoc rethinkdb yt-dlp mutagen --user --break-system-packages
