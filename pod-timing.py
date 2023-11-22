@@ -6,19 +6,19 @@
 ██║     ███████╗██║  ██║██║██║ ╚████║
 ╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
 
- ██████╗ ██╗     ██████╗             
-██╔═══██╗██║     ██╔══██╗            
-██║   ██║██║     ██║  ██║            
-██║   ██║██║     ██║  ██║            
-╚██████╔╝███████╗██████╔╝            
- ╚═════╝ ╚══════╝╚═════╝             
+ ██████╗ ██╗     ██████╗
+██╔═══██╗██║     ██╔══██╗
+██║   ██║██║     ██║  ██║
+██║   ██║██║     ██║  ██║
+╚██████╔╝███████╗██████╔╝
+ ╚═════╝ ╚══════╝╚═════╝
 
-██████╗  █████╗ ████████╗ █████╗     
-██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗    
-██║  ██║███████║   ██║   ███████║    
-██║  ██║██╔══██║   ██║   ██╔══██║    
-██████╔╝██║  ██║   ██║   ██║  ██║    
-╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝    
+██████╗  █████╗ ████████╗ █████╗
+██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗
+██║  ██║███████║   ██║   ███████║
+██║  ██║██╔══██║   ██║   ██╔══██║
+██████╔╝██║  ██║   ██║   ██║  ██║
+╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
 """
 
 from dataclasses import dataclass
@@ -26,8 +26,9 @@ from collections import namedtuple
 from statistics import geometric_mean, harmonic_mean, quantiles, pvariance, variance, pstdev, median, stdev, mean
 from functools import cache
 from operator import attrgetter
-from typing import NamedTuple, Union
+from typing import NamedTuple
 import dataclasses
+import contextlib
 import timeit
 import sys
 
@@ -65,10 +66,8 @@ def time(code: str, iterations: int = N_ITERATIONS, runs: int = N_RUNS, setup: s
 def row(name: str, new: str, access: str):
   """another row in the table"""
   # 1000* gives ms
-  try:
+  with contextlib.suppress(Exception):
     print(f"| {name:>23} | {getsizeof(eval(new)):04} | {1000*time(new): >9.4f} | {1000*time("var"+access, setup = "var="+new): >9.4f} |")
-  except Exception:
-    pass
 
 #################
 # Test Subjects #
@@ -95,7 +94,7 @@ class Slots:
 NTuple = namedtuple("NTuple", ["sender", "receiver", "date", "amount"])
 """named tuple"""
 
-ProcTypedNTuple = NamedTuple("_TypedNTuple", sender = str, receiver = str, date = str, amount = float)
+ProcTypedNTuple = NamedTuple("_TypedNTuple", sender = str, receiver = str, date = str, amount = float) # noqa: UP014
 """typed named tuple, using the procedural kwargs approach"""
 
 class TypedNTuple(NamedTuple):
@@ -203,7 +202,7 @@ class Struct:
     """how many slots there are, useful for slices, iteration, and reversing"""
     return len(self.__slots__) # type: ignore
   
-  def __getitem__(self, n: Union[int, slice]):
+  def __getitem__(self, n: int | slice):
     """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
     if isinstance(n, int):
       return self.__getattribute__(self.__slots__[n]) # type: ignore
@@ -243,7 +242,7 @@ class StructSubclassable:
     """how many slots there are, useful for slices, iteration, and reversing"""
     return len(self.fields())
   
-  def __getitem__(self, n: Union[int, slice]):
+  def __getitem__(self, n: int | slice):
     """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
     if isinstance(n, int):
       return self.__getattribute__(self.fields()[n])
@@ -315,6 +314,8 @@ print()
 # 31 W base, 31 W turbo, 4.0 GHz base, 5.2 GHz turbo
 # 2x8 GB 6400 MT/s 19-15-17-34 LPDDR5
 # running in the Windows 11 "performance" mode for this
+
+# ruff: noqa: N816
 
 win_cpython_3_10_8700k = """
 POD test results for 1000000 iterations, best of 100 runs:
