@@ -27,7 +27,7 @@ import hashlib
 
 from collections.abc import Sequence, Iterator, Iterable, Callable
 from functools import partial, reduce, cache
-from typing import SupportsIndex, NamedTuple, Optional, TypeVar, Literal, Union, Any
+from typing import SupportsIndex, NamedTuple, TypeVar, Literal, Any
 from math import sqrt, prod
 
 # ruff: noqa: E402 F401
