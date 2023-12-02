@@ -34,11 +34,13 @@ import sys
 
 try:
   from sys import getsizeof
+
   getsizeof("sorry pypy, but cry about it, I want the overhead, not the recursive size")
 except Exception:
-  
+
   def getsizeof(obj: object, default: int = -1) -> int:
     return -1
+
 
 PY3_10_PLUS = sys.version_info.major >= 3 and sys.version_info.minor >= 10
 
@@ -47,7 +49,7 @@ PY3_10_PLUS = sys.version_info.major >= 3 and sys.version_info.minor >= 10
 #########
 
 N_ITERATIONS, N_RUNS = 10**6, 10
-PRINTSTATS = False # only need to print out when there's something new
+PRINTSTATS = False  # only need to print out when there's something new
 
 ##############
 # Formatting #
@@ -59,219 +61,262 @@ print(sep)
 print(f"| {"name":>23} | size | make (ms) | item (ms) |")
 print(sep)
 
+
 def time(code: str, iterations: int = N_ITERATIONS, runs: int = N_RUNS, setup: str = ""):
   """time how long something takes, result is min recorded time for an entire run in seconds"""
-  return min(timeit.repeat(code, setup = setup, number = iterations, repeat = runs, globals = globals()))
+  return min(timeit.repeat(code, setup=setup, number=iterations, repeat=runs, globals=globals()))
+
 
 def row(name: str, new: str, access: str):
   """another row in the table"""
   # 1000* gives ms
   with contextlib.suppress(Exception):
-    print(f"| {name:>23} | {getsizeof(eval(new)):04} | {1000*time(new): >9.4f} | {1000*time("var"+access, setup = "var="+new): >9.4f} |")
+    print(f"| {name:>23} | {getsizeof(eval(new)):04} | {1000 * time(new): >9.4f} | {1000 * time("var" + access, setup = "var=" + new): >9.4f} |")
+
 
 #################
 # Test Subjects #
 #################
 
+
 class Regular:
   """regular class"""
+
   def __init__(self, sender, receiver, date, amount):
     self.sender = sender
     self.receiver = receiver
     self.date = date
     self.amount = amount
 
+
 class Slots:
   """regular class with slots"""
+
   __slots__ = ["sender", "amount", "receiver", "date"]
-  
+
   def __init__(self, sender, receiver, date, amount):
     self.sender = sender
     self.receiver = receiver
     self.date = date
     self.amount = amount
+
 
 NTuple = namedtuple("NTuple", ["sender", "receiver", "date", "amount"])
 """named tuple"""
 
-ProcTypedNTuple = NamedTuple("_TypedNTuple", sender = str, receiver = str, date = str, amount = float) # noqa: UP014
+ProcTypedNTuple = NamedTuple("_TypedNTuple", sender=str, receiver=str, date=str, amount=float)  # noqa: UP014
 """typed named tuple, using the procedural kwargs approach"""
+
 
 class TypedNTuple(NamedTuple):
   """typed named tuple"""
+
   sender: str
   receiver: str
   date: str
   amount: float
 
+
 @dataclass
-class DataClass: # RECOMMENDED WHEN YOU CAN'T SPARE BTYES
+class DataClass:  # RECOMMENDED WHEN YOU CAN'T SPARE BTYES
   """dataclass"""
+
   sender: str
   receiver: str
   date: str
   amount: float
+
 
 @dataclass
 class DataSlots:
   """dataclass with slots, uses manual entry"""
+
   __slots__ = ["sender", "amount", "receiver", "date"]
   sender: str
   receiver: str
   date: str
   amount: float
 
+
 if PY3_10_PLUS:
   # bc pypy isn't 3.10 yet
-  @dataclass(slots = True)
-  class DataSlotsAuto: # type: ignore # RECOMMENDED IN GENERAL
+  @dataclass(slots=True)
+  class DataSlotsAuto:  # type: ignore # RECOMMENDED IN GENERAL
     """dataclass with slots, requires python 3.10+"""
+
     sender: str
     receiver: str
     date: str
     amount: float
 else:
-  
+
   @dataclass
   class DataSlotsAuto:
     """dataclass with slots, uses manual entry"""
+
     __slots__ = ["sender", "amount", "receiver", "date"]
     sender: str
     receiver: str
     date: str
     amount: float
 
-@dataclass(frozen = True)
+
+@dataclass(frozen=True)
 class FrozenData:
   """frozen dataclass"""
+
   sender: str
   receiver: str
   date: str
   amount: float
 
-@dataclass(frozen = True)
+
+@dataclass(frozen=True)
 class FrozenDataSlots:
   """frozen dataclass with slots, uses manual entry"""
+
   __slots__ = ["sender", "amount", "receiver", "date"]
   sender: str
   receiver: str
   date: str
   amount: float
 
+
 if PY3_10_PLUS:
   # bc pypy isn't 3.10 yet
-  @dataclass(slots = True, frozen = True)
-  class FrozenDataSlotsAuto: # type: ignore
+  @dataclass(slots=True, frozen=True)
+  class FrozenDataSlotsAuto:  # type: ignore
     """frozen dataclass with slots, requires python 3.10+"""
+
     sender: str
     receiver: str
     date: str
     amount: float
 else:
-  
-  @dataclass(frozen = True)
+
+  @dataclass(frozen=True)
   class FrozenDataSlotsAuto:
     """frozen dataclass with slots, uses manual entry"""
+
     __slots__ = ["sender", "amount", "receiver", "date"]
     sender: str
     receiver: str
     date: str
     amount: float
 
+
 TRY_SLOTS_TRUE = {"slots": True} if PY3_10_PLUS else {}
 "@dataclass(slots = True) only accessible in Python 3.10+"
+
 
 @cache
 def cls_to_tuple(cls):
   """this converts a class to a NamedTuple; cached because this is expensive!"""
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
+
 @dataclass(**TRY_SLOTS_TRUE)
 class Struct:
   """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that"""
+
   sender: str
   receiver: str
   date: str
   amount: float
-  
+
   def __iter__(self):
     """iterating over the values, rather than the __slots__"""
-    yield from map(self.__getattribute__, self.__slots__) # type: ignore
-  
+    yield from map(self.__getattribute__, self.__slots__)  # type: ignore
+
   def __len__(self):
     """how many slots there are, useful for slices, iteration, and reversing"""
-    return len(self.__slots__) # type: ignore
-  
+    return len(self.__slots__)  # type: ignore
+
   def __getitem__(self, n: int | slice):
     """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
     if isinstance(n, int):
-      return self.__getattribute__(self.__slots__[n]) # type: ignore
+      return self.__getattribute__(self.__slots__[n])  # type: ignore
     else:
-      return list(map(self.__getattribute__, self.__slots__[n])) # type: ignore
-  
+      return list(map(self.__getattribute__, self.__slots__[n]))  # type: ignore
+
   def _astuple(self):
     """generic __slots__ -> tuple; super fast, low quality of life"""
-    return tuple(map(self.__getattribute__, self.__slots__)) # type: ignore
-  
+    return tuple(map(self.__getattribute__, self.__slots__))  # type: ignore
+
   def aslist(self):
     """generic __slots__ -> list; super fast, low quality of life, a shallow copy"""
-    return list(map(self.__getattribute__, self.__slots__)) # type: ignore
-  
+    return list(map(self.__getattribute__, self.__slots__))  # type: ignore
+
   def asdict(self):
     """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
-    return {slot: self.__getattribute__(slot) for slot in self.__slots__} # type: ignore
-  
+    return {slot: self.__getattribute__(slot) for slot in self.__slots__}  # type: ignore
+
   def astuple(self):
     """generic __slots__ -> NamedTuple; a named shallow copy"""
-    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__)) # type: ignore
+    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__))  # type: ignore
+
 
 @dataclass(**TRY_SLOTS_TRUE)
 class StructSubclassable:
   """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed"""
-  
+
   sender: str
   receiver: str
   date: str
   amount: float
-  
+
   def __iter__(self):
     """iterating over the values, rather than the __slots__"""
     yield from map(self.__getattribute__, self.fields())
-  
+
   def __len__(self):
     """how many slots there are, useful for slices, iteration, and reversing"""
     return len(self.fields())
-  
+
   def __getitem__(self, n: int | slice):
     """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
     if isinstance(n, int):
       return self.__getattribute__(self.fields()[n])
     else:
       return list(map(self.__getattribute__, self.fields()[n]))
-  
+
   def _astuple(self):
     """generic __slots__ -> tuple; super fast, low quality of life, a shallow copy"""
     return tuple(map(self.__getattribute__, self.fields()))
-  
+
   def aslist(self):
     """generic __slots__ -> list; super fast, low quality of life, a shallow copy"""
     return list(map(self.__getattribute__, self.fields()))
-  
+
   def asdict(self):
     """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging, a shallow copy"""
     return {slot: self.__getattribute__(slot) for slot in self.fields()}
-  
+
   def astuple(self):
     """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
     return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.fields()))
-  
+
   def fields(self):
     """__slots__ equivalent using the proper fields approach"""
     return list(map(attrgetter("name"), dataclasses.fields(self)))
 
+
 PODS = [
-  Regular, Slots, NTuple, ProcTypedNTuple, TypedNTuple, DataClass, DataSlots, DataSlotsAuto, DataSlotsAuto, FrozenData, FrozenDataSlots, FrozenDataSlotsAuto,
-  FrozenDataSlotsAuto, Struct, StructSubclassable
+  Regular,
+  Slots,
+  NTuple,
+  ProcTypedNTuple,
+  TypedNTuple,
+  DataClass,
+  DataSlots,
+  DataSlotsAuto,
+  DataSlotsAuto,
+  FrozenData,
+  FrozenDataSlots,
+  FrozenDataSlotsAuto,
+  FrozenDataSlotsAuto,
+  Struct,
+  StructSubclassable,
 ]
 
 #########
@@ -634,19 +679,82 @@ POD test results for 1000000 iterations, best of 100 runs:
 
 print = print if PRINTSTATS else id
 
+
 def stats(x):
   print(f"{x:.6f}" if isinstance(x, float) else " ".join(f"{_x:.6f}" for _x in x))
 
+
 ratios_4700U_to_8700k = [
-  85.1526 / 77.4804, 8.2798 / 7.7768, 393.2533 / 419.9600, 341.9360 / 370.3981, 358.9367 / 404.1549, 358.3562 / 406.0698, 361.5343 / 402.0191,
-  395.0910 / 417.8476, 345.4267 / 367.6712, 348.0640 / 377.8337, 746.4775 / 794.3493, 677.4594 / 752.0625, 679.9086 / 760.5823, 22.5792 / 24.0198,
-  20.2340 / 24.3028, 23.0611 / 22.1962, 22.6880 / 21.2082, 20.7772 / 19.9666, 23.3201 / 19.7323, 21.2919 / 20.0104, 24.0210 / 22.4429, 21.2310 / 21.0758,
-  22.3947 / 21.2881, 23.1717 / 22.7376, 20.7030 / 21.3258, 21.2003 / 21.7042, 68.9289 / 67.4939, 5.6050 / 4.8811, 321.4695 / 343.6451, 292.5633 / 314.6168,
-  294.4185 / 324.5867, 296.6719 / 325.6120, 294.3780 / 325.4169, 321.2171 / 344.2590, 291.5041 / 316.9539, 634.3641 / 697.5164, 594.0366 / 645.1800,
-  16.5077 / 16.3071, 15.3206 / 14.7222, 17.6356 / 19.4977, 20.0772 / 20.3658, 17.1632 / 18.5107, 17.6866 / 18.3033, 17.1658 / 18.2874, 18.1571 / 19.5564,
-  18.7349 / 20.3715, 17.6353 / 19.4942, 20.1110 / 20.6960, 0.6991 / 0.5567, 0.5326 / 0.5622, 0.5349 / 0.5567, 0.5353 / 0.5614, 0.5343 / 0.5600, 0.6858 / 0.5567,
-  0.5342 / 0.5567, 0.5354 / 0.5567, 0.5357 / 0.5680, 0.5369 / 0.5567, 0.5372 / 0.5567, 13.5548 / 13.4704, 0.6842 / 0.5600, 0.6003 / 0.5568, 0.5346 / 0.7157,
-  0.6852 / 0.5600, 0.5335 / 0.5567, 0.6834 / 0.5570, 0.6847 / 0.5567, 0.5351 / 0.5658, 0.6849 / 0.5568, 0.5815 / 0.5567
+  85.1526 / 77.4804,
+  8.2798 / 7.7768,
+  393.2533 / 419.9600,
+  341.9360 / 370.3981,
+  358.9367 / 404.1549,
+  358.3562 / 406.0698,
+  361.5343 / 402.0191,
+  395.0910 / 417.8476,
+  345.4267 / 367.6712,
+  348.0640 / 377.8337,
+  746.4775 / 794.3493,
+  677.4594 / 752.0625,
+  679.9086 / 760.5823,
+  22.5792 / 24.0198,
+  20.2340 / 24.3028,
+  23.0611 / 22.1962,
+  22.6880 / 21.2082,
+  20.7772 / 19.9666,
+  23.3201 / 19.7323,
+  21.2919 / 20.0104,
+  24.0210 / 22.4429,
+  21.2310 / 21.0758,
+  22.3947 / 21.2881,
+  23.1717 / 22.7376,
+  20.7030 / 21.3258,
+  21.2003 / 21.7042,
+  68.9289 / 67.4939,
+  5.6050 / 4.8811,
+  321.4695 / 343.6451,
+  292.5633 / 314.6168,
+  294.4185 / 324.5867,
+  296.6719 / 325.6120,
+  294.3780 / 325.4169,
+  321.2171 / 344.2590,
+  291.5041 / 316.9539,
+  634.3641 / 697.5164,
+  594.0366 / 645.1800,
+  16.5077 / 16.3071,
+  15.3206 / 14.7222,
+  17.6356 / 19.4977,
+  20.0772 / 20.3658,
+  17.1632 / 18.5107,
+  17.6866 / 18.3033,
+  17.1658 / 18.2874,
+  18.1571 / 19.5564,
+  18.7349 / 20.3715,
+  17.6353 / 19.4942,
+  20.1110 / 20.6960,
+  0.6991 / 0.5567,
+  0.5326 / 0.5622,
+  0.5349 / 0.5567,
+  0.5353 / 0.5614,
+  0.5343 / 0.5600,
+  0.6858 / 0.5567,
+  0.5342 / 0.5567,
+  0.5354 / 0.5567,
+  0.5357 / 0.5680,
+  0.5369 / 0.5567,
+  0.5372 / 0.5567,
+  13.5548 / 13.4704,
+  0.6842 / 0.5600,
+  0.6003 / 0.5568,
+  0.5346 / 0.7157,
+  0.6852 / 0.5600,
+  0.5335 / 0.5567,
+  0.6834 / 0.5570,
+  0.6847 / 0.5567,
+  0.5351 / 0.5658,
+  0.6849 / 0.5568,
+  0.5815 / 0.5567,
 ]
 """
 from these ratios of 4700U's performance to the 8700k's performance, we observe:
@@ -671,7 +779,7 @@ stats(geometric_mean(ratios_4700U_to_8700k))
 stats(harmonic_mean(ratios_4700U_to_8700k))
 stats(median(ratios_4700U_to_8700k))
 stats(quantiles(ratios_4700U_to_8700k))
-stats(quantiles(ratios_4700U_to_8700k, n = 10))
+stats(quantiles(ratios_4700U_to_8700k, n=10))
 stats(pstdev(ratios_4700U_to_8700k))
 stats(pvariance(ratios_4700U_to_8700k))
 stats(stdev(ratios_4700U_to_8700k))
@@ -679,12 +787,50 @@ stats(variance(ratios_4700U_to_8700k))
 print("")
 
 ratios_cpython_to_pypy = [
-  68.9289 / 0.6991, 5.6050 / 0.5326, 321.4695 / 0.5349, 292.5633 / 0.5353, 294.4185 / 0.5343, 296.6719 / 0.6858, 294.3780 / 0.5342, 321.2171 / 0.5354,
-  291.5041 / 0.5357, 634.3641 / 0.5369, 594.0366 / 0.5372, 16.5077 / 13.5548, 15.3206 / 0.6842, 17.6356 / 0.6003, 20.0772 / 0.5346, 17.1632 / 0.6852,
-  17.6866 / 0.5335, 17.1658 / 0.6834, 18.1571 / 0.6847, 18.7349 / 0.5351, 17.6353 / 0.6849, 20.1110 / 0.5815, 67.4939 / 0.5567, 4.8811 / 0.5622,
-  343.6451 / 0.5567, 314.6168 / 0.5614, 324.5867 / 0.5600, 325.6120 / 0.5567, 325.4169 / 0.5567, 344.2590 / 0.5567, 316.9539 / 0.5680, 697.5164 / 0.5567,
-  645.1800 / 0.5567, 16.3071 / 13.4704, 14.7222 / 0.5600, 19.4977 / 0.5568, 20.3658 / 0.7157, 18.5107 / 0.5600, 18.3033 / 0.5567, 18.2874 / 0.5570,
-  19.5564 / 0.5567, 20.3715 / 0.5658, 19.4942 / 0.5568, 20.6960 / 0.5567
+  68.9289 / 0.6991,
+  5.6050 / 0.5326,
+  321.4695 / 0.5349,
+  292.5633 / 0.5353,
+  294.4185 / 0.5343,
+  296.6719 / 0.6858,
+  294.3780 / 0.5342,
+  321.2171 / 0.5354,
+  291.5041 / 0.5357,
+  634.3641 / 0.5369,
+  594.0366 / 0.5372,
+  16.5077 / 13.5548,
+  15.3206 / 0.6842,
+  17.6356 / 0.6003,
+  20.0772 / 0.5346,
+  17.1632 / 0.6852,
+  17.6866 / 0.5335,
+  17.1658 / 0.6834,
+  18.1571 / 0.6847,
+  18.7349 / 0.5351,
+  17.6353 / 0.6849,
+  20.1110 / 0.5815,
+  67.4939 / 0.5567,
+  4.8811 / 0.5622,
+  343.6451 / 0.5567,
+  314.6168 / 0.5614,
+  324.5867 / 0.5600,
+  325.6120 / 0.5567,
+  325.4169 / 0.5567,
+  344.2590 / 0.5567,
+  316.9539 / 0.5680,
+  697.5164 / 0.5567,
+  645.1800 / 0.5567,
+  16.3071 / 13.4704,
+  14.7222 / 0.5600,
+  19.4977 / 0.5568,
+  20.3658 / 0.7157,
+  18.5107 / 0.5600,
+  18.3033 / 0.5567,
+  18.2874 / 0.5570,
+  19.5564 / 0.5567,
+  20.3715 / 0.5658,
+  19.4942 / 0.5568,
+  20.6960 / 0.5567,
 ]
 """
 from these ratios of CPython's performance to PyPy's performance, we observe:
@@ -709,7 +855,7 @@ stats(geometric_mean(ratios_cpython_to_pypy))
 stats(harmonic_mean(ratios_cpython_to_pypy))
 stats(median(ratios_cpython_to_pypy))
 stats(quantiles(ratios_cpython_to_pypy))
-stats(quantiles(ratios_cpython_to_pypy, n = 10))
+stats(quantiles(ratios_cpython_to_pypy, n=10))
 stats(pstdev(ratios_cpython_to_pypy))
 stats(pvariance(ratios_cpython_to_pypy))
 stats(stdev(ratios_cpython_to_pypy))
@@ -717,15 +863,76 @@ stats(variance(ratios_cpython_to_pypy))
 print("")
 
 ratios_4700U_battery_to_4700U_plugged = [
-  77.4804 / 129.8398, 7.7768 / 13.1828, 419.9600 / 775.1731, 370.3981 / 461.8491, 404.1549 / 463.4976, 406.0698 / 468.3234, 402.0191 / 449.3548,
-  417.8476 / 459.1070, 367.6712 / 424.1747, 377.8337 / 452.0948, 794.3493 / 1191.4967, 752.0625 / 901.3104, 760.5823 / 843.3253, 24.0198 / 46.1178,
-  24.3028 / 51.6418, 22.1962 / 44.0287, 21.2082 / 26.3737, 19.9666 / 20.9656, 19.7323 / 19.5120, 20.0104 / 19.7859, 22.4429 / 22.4903, 21.0758 / 21.3831,
-  21.2881 / 28.5871, 22.7376 / 37.7340, 21.3258 / 21.8362, 21.7042 / 23.4631, 67.4939 / 114.3563, 4.8811 / 8.4461, 343.6451 / 640.5819, 314.6168 / 577.8327,
-  324.5867 / 493.8302, 325.6120 / 348.2305, 325.4169 / 342.9820, 344.2590 / 393.6214, 316.9539 / 370.9233, 697.5164 / 861.5859, 645.1800 / 1050.7468,
-  16.3071 / 28.1532, 14.7222 / 26.9623, 19.4977 / 31.9918, 20.3658 / 32.3710, 18.5107 / 33.8196, 18.3033 / 18.1998, 18.2874 / 19.0184, 19.5564 / 21.3467,
-  20.3715 / 21.2177, 19.4942 / 34.6186, 20.6960 / 29.0954, 0.5567 / 0.9427, 0.5622 / 0.9630, 0.5567 / 0.9559, 0.5614 / 0.9464, 0.5600 / 0.9443, 0.5567 / 0.9441,
-  0.5567 / 0.9447, 0.5567 / 1.6885, 0.5680 / 1.7018, 0.5567 / 3.6359, 0.5567 / 0.9501, 13.4704 / 25.8458, 0.5600 / 0.9480, 0.5568 / 1.2427, 0.7157 / 0.9418,
-  0.5600 / 0.9432, 0.5567 / 0.9437, 0.5570 / 1.1097, 0.5567 / 1.2091, 0.5658 / 0.9422, 0.5568 / 2.1674, 0.5567 / 0.9422
+  77.4804 / 129.8398,
+  7.7768 / 13.1828,
+  419.9600 / 775.1731,
+  370.3981 / 461.8491,
+  404.1549 / 463.4976,
+  406.0698 / 468.3234,
+  402.0191 / 449.3548,
+  417.8476 / 459.1070,
+  367.6712 / 424.1747,
+  377.8337 / 452.0948,
+  794.3493 / 1191.4967,
+  752.0625 / 901.3104,
+  760.5823 / 843.3253,
+  24.0198 / 46.1178,
+  24.3028 / 51.6418,
+  22.1962 / 44.0287,
+  21.2082 / 26.3737,
+  19.9666 / 20.9656,
+  19.7323 / 19.5120,
+  20.0104 / 19.7859,
+  22.4429 / 22.4903,
+  21.0758 / 21.3831,
+  21.2881 / 28.5871,
+  22.7376 / 37.7340,
+  21.3258 / 21.8362,
+  21.7042 / 23.4631,
+  67.4939 / 114.3563,
+  4.8811 / 8.4461,
+  343.6451 / 640.5819,
+  314.6168 / 577.8327,
+  324.5867 / 493.8302,
+  325.6120 / 348.2305,
+  325.4169 / 342.9820,
+  344.2590 / 393.6214,
+  316.9539 / 370.9233,
+  697.5164 / 861.5859,
+  645.1800 / 1050.7468,
+  16.3071 / 28.1532,
+  14.7222 / 26.9623,
+  19.4977 / 31.9918,
+  20.3658 / 32.3710,
+  18.5107 / 33.8196,
+  18.3033 / 18.1998,
+  18.2874 / 19.0184,
+  19.5564 / 21.3467,
+  20.3715 / 21.2177,
+  19.4942 / 34.6186,
+  20.6960 / 29.0954,
+  0.5567 / 0.9427,
+  0.5622 / 0.9630,
+  0.5567 / 0.9559,
+  0.5614 / 0.9464,
+  0.5600 / 0.9443,
+  0.5567 / 0.9441,
+  0.5567 / 0.9447,
+  0.5567 / 1.6885,
+  0.5680 / 1.7018,
+  0.5567 / 3.6359,
+  0.5567 / 0.9501,
+  13.4704 / 25.8458,
+  0.5600 / 0.9480,
+  0.5568 / 1.2427,
+  0.7157 / 0.9418,
+  0.5600 / 0.9432,
+  0.5567 / 0.9437,
+  0.5570 / 1.1097,
+  0.5567 / 1.2091,
+  0.5658 / 0.9422,
+  0.5568 / 2.1674,
+  0.5567 / 0.9422,
 ]
 """
 from these ratios of unplugged performance to plugged performance for the 4700U, we observe:
@@ -750,7 +957,7 @@ stats(geometric_mean(ratios_4700U_battery_to_4700U_plugged))
 stats(harmonic_mean(ratios_4700U_battery_to_4700U_plugged))
 stats(median(ratios_4700U_battery_to_4700U_plugged))
 stats(quantiles(ratios_4700U_battery_to_4700U_plugged))
-stats(quantiles(ratios_4700U_battery_to_4700U_plugged, n = 10))
+stats(quantiles(ratios_4700U_battery_to_4700U_plugged, n=10))
 stats(pstdev(ratios_4700U_battery_to_4700U_plugged))
 stats(pvariance(ratios_4700U_battery_to_4700U_plugged))
 stats(stdev(ratios_4700U_battery_to_4700U_plugged))

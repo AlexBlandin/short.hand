@@ -20,10 +20,10 @@ pipx upgrade-all
 pip install -U PyNaCl pyOpenSSL cryptography certifi blake3 --user --break-system-packages
 
 : # Python tooling, style, typing, debugging, system info, etc
-pip install -U mypy yapf ruff pyupgrade pytest pdbpp psutil typing-extensions --user --break-system-packages
+pip install -U mypy yapf ruff ruff-lsp python-lsp-server[rope,yapf] pyupgrade pytest pdbpp psutil typing-extensions --user --break-system-packages
 
 : # Useful tools
-pip install -U attrs icecream sortedcontainers toolz cffi fastcore pytomlpp humanize parse regex  pylev langcodes --user --break-system-packages
+pip install -U attrs icecream sortedcontainers more-itertools toolz cffi fastcore pytomlpp humanize parse regex  pylev langcodes --user --break-system-packages
 pip install pendulum==3.0.0b1 --user --break-system-packages
 : # 3.0.0 has been release candidates for two years now, but it seems to actually be close now and this added 3.12 support, so let's try it
 
