@@ -5,6 +5,7 @@ __pycache__/
 tempCodeRunnerFile.py
 
 # Distribution / packaging
+.ruff_cache/
 .Python
 build/
 develop-eggs/
