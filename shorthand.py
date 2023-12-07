@@ -599,7 +599,7 @@ def yesno(msg="", accept_return=True, replace_lists=False, yes_group: set[str] |
     yes_group = set()
   while True:
     reply = input(f"{msg} [y/N]: ").strip().lower()
-    if reply in (yes_group if replace_lists else {"y", "ye", "yes"} | yes_group) or (accept_return and reply == ""):
+    if reply in (yes_group if replace_lists else {"y", "ye", "yes"} | yes_group) or (accept_return and not reply):
       return True
     if reply in (no_group if replace_lists else {"n", "no"} | no_group):
       return False
@@ -696,7 +696,7 @@ def lev(s1: str, s2: str) -> int:
   if s1 == s2:
     return 0
   l1, l2 = len(s1), len(s2)
-  if 0 in (l1, l2):
+  if 0 in (l1, l2):  # noqa: PLR6201 # `tuple[int,int]` is slightly faster than `set[int]` for .__contains__(int)
     return l1 or l2
   if l1 > l2:
     s1, s2, l1, l2 = s2, s1, l2, l1
