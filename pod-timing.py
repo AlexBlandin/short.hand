@@ -19,6 +19,8 @@
 ██║  ██║██╔══██║   ██║   ██╔══██║
 ██████╔╝██║  ██║   ██║   ██║  ██║
 ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
+
+for when you can't use attrs
 """
 
 from dataclasses import dataclass
@@ -30,7 +32,6 @@ from typing import NamedTuple
 import dataclasses
 import contextlib
 import timeit
-import sys
 
 try:
   from sys import getsizeof
@@ -41,8 +42,6 @@ except Exception:
   def getsizeof(obj: object, default: int = -1) -> int:
     return -1
 
-
-PY3_10_PLUS = sys.version_info.major >= 3 and sys.version_info.minor >= 10
 
 #########
 # Dials #
@@ -118,7 +117,7 @@ class TypedNTuple(NamedTuple):
 
 
 @dataclass
-class DataClass:  # RECOMMENDED WHEN YOU CAN'T SPARE BTYES
+class DataClass:  # RECOMMENDED WHEN YOU CAN'T SPARE BYTES AND AREN'T USING attrs
   """dataclass"""
 
   sender: str
@@ -138,27 +137,14 @@ class DataSlots:
   amount: float
 
 
-if PY3_10_PLUS:
-  # bc pypy isn't 3.10 yet
-  @dataclass(slots=True)
-  class DataSlotsAuto:  # type: ignore # RECOMMENDED IN GENERAL
-    """dataclass with slots, requires python 3.10+"""
+@dataclass(slots=True)
+class DataSlotsAuto:  # RECOMMENDED IN GENERAL WHEN YOU CAN'T USE attrs
+  """dataclass with slots, requires python 3.10+"""
 
-    sender: str
-    receiver: str
-    date: str
-    amount: float
-else:
-
-  @dataclass
-  class DataSlotsAuto:
-    """dataclass with slots, uses manual entry"""
-
-    __slots__ = ["sender", "amount", "receiver", "date"]
-    sender: str
-    receiver: str
-    date: str
-    amount: float
+  sender: str
+  receiver: str
+  date: str
+  amount: float
 
 
 @dataclass(frozen=True)
@@ -182,31 +168,14 @@ class FrozenDataSlots:
   amount: float
 
 
-if PY3_10_PLUS:
-  # bc pypy isn't 3.10 yet
-  @dataclass(slots=True, frozen=True)
-  class FrozenDataSlotsAuto:  # type: ignore
-    """frozen dataclass with slots, requires python 3.10+"""
+@dataclass(slots=True, frozen=True)
+class FrozenDataSlotsAuto:
+  """frozen dataclass with slots, requires python 3.10+"""
 
-    sender: str
-    receiver: str
-    date: str
-    amount: float
-else:
-
-  @dataclass(frozen=True)
-  class FrozenDataSlotsAuto:
-    """frozen dataclass with slots, uses manual entry"""
-
-    __slots__ = ["sender", "amount", "receiver", "date"]
-    sender: str
-    receiver: str
-    date: str
-    amount: float
-
-
-TRY_SLOTS_TRUE = {"slots": True} if PY3_10_PLUS else {}
-"@dataclass(slots = True) only accessible in Python 3.10+"
+  sender: str
+  receiver: str
+  date: str
+  amount: float
 
 
 @cache
@@ -215,7 +184,7 @@ def cls_to_tuple(cls):
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
 
-@dataclass(**TRY_SLOTS_TRUE)
+@dataclass(slots=True)
 class Struct:
   """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that"""
 
@@ -256,7 +225,7 @@ class Struct:
     return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__))  # type: ignore
 
 
-@dataclass(**TRY_SLOTS_TRUE)
+@dataclass(slots=True)
 class StructSubclassable:
   """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed"""
 
