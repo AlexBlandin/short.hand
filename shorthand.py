@@ -209,7 +209,7 @@ def headtail(xs: Iterable[_T1]) -> tuple[_T1, Iterator[_T1]]:
   return next(ixs), ixs
 
 
-def groupdict(xs: Iterable[_T1], key: Callable[[_T1], _T2] | None = None) -> dict[_T2, list[_T1]]:
+def groupdict(xs: Iterable[_T1], key: Callable[[_T1], _T2] | None = None) -> dict[_T1 | _T2, list[_T1]]:
   """
   make a dict that maps keys and consecutive groups from the iterable
 
@@ -220,7 +220,7 @@ def groupdict(xs: Iterable[_T1], key: Callable[[_T1], _T2] | None = None) -> dic
   Returns:
   - `dict[a, list[a]]`; Keys mapped to their groups
   """
-  d: defaultdict[_T2, list[_T1]] = defaultdict(list)
+  d: defaultdict[_T1 | _T2, list[_T1]] = defaultdict(list)
   for k, v in itertools.groupby(xs, key=key):
     d[k].extend(list(v))
   return dict(d.items())
