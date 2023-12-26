@@ -33,10 +33,7 @@ import sys
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import cache, partial, reduce
 from math import prod, sqrt
-from typing import Any, Literal, NamedTuple, SupportsIndex, TypeVar
-
-_T1 = TypeVar("_T1")
-_T2 = TypeVar("_T2")
+from typing import Any, Literal, NamedTuple, SupportsIndex
 
 RE_HTTP = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", flags=re.I | re.M | re.U)  # credit @stephenhay
 
@@ -50,7 +47,7 @@ if PY3_10_PLUS:
   from itertools import pairwise  # type: ignore
 else:
   # we have to make it ourselves
-  def pairwise(iterable: Iterable[_T1]) -> zip[tuple[_T1, _T1]]:
+  def pairwise[T](iterable: Iterable[T]) -> zip[tuple[T, T]]:
     """return an iterator of overlapping pairs taken from the input iterator `pairwise([1,2,3,4]) -> [(1,2), (2,3), (3,4)]`"""
     a, b = itertools.tee(iterable)
     next(b, None)
@@ -191,25 +188,25 @@ class SubStruct:
 flatten = chain.from_iterable
 
 
-def head(xs: Iterable[_T1]) -> _T1:
+def head[T](xs: Iterable[T]) -> T:
   """the first item"""
   return next(iter(xs))
 
 
-def tail(xs: Iterable[_T1]) -> Iterator[_T1]:
+def tail[T](xs: Iterable[T]) -> Iterator[T]:
   """everything but the first item (as an iterable)"""
   ixs = iter(xs)
   _ = next(ixs)
   return ixs
 
 
-def headtail(xs: Iterable[_T1]) -> tuple[_T1, Iterator[_T1]]:
+def headtail[T](xs: Iterable[T]) -> tuple[T, Iterator[T]]:
   """the (head, everything else), with everything but the first item as an iterable"""
   ixs = iter(xs)
   return next(ixs), ixs
 
 
-def groupdict(xs: Iterable[_T1], key: Callable[[_T1], _T2] | None = None) -> dict[_T1 | _T2, list[_T1]]:
+def groupdict[T, S](xs: Iterable[T], key: Callable[[T], S] | None = None) -> dict[T | S, list[T]]:
   """
   make a dict that maps keys and consecutive groups from the iterable
 
@@ -220,7 +217,7 @@ def groupdict(xs: Iterable[_T1], key: Callable[[_T1], _T2] | None = None) -> dic
   Returns:
   - `dict[a, list[a]]`; Keys mapped to their groups
   """
-  d: defaultdict[_T1 | _T2, list[_T1]] = defaultdict(list)
+  d: defaultdict[T | S, list[T]] = defaultdict(list)
   for k, v in itertools.groupby(xs, key=key):
     d[k].extend(list(v))
   return dict(d.items())
@@ -270,7 +267,7 @@ def unique_list(xs: Sequence):
   return list(dict(zip(xs if len(xs) != 1 else xs[0], itertools.repeat(0))))
 
 
-def unwrap(f: Callable[[_T1, _T1], _T2], *args: _T1, **kwargs: _T1) -> _T2 | None:
+def unwrap[T, S](f: Callable[[T, T], S], *args: T, **kwargs: T) -> S | None:
   """because exceptions are bad, in general you should use `contextlib.suppress` instead of this"""
   try:
     return f(*args, **kwargs)
