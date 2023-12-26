@@ -816,12 +816,10 @@ if __name__ == "__main__":
   # But for now, I can just use my own table of my devices
 
   table = defaultdict(platform.processor)  # otherwise just report that back
-  table.update(
-    {
-      "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel": "Intel 8700k",
-      "AMD64 Family 25 Model 116 Stepping 1, AuthenticAMD": "AMD 7980HS",
-    }
-  )
+  table.update({
+    "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel": "Intel 8700k",
+    "AMD64 Family 25 Model 116 Stepping 1, AuthenticAMD": "AMD 7980HS",
+  })
   CPU = table[platform.processor()]
   device = f"{platform.node()} (ROG Flow X13) w/ {CPU}" if CPU == "AMD 7980HS" else f"{platform.node()} w/ {CPU}"
 

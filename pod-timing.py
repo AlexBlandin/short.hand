@@ -23,15 +23,15 @@
 for when you can't use attrs
 """
 
-from dataclasses import dataclass
+import contextlib
+import dataclasses
+import timeit
 from collections import namedtuple
-from statistics import geometric_mean, harmonic_mean, quantiles, pvariance, variance, pstdev, median, stdev, mean
+from dataclasses import dataclass
 from functools import cache
 from operator import attrgetter
+from statistics import geometric_mean, harmonic_mean, mean, median, pstdev, pvariance, quantiles, stdev, variance
 from typing import NamedTuple
-import dataclasses
-import contextlib
-import timeit
 
 try:
   from sys import getsizeof
