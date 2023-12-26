@@ -117,7 +117,7 @@ class TypedNTuple(NamedTuple):
 
 
 @dataclass
-class DataClass:  # RECOMMENDED WHEN YOU CAN'T SPARE BYTES AND AREN'T USING attrs
+class DataClass:  # RECOMMENDED WHEN YOU CAN'T USE attrs
   """dataclass"""
 
   sender: str
@@ -138,7 +138,7 @@ class DataSlots:
 
 
 @dataclass(slots=True)
-class DataSlotsAuto:  # RECOMMENDED IN GENERAL WHEN YOU CAN'T USE attrs
+class DataSlotsAuto:
   """dataclass with slots, requires python 3.10+"""
 
   sender: str
@@ -279,10 +279,8 @@ PODS = [
   DataClass,
   DataSlots,
   DataSlotsAuto,
-  DataSlotsAuto,
   FrozenData,
   FrozenDataSlots,
-  FrozenDataSlotsAuto,
   FrozenDataSlotsAuto,
   Struct,
   StructSubclassable,
@@ -330,27 +328,6 @@ print()
 # running in the Windows 11 "performance" mode for this
 
 # ruff: noqa: N816
-
-win_cpython_3_10_8700k = """
-POD test results for 1000000 iterations, best of 100 runs:
-+-------------------------+------+-----------+-----------+
-|                    name | size | make (ms) | item (ms) |
-+-------------------------+------+-----------+-----------+
-|       dict from literal | 0232 |   85.1526 |   22.5792 |
-|      tuple from literal | 0072 |    8.2798 |   20.2340 |
-|           regular class | 0048 |  393.2533 |   23.0611 |
-|       class using slots | 0064 |  341.9360 |   22.6880 |
-|  collections namedtuple | 0072 |  358.9367 |   20.7772 |
-|  proc. typed NamedTuple | 0072 |  358.3562 |   23.3201 |
-|        typed NamedTuple | 0072 |  361.5343 |   21.2919 |
-|       regular dataclass | 0048 |  395.0910 |   24.0210 |
-| regular dataclass slots | 0064 |  345.4267 |   21.2310 |
-| autogen dataclass slots | 0064 |  348.0640 |   22.3947 |
-|        frozen dataclass | 0048 |  746.4775 |   23.1717 |
-|  frozen dataclass slots | 0064 |  677.4594 |   20.7030 |
-| autogen frozen dc slots | 0064 |  679.9086 |   21.2003 |
-+-------------------------+------+-----------+-----------+
-"""
 
 win_cpython_3_12_7980HS_plugged = """
 POD test results for 1000000 iterations, best of 10 runs:
@@ -437,6 +414,27 @@ POD test results for 1000000 iterations, best of 10 runs:
 |        frozen dataclass | 0048 | 1191.4967 |   37.7340 |
 |  frozen dataclass slots | 0064 |  901.3104 |   21.8362 |
 | autogen frozen dc slots | 0064 |  843.3253 |   23.4631 |
++-------------------------+------+-----------+-----------+
+"""
+
+win_cpython_3_10_8700k = """
+POD test results for 1000000 iterations, best of 100 runs:
++-------------------------+------+-----------+-----------+
+|                    name | size | make (ms) | item (ms) |
++-------------------------+------+-----------+-----------+
+|       dict from literal | 0232 |   85.1526 |   22.5792 |
+|      tuple from literal | 0072 |    8.2798 |   20.2340 |
+|           regular class | 0048 |  393.2533 |   23.0611 |
+|       class using slots | 0064 |  341.9360 |   22.6880 |
+|  collections namedtuple | 0072 |  358.9367 |   20.7772 |
+|  proc. typed NamedTuple | 0072 |  358.3562 |   23.3201 |
+|        typed NamedTuple | 0072 |  361.5343 |   21.2919 |
+|       regular dataclass | 0048 |  395.0910 |   24.0210 |
+| regular dataclass slots | 0064 |  345.4267 |   21.2310 |
+| autogen dataclass slots | 0064 |  348.0640 |   22.3947 |
+|        frozen dataclass | 0048 |  746.4775 |   23.1717 |
+|  frozen dataclass slots | 0064 |  677.4594 |   20.7030 |
+| autogen frozen dc slots | 0064 |  679.9086 |   21.2003 |
 +-------------------------+------+-----------+-----------+
 """
 
