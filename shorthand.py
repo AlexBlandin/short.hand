@@ -588,14 +588,15 @@ def hours_minutes_seconds(t: float):
 ################
 
 
-def yesno(msg="", accept_return_as: bool | None = None, replace_lists=False, yes_group: set[str] | None = None, no_group: set[str] | None = None):
+def yesno(prompt="", accept_return_as: bool | None = None, replace_lists=False, yes_group: set[str] | None = None, no_group: set[str] | None = None):
   """keep asking until they say yes or no (if accept_return_as is True then ENTER/RETURN is a yes, if accept_return_as is False than it's a no)"""
   if no_group is None:
     no_group = set()
   if yes_group is None:
     yes_group = set()
+  msg = f"{prompt} [Y/n]: " if accept_return_as else f"{prompt} [y/n]: " if accept_return_as is None else f"{prompt} [y/N]: "
   while True:
-    reply = input(f"{msg} [Y/n]: " if accept_return_as else f"{msg} [y/n]: " if accept_return_as is None else f"{msg} [y/N]: ").strip().lower()
+    reply = input(msg).strip().lower()
     if reply in (yes_group if replace_lists else {"y", "ye", "yes"} | yes_group) or (accept_return_as and not reply):
       return True
     if reply in (no_group if replace_lists else {"n", "no"} | no_group) or accept_return_as is False:
