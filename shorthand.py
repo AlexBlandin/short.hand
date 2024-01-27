@@ -588,17 +588,17 @@ def hours_minutes_seconds(t: float):
 ################
 
 
-def yesno(msg="", accept_return=True, replace_lists=False, yes_group: set[str] | None = None, no_group: set[str] | None = None):
-  """keep asking until they say yes or no"""
+def yesno(msg="", accept_return_as: bool | None = None, replace_lists=False, yes_group: set[str] | None = None, no_group: set[str] | None = None):
+  """keep asking until they say yes or no (if accept_return_as is True then ENTER/RETURN is a yes, if accept_return_as is False than it's a no)"""
   if no_group is None:
     no_group = set()
   if yes_group is None:
     yes_group = set()
   while True:
-    reply = input(f"{msg} [y/N]: ").strip().lower()
-    if reply in (yes_group if replace_lists else {"y", "ye", "yes"} | yes_group) or (accept_return and not reply):
+    reply = input(f"{msg} [Y/n]: " if accept_return_as else f"{msg} [y/n]: " if accept_return_as is None else f"{msg} [y/N]: ").strip().lower()
+    if reply in (yes_group if replace_lists else {"y", "ye", "yes"} | yes_group) or (accept_return_as and not reply):
       return True
-    if reply in (no_group if replace_lists else {"n", "no"} | no_group):
+    if reply in (no_group if replace_lists else {"n", "no"} | no_group) or accept_return_as is False:
       return False
 
 
@@ -813,10 +813,12 @@ if __name__ == "__main__":
   # But for now, I can just use my own table of my devices
 
   table = defaultdict(platform.processor)  # otherwise just report that back
-  table.update({
-    "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel": "Intel 8700k",
-    "AMD64 Family 25 Model 116 Stepping 1, AuthenticAMD": "AMD 7980HS",
-  })
+  table.update(
+    {
+      "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel": "Intel 8700k",
+      "AMD64 Family 25 Model 116 Stepping 1, AuthenticAMD": "AMD 7980HS",
+    }
+  )
   CPU = table[platform.processor()]
   device = f"{platform.node()} (ROG Flow X13) w/ {CPU}" if CPU == "AMD 7980HS" else f"{platform.node()} w/ {CPU}"
 
