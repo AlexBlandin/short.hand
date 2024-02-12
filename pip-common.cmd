@@ -24,6 +24,7 @@ pip install -U PyNaCl pyOpenSSL cryptography certifi blake3 --user --break-syste
 : # Python tooling, style, typing, debugging, system info, etc
 pip install -U ruff mypy pytest typing-extensions pdbpp psutil --user --break-system-packages
 
+
 : # Useful tools
 pip install -U attrs icecream sortedcontainers more-itertools toolz cffi fastcore pytomlpp humanize parse regex pendulum pylev langcodes --user --break-system-packages
 
@@ -66,3 +67,6 @@ pip install pillow-avif-plugin --user --break-system-packages
 : # The pypy shortlist version
 : # pypy -m ensurepip
 : # pypy -m pip install pip setuptools wheel mypy ruff pytest pdbpp psutil typing-extensions attrs icecream cffi humanize parse pendulum pylev langcodes numpy tqdm
+
+: # Type stubs
+pip install -U pandas-stubs types-Pillow types-openpyxl types-Pygments types-colorama types-decorator types-jsonschema types-six
