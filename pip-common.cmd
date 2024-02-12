@@ -22,7 +22,7 @@ pipx inject poetry poetry-plugin-export
 pip install -U PyNaCl pyOpenSSL cryptography certifi blake3 --user --break-system-packages
 
 : # Python tooling, style, typing, debugging, system info, etc
-pip install -U mypy ruff ruff-lsp python-lsp-server[rope] pyupgrade pytest pdbpp psutil typing-extensions --user --break-system-packages
+pip install -U ruff mypy pytest typing-extensions pdbpp psutil --user --break-system-packages
 
 : # Useful tools
 pip install -U attrs icecream sortedcontainers more-itertools toolz cffi fastcore pytomlpp humanize parse regex pendulum pylev langcodes --user --break-system-packages
@@ -65,4 +65,4 @@ pip install pillow-avif-plugin --user --break-system-packages
 
 : # The pypy shortlist version
 : # pypy -m ensurepip
-: # pypy -m pip install pip setuptools wheel mypy ruff pylint pyupgrade pytest pdbpp psutil typing-extensions attrs icecream cffi humanize parse pendulum pylev langcodes numpy tqdm
+: # pypy -m pip install pip setuptools wheel mypy ruff pytest pdbpp psutil typing-extensions attrs icecream cffi humanize parse pendulum pylev langcodes numpy tqdm

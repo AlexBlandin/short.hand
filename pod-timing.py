@@ -81,7 +81,7 @@ def row(name: str, new: str, access: str):
 class Regular:
   """regular class"""
 
-  def __init__(self, sender, receiver, date, amount):
+  def __init__(self, sender, receiver, date, amount) -> None:
     self.sender = sender
     self.receiver = receiver
     self.date = date
@@ -93,7 +93,7 @@ class Slots:
 
   __slots__ = ["sender", "amount", "receiver", "date"]
 
-  def __init__(self, sender, receiver, date, amount):
+  def __init__(self, sender, receiver, date, amount) -> None:
     self.sender = sender
     self.receiver = receiver
     self.date = date
@@ -197,7 +197,7 @@ class Struct:
     """iterating over the values, rather than the __slots__"""
     yield from map(self.__getattribute__, self.__slots__)  # type: ignore
 
-  def __len__(self):
+  def __len__(self) -> int:
     """how many slots there are, useful for slices, iteration, and reversing"""
     return len(self.__slots__)  # type: ignore
 
@@ -238,7 +238,7 @@ class StructSubclassable:
     """iterating over the values, rather than the __slots__"""
     yield from map(self.__getattribute__, self.fields())
 
-  def __len__(self):
+  def __len__(self) -> int:
     """how many slots there are, useful for slices, iteration, and reversing"""
     return len(self.fields())
 

@@ -86,7 +86,7 @@ class Struct:
     """iterating over the values, rather than the __slots__"""
     yield from map(self.__getattribute__, self.__slots__)
 
-  def __len__(self):
+  def __len__(self) -> int:
     """how many slots there are, useful for slices, iteration, and reversing"""
     return len(self.__slots__)
 
@@ -99,7 +99,7 @@ class Struct:
     else:
       raise IndexTypeError
 
-  def __setitem__(self, n: int | slice, val: Any | Iterable[Any]):
+  def __setitem__(self, n: int | slice, val: Any | Iterable[Any]) -> None:
     """generic __slots__[n] = val, because subscripting (and slicing) is handy at times"""
     if isinstance(n, int):
       self.__setattr__(self.__slots__[n], val)
@@ -135,7 +135,7 @@ class SubStruct:
     """iterating over the values, rather than the __slots__"""
     yield from map(self.__getattribute__, self.fields)
 
-  def __len__(self):
+  def __len__(self) -> int:
     """how many slots there are, useful for slices, iteration, and reversing"""
     return len(self.fields)
 
@@ -148,7 +148,7 @@ class SubStruct:
     else:
       raise IndexTypeError
 
-  def __setitem__(self, n: int | slice, val: Any | Iterable[Any]):
+  def __setitem__(self, n: int | slice, val: Any | Iterable[Any]) -> None:
     """generic __slots__[n] = val, because subscripting (and slicing) is handy at times"""
     if isinstance(n, int):
       self.__setattr__(self.fields[n], val)
@@ -231,7 +231,7 @@ class Circular(list):
       return [self[x] for x in range(0 if x.start is None else x.start, len(self) if x.stop is None else x.stop, 1 if x.step is None else x.step)]
     return super().__getitem__(x % max(1, len(self)))
 
-  def __setitem__(self, x: int | (float | slice), val: Sequence[Any] | Any):
+  def __setitem__(self, x: int | (float | slice), val: Sequence[Any] | Any) -> None:
     if isinstance(x, slice) and (hasattr(val, "__iter__") or hasattr(val, "__getitem__")):
       m = max(1, len(self))
       start = 0 if x.start is None else x.start
@@ -397,14 +397,14 @@ def find(v, xs: list | Iterable, start: int | None = None, stop: int | None = No
 class DeepChainMap(ChainMap):
   """Variant of ChainMap that allows direct updates to inner scopes"""
 
-  def __setitem__(self, key, value):
+  def __setitem__(self, key, value) -> None:
     for mapping in self.maps:
       if key in mapping:
         mapping[key] = value
         return  # we only modify the first match
     self.maps[0][key] = value
 
-  def __delitem__(self, key):
+  def __delitem__(self, key) -> None:
     for mapping in self.maps:
       if key in mapping:
         del mapping[key]
@@ -550,7 +550,7 @@ def tf(func: Callable, *args, __pretty_tf=True, **kwargs):
   r = func(*args, **kwargs)
   end = time()
   if __pretty_tf:
-    fargs = list(map(str, map(lambda a: a.__name__ if hasattr(a, "__name__") else a, args))) + [f"{k}={v}" for k, v in kwargs.items()]
+    fargs = list(map(str, (a.__name__ if hasattr(a, "__name__") else a for a in args))) + [f"{k}={v}" for k, v in kwargs.items()]
     print(f"{func.__qualname__}({', '.join(fargs)}) = {r} ({human_time(end - start)})")
   else:
     print(human_time(end - start))
@@ -621,7 +621,7 @@ else:
   class NotInBinaryReadModeError(ValueError):
     """'{fileobj}' is not a file-like object in binary reading mode."""
 
-    def __init__(self, fileobj):
+    def __init__(self, fileobj) -> None:
       super().__init__(f"'{fileobj!r}' is not a file-like object in binary reading mode.")
 
   def file_digest(fileobj, digest: str | Callable[[], Any], /, *, _bufsize=2**18) -> Any:  # Any = hashlib._Hash
@@ -724,21 +724,21 @@ def lev(s1: str, s2: str) -> int:
 class NonIntegerSliceBoundsTypeError(TypeError):
   """Slice values must be integers"""
 
-  def __init__(self):
+  def __init__(self) -> None:
     super().__init__(self.__doc__)
 
 
 class SliceAssignmentTypeError(TypeError):
   """When assigning to a slice, the assigned values must be provided in an interable or sequence"""
 
-  def __init__(self):
+  def __init__(self) -> None:
     super().__init__(self.__doc__)
 
 
 class IndexTypeError(TypeError):
   """Inappropriate index type. You can only index using integers or slice objects."""
 
-  def __init__(self):
+  def __init__(self) -> None:
     super().__init__(self.__doc__)
 
 
@@ -790,10 +790,10 @@ if __name__ == "__main__":
         raise NotImplementedError
       return self
 
-    def __repr__(self):
+    def __repr__(self) -> str:
       return f"BestTime({self.cpython:.6f}, {self.pypy:.6f})"
 
-    def __str__(self):
+    def __str__(self) -> str:
       return human_time(self.cpython or self.pypy or 10.0) if self.cpython or self.pypy else "??????"
 
   @dataclass(slots=True)
@@ -803,10 +803,10 @@ if __name__ == "__main__":
     substruct: BestTime
     comment: str
 
-    def __repr__(self):
+    def __repr__(self) -> str:
       return f'    TimingRow("{self.code}", {self.struct!r}, {self.substruct!r}, "{self.comment}"),'
 
-    def __str__(self):
+    def __str__(self) -> str:
       return f"{self.code} | {self.struct} \t | {self.substruct} \t | {self.comment}"
 
   # python -m pip install -U py-cpuinfo
@@ -818,7 +818,7 @@ if __name__ == "__main__":
     {
       "Intel64 Family 6 Model 158 Stepping 10, GenuineIntel": "Intel 8700k",
       "AMD64 Family 25 Model 116 Stepping 1, AuthenticAMD": "AMD 7980HS",
-    }
+    },
   )
   CPU = table[platform.processor()]
   device = f"{platform.node()} (ROG Flow X13) w/ {CPU}" if CPU == "AMD 7980HS" else f"{platform.node()} w/ {CPU}"
