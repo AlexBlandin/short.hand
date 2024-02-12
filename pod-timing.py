@@ -1,10 +1,11 @@
-"""
+"""POD testing.
+
 ██████╗ ██╗      █████╗ ██╗███╗   ██╗
 ██╔══██╗██║     ██╔══██╗██║████╗  ██║
 ██████╔╝██║     ███████║██║██╔██╗ ██║
 ██╔═══╝ ██║     ██╔══██║██║██║╚██╗██║
 ██║     ███████╗██║  ██║██║██║ ╚████║
-╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
+╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝.
 
  ██████╗ ██╗     ██████╗
 ██╔═══██╗██║     ██╔══██╗
@@ -23,6 +24,7 @@
 for when you can't use attrs
 """
 
+import ast
 import contextlib
 import dataclasses
 import timeit
@@ -37,9 +39,9 @@ try:
   from sys import getsizeof
 
   getsizeof("sorry pypy, but cry about it, I want the overhead, not the recursive size")
-except Exception:
+except TypeError:
 
-  def getsizeof(obj: object, default: int = -1) -> int:
+  def getsizeof(obj: object, default: int = -1) -> int:  # noqa: D103, ARG001
     return -1
 
 
@@ -61,16 +63,16 @@ print(f"| {"name":>23} | size | make (ms) | item (ms) |")
 print(sep)
 
 
-def time(code: str, iterations: int = N_ITERATIONS, runs: int = N_RUNS, setup: str = ""):
-  """time how long something takes, result is min recorded time for an entire run in seconds"""
+def time(code: str, iterations: int = N_ITERATIONS, runs: int = N_RUNS, setup: str = "") -> float:
+  """Time how long something takes, result is min recorded time for an entire run in seconds."""
   return min(timeit.repeat(code, setup=setup, number=iterations, repeat=runs, globals=globals()))
 
 
-def row(name: str, new: str, access: str):
-  """another row in the table"""
+def row(name: str, new: str, access: str) -> None:
+  """Another row in the table."""
   # 1000* gives ms
   with contextlib.suppress(Exception):
-    print(f"| {name:>23} | {getsizeof(eval(new)):04} | {1000 * time(new): >9.4f} | {1000 * time("var" + access, setup = "var=" + new): >9.4f} |")
+    print(f"| {name:>23} | {getsizeof(ast.literal_eval(new)):04} | {1000 * time(new): >9.4f} | {1000 * time("var" + access, setup = "var=" + new): >9.4f} |")
 
 
 #################
@@ -79,7 +81,7 @@ def row(name: str, new: str, access: str):
 
 
 class Regular:
-  """regular class"""
+  """regular class."""
 
   def __init__(self, sender, receiver, date, amount) -> None:
     self.sender = sender
@@ -89,7 +91,7 @@ class Regular:
 
 
 class Slots:
-  """regular class with slots"""
+  """regular class with slots."""
 
   __slots__ = ["sender", "amount", "receiver", "date"]
 
@@ -100,7 +102,7 @@ class Slots:
     self.amount = amount
 
 
-NTuple = namedtuple("NTuple", ["sender", "receiver", "date", "amount"])
+NTuple = namedtuple("NTuple", ["sender", "receiver", "date", "amount"])  # noqa: PYI024
 """named tuple"""
 
 ProcTypedNTuple = NamedTuple("_TypedNTuple", sender=str, receiver=str, date=str, amount=float)  # noqa: UP014
@@ -108,7 +110,7 @@ ProcTypedNTuple = NamedTuple("_TypedNTuple", sender=str, receiver=str, date=str,
 
 
 class TypedNTuple(NamedTuple):
-  """typed named tuple"""
+  """typed named tuple."""
 
   sender: str
   receiver: str
@@ -118,7 +120,7 @@ class TypedNTuple(NamedTuple):
 
 @dataclass
 class DataClass:  # RECOMMENDED WHEN YOU CAN'T USE attrs
-  """dataclass"""
+  """dataclass."""
 
   sender: str
   receiver: str
@@ -128,7 +130,7 @@ class DataClass:  # RECOMMENDED WHEN YOU CAN'T USE attrs
 
 @dataclass
 class DataSlots:
-  """dataclass with slots, uses manual entry"""
+  """dataclass with slots, uses manual entry."""
 
   __slots__ = ["sender", "amount", "receiver", "date"]
   sender: str
@@ -139,7 +141,7 @@ class DataSlots:
 
 @dataclass(slots=True)
 class DataSlotsAuto:
-  """dataclass with slots, requires python 3.10+"""
+  """dataclass with slots, requires python 3.10+."""
 
   sender: str
   receiver: str
@@ -149,7 +151,7 @@ class DataSlotsAuto:
 
 @dataclass(frozen=True)
 class FrozenData:
-  """frozen dataclass"""
+  """frozen dataclass."""
 
   sender: str
   receiver: str
@@ -159,7 +161,7 @@ class FrozenData:
 
 @dataclass(frozen=True)
 class FrozenDataSlots:
-  """frozen dataclass with slots, uses manual entry"""
+  """frozen dataclass with slots, uses manual entry."""
 
   __slots__ = ["sender", "amount", "receiver", "date"]
   sender: str
@@ -170,7 +172,7 @@ class FrozenDataSlots:
 
 @dataclass(slots=True, frozen=True)
 class FrozenDataSlotsAuto:
-  """frozen dataclass with slots, requires python 3.10+"""
+  """frozen dataclass with slots, requires python 3.10+."""
 
   sender: str
   receiver: str
@@ -180,13 +182,13 @@ class FrozenDataSlotsAuto:
 
 @cache
 def cls_to_tuple(cls):
-  """this converts a class to a NamedTuple; cached because this is expensive!"""
+  """This converts a class to a NamedTuple; cached because this is expensive!"""
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
 
 @dataclass(slots=True)
 class Struct:
-  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that"""
+  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that."""
 
   sender: str
   receiver: str
@@ -194,40 +196,40 @@ class Struct:
   amount: float
 
   def __iter__(self):
-    """iterating over the values, rather than the __slots__"""
-    yield from map(self.__getattribute__, self.__slots__)  # type: ignore
+    """Iterating over the values, rather than the __slots__."""
+    yield from map(self.__getattribute__, self.__slots__)
 
   def __len__(self) -> int:
-    """how many slots there are, useful for slices, iteration, and reversing"""
-    return len(self.__slots__)  # type: ignore
+    """How many slots there are, useful for slices, iteration, and reversing."""
+    return len(self.__slots__)  # type: ignore[reportArgumentType]
 
   def __getitem__(self, n: int | slice):
-    """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
+    """Generic __slots__[n] -> val, because subscripting (and slicing) is handy at times."""
     if isinstance(n, int):
-      return self.__getattribute__(self.__slots__[n])  # type: ignore
+      return self.__getattribute__(self.__slots__[n])  # type: ignore[reportArgumentType]
     else:
-      return list(map(self.__getattribute__, self.__slots__[n]))  # type: ignore
+      return list(map(self.__getattribute__, self.__slots__[n]))  # type: ignore[reportArgumentType]
 
   def _astuple(self):
-    """generic __slots__ -> tuple; super fast, low quality of life"""
-    return tuple(map(self.__getattribute__, self.__slots__))  # type: ignore
+    """Generic __slots__ -> tuple; super fast, low quality of life."""
+    return tuple(map(self.__getattribute__, self.__slots__))  # type: ignore[reportArgumentType]
 
   def aslist(self):
-    """generic __slots__ -> list; super fast, low quality of life, a shallow copy"""
-    return list(map(self.__getattribute__, self.__slots__))  # type: ignore
+    """Generic __slots__ -> list; super fast, low quality of life, a shallow copy."""
+    return list(map(self.__getattribute__, self.__slots__))  # type: ignore[reportArgumentType]
 
   def asdict(self):
-    """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
-    return {slot: self.__getattribute__(slot) for slot in self.__slots__}  # type: ignore
+    """Generic __slots__ -> dict; helpful for introspection, limited uses outside debugging."""
+    return {slot: self.__getattribute__(slot) for slot in self.__slots__}  # type: ignore[reportArgumentType]
 
   def astuple(self):
-    """generic __slots__ -> NamedTuple; a named shallow copy"""
-    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__))  # type: ignore
+    """Generic __slots__ -> NamedTuple; a named shallow copy."""
+    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__))  # type: ignore[reportArgumentType]
 
 
 @dataclass(slots=True)
 class StructSubclassable:
-  """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed"""
+  """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed."""
 
   sender: str
   receiver: str
@@ -235,38 +237,38 @@ class StructSubclassable:
   amount: float
 
   def __iter__(self):
-    """iterating over the values, rather than the __slots__"""
+    """Iterating over the values, rather than the __slots__."""
     yield from map(self.__getattribute__, self.fields())
 
   def __len__(self) -> int:
-    """how many slots there are, useful for slices, iteration, and reversing"""
+    """How many slots there are, useful for slices, iteration, and reversing."""
     return len(self.fields())
 
   def __getitem__(self, n: int | slice):
-    """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
+    """Generic __slots__[n] -> val, because subscripting (and slicing) is handy at times."""
     if isinstance(n, int):
       return self.__getattribute__(self.fields()[n])
     else:
       return list(map(self.__getattribute__, self.fields()[n]))
 
   def _astuple(self):
-    """generic __slots__ -> tuple; super fast, low quality of life, a shallow copy"""
+    """Generic __slots__ -> tuple; super fast, low quality of life, a shallow copy."""
     return tuple(map(self.__getattribute__, self.fields()))
 
   def aslist(self):
-    """generic __slots__ -> list; super fast, low quality of life, a shallow copy"""
+    """Generic __slots__ -> list; super fast, low quality of life, a shallow copy."""
     return list(map(self.__getattribute__, self.fields()))
 
   def asdict(self):
-    """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging, a shallow copy"""
+    """Generic __slots__ -> dict; helpful for introspection, limited uses outside debugging, a shallow copy."""
     return {slot: self.__getattribute__(slot) for slot in self.fields()}
 
   def astuple(self):
-    """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
+    """Generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict."""
     return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.fields()))
 
   def fields(self):
-    """__slots__ equivalent using the proper fields approach"""
+    """__slots__ equivalent using the proper fields approach."""
     return list(map(attrgetter("name"), dataclasses.fields(self)))
 
 
@@ -647,7 +649,7 @@ POD test results for 1000000 iterations, best of 100 runs:
 print = print if PRINTSTATS else id
 
 
-def stats(x):
+def stats(x) -> None:
   print(f"{x:.6f}" if isinstance(x, float) else " ".join(f"{_x:.6f}" for _x in x))
 
 

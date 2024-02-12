@@ -1,6 +1,5 @@
-"""
-short.hand
----
+"""short.hand
+---.
 
 Here we collect useful functions and classes, which are often "fast enough".
 Star-importing this includes a few handy stdlib imports, great for the REPL.
@@ -48,7 +47,7 @@ if PY3_10_PLUS:
 else:
   # we have to make it ourselves
   def pairwise[T](iterable: Iterable[T]) -> zip[tuple[T, T]]:
-    """return an iterator of overlapping pairs taken from the input iterator `pairwise([1,2,3,4]) -> [(1,2), (2,3), (3,4)]`"""
+    """Return an iterator of overlapping pairs taken from the input iterator `pairwise([1,2,3,4]) -> [(1,2), (2,3), (3,4)]`."""
     a, b = itertools.tee(iterable)
     next(b, None)
     return zip(a, b, strict=True)
@@ -59,14 +58,14 @@ else:
 
 
 class Dot(dict):
-  """a "dot dict", a dict you can access by a `.` - inefficient vs dataclass, but convenient"""
+  """a "dot dict", a dict you can access by a `.` - inefficient vs dataclass, but convenient."""
 
   __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__  # type: ignore
 
 
 @cache
 def cls_to_tuple(cls):
-  """this converts a class to a NamedTuple; cached because this is expensive!"""
+  """This converts a class to a NamedTuple; cached because this is expensive!"""
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
 
@@ -78,20 +77,20 @@ def cls_to_tuple(cls):
 
 @dataclass
 class Struct:
-  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use SubStruct if you need that"""
+  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use SubStruct if you need that."""
 
   __slots__ = ()
 
   def __iter__(self):
-    """iterating over the values, rather than the __slots__"""
+    """Iterating over the values, rather than the __slots__."""
     yield from map(self.__getattribute__, self.__slots__)
 
   def __len__(self) -> int:
-    """how many slots there are, useful for slices, iteration, and reversing"""
+    """How many slots there are, useful for slices, iteration, and reversing."""
     return len(self.__slots__)
 
   def __getitem__(self, n: int | slice):
-    """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
+    """Generic __slots__[n] -> val, because subscripting (and slicing) is handy at times."""
     if isinstance(n, int):
       return self.__getattribute__(self.__slots__[n])
     elif isinstance(n, slice):
@@ -100,7 +99,7 @@ class Struct:
       raise IndexTypeError
 
   def __setitem__(self, n: int | slice, val: Any | Iterable[Any]) -> None:
-    """generic __slots__[n] = val, because subscripting (and slicing) is handy at times"""
+    """Generic __slots__[n] = val, because subscripting (and slicing) is handy at times."""
     if isinstance(n, int):
       self.__setattr__(self.__slots__[n], val)
     elif isinstance(n, slice) and isinstance(val, Iterable):
@@ -111,36 +110,36 @@ class Struct:
       raise IndexTypeError
 
   def _astuple(self):
-    """generic __slots__ -> tuple; super fast, low quality of life"""
+    """Generic __slots__ -> tuple; super fast, low quality of life."""
     return tuple(map(self.__getattribute__, self.__slots__))
 
   def aslist(self):
-    """generic __slots__ -> list; super fast, low quality of life, a shallow copy"""
+    """Generic __slots__ -> list; super fast, low quality of life, a shallow copy."""
     return list(map(self.__getattribute__, self.__slots__))
 
   def asdict(self):
-    """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging"""
+    """Generic __slots__ -> dict; helpful for introspection, limited uses outside debugging."""
     return {slot: self.__getattribute__(slot) for slot in self.__slots__}
 
   def astuple(self):
-    """generic __slots__ -> NamedTuple; a named shallow copy"""
+    """Generic __slots__ -> NamedTuple; a named shallow copy."""
     return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__))
 
 
 @dataclass
 class SubStruct:
-  """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can also be subclassed"""
+  """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can also be subclassed."""
 
   def __iter__(self):
-    """iterating over the values, rather than the __slots__"""
+    """Iterating over the values, rather than the __slots__."""
     yield from map(self.__getattribute__, self.fields)
 
   def __len__(self) -> int:
-    """how many slots there are, useful for slices, iteration, and reversing"""
+    """How many slots there are, useful for slices, iteration, and reversing."""
     return len(self.fields)
 
   def __getitem__(self, n: int | slice):
-    """generic __slots__[n] -> val, because subscripting (and slicing) is handy at times"""
+    """Generic __slots__[n] -> val, because subscripting (and slicing) is handy at times."""
     if isinstance(n, int):
       return self.__getattribute__(self.fields[n])
     elif isinstance(n, slice):
@@ -149,7 +148,7 @@ class SubStruct:
       raise IndexTypeError
 
   def __setitem__(self, n: int | slice, val: Any | Iterable[Any]) -> None:
-    """generic __slots__[n] = val, because subscripting (and slicing) is handy at times"""
+    """Generic __slots__[n] = val, because subscripting (and slicing) is handy at times."""
     if isinstance(n, int):
       self.__setattr__(self.fields[n], val)
     elif isinstance(n, slice) and isinstance(val, Iterable):
@@ -160,24 +159,24 @@ class SubStruct:
       raise IndexTypeError
 
   def _astuple(self):
-    """generic __slots__ -> tuple; super fast, low quality of life, a shallow copy"""
+    """Generic __slots__ -> tuple; super fast, low quality of life, a shallow copy."""
     return tuple(map(self.__getattribute__, self.fields))
 
   def aslist(self):
-    """generic __slots__ -> list; super fast, low quality of life, a shallow copy"""
+    """Generic __slots__ -> list; super fast, low quality of life, a shallow copy."""
     return list(map(self.__getattribute__, self.fields))
 
   def asdict(self):
-    """generic __slots__ -> dict; helpful for introspection, limited uses outside debugging, a shallow copy"""
+    """Generic __slots__ -> dict; helpful for introspection, limited uses outside debugging, a shallow copy."""
     return {slot: self.__getattribute__(slot) for slot in self.fields}
 
   def astuple(self):
-    """generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict"""
+    """Generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict."""
     return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.fields))
 
   @property
   def fields(self):
-    """__slots__ equivalent using the proper fields approach"""
+    """__slots__ equivalent using the proper fields approach."""
     return tuple(map(attrgetter("name"), dataclasses.fields(self)))
 
 
@@ -189,26 +188,25 @@ flatten = chain.from_iterable
 
 
 def head[T](xs: Iterable[T]) -> T:
-  """the first item"""
+  """The first item."""
   return next(iter(xs))
 
 
 def tail[T](xs: Iterable[T]) -> Iterator[T]:
-  """everything but the first item (as an iterable)"""
+  """Everything but the first item (as an iterable)."""
   ixs = iter(xs)
   _ = next(ixs)
   return ixs
 
 
 def headtail[T](xs: Iterable[T]) -> tuple[T, Iterator[T]]:
-  """the (head, everything else), with everything but the first item as an iterable"""
+  """The (head, everything else), with everything but the first item as an iterable."""
   ixs = iter(xs)
   return next(ixs), ixs
 
 
 def groupdict[T, S](xs: Iterable[T], key: Callable[[T], S] | None = None) -> dict[T | S, list[T]]:
-  """
-  make a dict that maps keys and consecutive groups from the iterable
+  """Make a dict that maps keys and consecutive groups from the iterable.
 
   Parameters:
   - `xs: Iterable`; Elements to divide into groups according to the key function
@@ -224,7 +222,7 @@ def groupdict[T, S](xs: Iterable[T], key: Callable[[T], S] | None = None) -> dic
 
 
 class Circular(list):
-  """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]"""
+  """a circularly addressable list, where Circular([0, 1, 2, 3, 4])[-5:10] is [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4]."""
 
   def __getitem__(self, x: int | slice):
     if isinstance(x, slice):
@@ -263,12 +261,12 @@ class Circular(list):
 
 
 def unique_list(xs: Sequence):
-  """reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience"""
+  """Reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`; can be passed as vargs or a single list, for convenience."""
   return list(dict(zip(xs if len(xs) != 1 else xs[0], itertools.repeat(0))))
 
 
 def unwrap[T, S](f: Callable[[T, T], S], *args: T, **kwargs: T) -> S | None:
-  """because exceptions are bad, in general you should use `contextlib.suppress` instead of this"""
+  """Because exceptions are bad, in general you should use `contextlib.suppress` instead of this."""
   try:
     return f(*args, **kwargs)
   except Exception:
@@ -276,7 +274,7 @@ def unwrap[T, S](f: Callable[[T, T], S], *args: T, **kwargs: T) -> S | None:
 
 
 def compose(*fs: Callable):
-  """combine each function in fs; evaluates fs[0] first, and fs[-1] last, like fs[-1](fs[-2](...fs[0](*args, **kwargs)...))"""
+  """Combine each function in fs; evaluates fs[0] first, and fs[-1] last, like fs[-1](fs[-2](...fs[0](*args, **kwargs)...))."""
 
   def _comp(x):
     # for the sake of simplicity, it assumes an arity of 1 for every function, because it might want a tuple in, or vargs, who knows
@@ -288,7 +286,7 @@ def compose(*fs: Callable):
 
 
 def mapcomp(xs: Iterable, *fs: Callable):
-  """map(compose(*fs), iterable); evaluates fs[0] first, fs[-1] last, so acts like map(fs[-1], map(fs[-2], ... map(fs[0], iterable)...))"""
+  """map(compose(*fs), iterable); evaluates fs[0] first, fs[-1] last, so acts like map(fs[-1], map(fs[-2], ... map(fs[0], iterable)...))."""
 
   def _comp(fs: list):
     # not using compose() internally to avoid overhead, this is faster than list(map(compose(*fs), iterable))
@@ -301,78 +299,78 @@ def mapcomp(xs: Iterable, *fs: Callable):
 
 
 def lmap(f: Callable, *args):
-  """because wrapping in list() all the time is awkward, saves abusing the slow `*a,=map(*args)`!"""
+  """Because wrapping in list() all the time is awkward, saves abusing the slow `*a,=map(*args)`!"""
   return list(map(f, *args))
 
 
 def transpose(matrix: list[list]):
-  """inefficient but elegant, so if it's a big matrix please don't use"""
+  """Inefficient but elegant, so if it's a big matrix please don't use."""
   return lmap(list, zip(*matrix, strict=True))
 
 
 def tmap(f: Callable, *args):
-  """for the versions of python with faster tuple lookups"""
+  """For the versions of python with faster tuple lookups."""
   return tuple(map(f, *args))
 
 
 def join(xs: Iterable, sep=" "):
-  """because sep.join(iterable) doesn't convert to str(i) for i in iterable"""
+  """Because sep.join(iterable) doesn't convert to str(i) for i in iterable."""
   return sep.join(map(str, xs))
 
 
 def minmax(xs: Iterable):
-  """get the minimum and maximum quickly"""
+  """Get the minimum and maximum quickly."""
   return min(xs), max(xs)
 
 
 def minmax_ind(xs: Iterable):
-  """minmax but with indices, so ((i_a, min), (i_b, max))"""
+  """Minmax but with indices, so ((i_a, min), (i_b, max))."""
   return min(enumerate(xs), key=itemgetter(1)), max(enumerate(xs), key=itemgetter(1))
 
 
 def shuffled(xs: Iterable):
-  """aka, "shuffle but not in place", like reversed() and sorted()"""
+  """aka, "shuffle but not in place", like reversed() and sorted()."""
   xs = list(xs)  # this way we support sets, without a sort, as sample doesn't anymore
   return sample(xs, len(xs))
 
 
 def lenfilter(xs: Iterable, pred=bool):
-  """counts how many are true for a given predicate"""
+  """Counts how many are true for a given predicate."""
   return sum(1 for i in xs if pred(i))  # better (esp in pypy) than len(filter()) since not constructing a list
 
 
 def first(xs: Iterable, default=None):
-  """the first item in iterable"""
+  """The first item in iterable."""
   return next(iter(xs), default)
 
 
 def sample_set(s: set, k: int):
-  """sample a set because you just want some random elements and don't care (about reproducibility)"""
+  """Sample a set because you just want some random elements and don't care (about reproducibility)."""
   return sample(list(s), k)  # if you care about reproducibility (with known seeds), sort prior
 
 
 def sorted_dict_by_key(d: dict, reverse=False):
-  """sort a dict by key"""
+  """Sort a dict by key."""
   return dict(sorted(d.items(), key=itemgetter(0), reverse=reverse))
 
 
 def sorted_dict_by_val(d: dict, reverse=False):
-  """sort a dict by value"""
+  """Sort a dict by value."""
   return dict(sorted(d.items(), key=itemgetter(1), reverse=reverse))
 
 
 def sorted_dict(d: dict, key=itemgetter(1), reverse=False):
-  """generic sorting, because it's something people kinda want"""
+  """Generic sorting, because it's something people kinda want."""
   return dict(sorted(d.items(), key=key, reverse=reverse))
 
 
 def sortas(first: Iterable, second: Iterable):
-  """sorts the first as if it was the second"""
+  """Sorts the first as if it was the second."""
   return list(map(itemgetter(0), sorted(zip(first, second, strict=True))))
 
 
 def dedupe(it):
-  """deduplicates an iterator, consumes memory to do so, non-blocking"""
+  """Deduplicates an iterator, consumes memory to do so, non-blocking."""
   s = set()
   for i in it:
     if i not in s:
@@ -381,7 +379,7 @@ def dedupe(it):
 
 
 def find(v, xs: list | Iterable, start: int | None = None, stop: int | None = None, missing=-1):
-  """find the first index of v in interable without raising exceptions, will consume iterables so be careful"""
+  """Find the first index of v in interable without raising exceptions, will consume iterables so be careful."""
   if isinstance(xs, list):
     return xs.index(v, start if start is not None else 0, stop if stop is not None else sys.maxsize)
   else:
@@ -395,7 +393,7 @@ def find(v, xs: list | Iterable, start: int | None = None, stop: int | None = No
 
 
 class DeepChainMap(ChainMap):
-  """Variant of ChainMap that allows direct updates to inner scopes"""
+  """Variant of ChainMap that allows direct updates to inner scopes."""
 
   def __setitem__(self, key, value) -> None:
     for mapping in self.maps:
@@ -418,7 +416,7 @@ class DeepChainMap(ChainMap):
 
 
 def avg(xs: Sequence, start=0):
-  """no exceptions, because x/0 = 0 in euclidean"""
+  """No exceptions, because x/0 = 0 in euclidean."""
   return sum(xs, start) / len(xs) if len(xs) else 0
 
 
@@ -427,18 +425,18 @@ def dotprod(vec_a: Iterable, vec_b: Iterable):
 
 
 def bits(x: int):
-  """because bin() has the annoying 0b, so slower but cleaner"""
+  """Because bin() has the annoying 0b, so slower but cleaner."""
   return f"{x:b}"
 
 
 def ilog2(x: int):
-  """integer log2, aka the position of the first bit"""
+  """Integer log2, aka the position of the first bit."""
   return x.bit_length() - 1
 
 
 # from gmpy2 import bit_scan1 as ctz # if you must go faster
 def ctz(v: int):
-  """count trailing zeroes"""
+  """Count trailing zeroes."""
   return (v & -v).bit_length() - 1
 
 
@@ -455,7 +453,7 @@ else:
 
 
 def isqrt(n: int):
-  """works for all ints, fast for numbers < 2**52 (aka, abusing double precision sqrt)"""
+  """Works for all ints, fast for numbers < 2**52 (aka, abusing double precision sqrt)."""
   if n < 2**52:
     return int(sqrt(n))
   n = int(n)
@@ -466,7 +464,7 @@ def isqrt(n: int):
 
 
 def isprime(n: int):
-  """simple iterative one"""
+  """Simple iterative one."""
   if n in {2, 3, 5, 7}:
     return True
   if not (n & 1) or not (n % 3) or not (n % 5) or not (n % 7):
@@ -479,15 +477,13 @@ def isprime(n: int):
 
 
 def fastprime(n: int, trials: int = 8):
-  """
-  Miller-Rabin primality test.
+  """Miller-Rabin primality test.
 
   - Returns False when n is not prime.
   - Returns True when n is a prime under 3317044064679887385961981, else when n is very likely a prime.
 
   Increase the number of trials to raise confidence with n >= 3317044064679887385961981 at cost in performance
   """
-
   if n in {2, 3, 5, 7}:
     return True
   if not (n & 1) or not (n % 3) or not (n % 5) or not (n % 7):
@@ -540,12 +536,12 @@ def fastprime(n: int, trials: int = 8):
 
 
 def now():
-  """because sometimes I want the time now()"""
+  """Because sometimes I want the time now()."""
   return f"{datetime.now():%Y-%m-%d-%H-%M-%S}"
 
 
 def tf(func: Callable, *args, __pretty_tf=True, **kwargs):
-  """time func func, as in, func to time the function func"""
+  """Time func func, as in, func to time the function func."""
   start = time()
   r = func(*args, **kwargs)
   end = time()
@@ -558,12 +554,12 @@ def tf(func: Callable, *args, __pretty_tf=True, **kwargs):
 
 
 def human_time(t: float, seconds=True):
-  """because nobody makes it humanly readable"""
+  """Because nobody makes it humanly readable."""
   return f"{t // 60:.0f}m {t % 60:.3f}s" if t > 60 else f"{t:.3f}s" if t > 0.1 and seconds else f"{t * 1000:.3f}ms" if t > 0.0001 else f"{t * 10**6:.3f}us"
 
 
 def hours_minutes_seconds(t: float):
-  """from some number of seconds t, how many (years) (weeks) (days) (hours) minutes and seconds are there (filled in as needed)"""
+  """From some number of seconds t, how many (years) (weeks) (days) (hours) minutes and seconds are there (filled in as needed)."""
   seconds = int(t)
   print(f"{seconds}s")
   minutes, seconds = seconds // 60, seconds % 60
@@ -589,7 +585,7 @@ def hours_minutes_seconds(t: float):
 
 
 def yesno(prompt="", accept_return_as: bool | None = None, replace_lists=False, yes_group: set[str] | None = None, no_group: set[str] | None = None):
-  """keep asking until they say yes or no (if accept_return_as is True then ENTER/RETURN is a yes, if accept_return_as is False than it's a no)"""
+  """Keep asking until they say yes or no (if accept_return_as is True then ENTER/RETURN is a yes, if accept_return_as is False than it's a no)."""
   if no_group is None:
     no_group = set()
   if yes_group is None:
@@ -605,12 +601,12 @@ def yesno(prompt="", accept_return_as: bool | None = None, replace_lists=False, 
 
 # these to/from bytes wrappers are just for dunder "ephemeral" bytes, use normal int.to/from when byteorder matters
 def to_bytes(x: int, nbytes: int | None = None, signed: bool | None = None, byteorder: Literal["little", "big"] = sys.byteorder) -> bytes:
-  """int.to_bytes but with (sensible) default values, by default assumes unsigned if >=0, signed if <0"""
+  """int.to_bytes but with (sensible) default values, by default assumes unsigned if >=0, signed if <0."""
   return x.to_bytes((nbytes or (x.bit_length() + 7) // 8), byteorder, signed=(x >= 0) if signed is None else signed)
 
 
 def from_bytes(b: bytes, signed: bool = False, byteorder: Literal["little", "big"] = sys.byteorder) -> int:
-  """int.from_bytes but sensible byteorder, you must say if it's signed"""
+  """int.from_bytes but sensible byteorder, you must say if it's signed."""
   return int.from_bytes(b, byteorder, signed=signed)
 
 
@@ -653,34 +649,34 @@ else:
 
 
 def resolve(path: str | Path):
-  """resolve a Path including "~" (bc Path(path) doesn't...)"""
+  """Resolve a Path including "~" (bc Path(path) doesn't...)."""
   return Path(path).expanduser()
 
 
 @cache
 def filedigest(path: Path, hash="sha1"):
-  """fingerprint a file, caches so modified files bypass with filedigest.__wrapped__ or filedigest.cache_clear()"""
+  """Fingerprint a file, caches so modified files bypass with filedigest.__wrapped__ or filedigest.cache_clear()."""
   with open(path, "rb") as f:
     return file_digest(f, hash).hexdigest()
 
 
 def readlines(fp: str | Path, encoding="utf8"):
-  """just reads lines as you normally would want to"""
+  """Just reads lines as you normally would want to."""
   return resolve(fp).read_text(encoding).splitlines()
 
 
 def readlinesmap(fp: str | Path, *fs: Callable, encoding="utf8"):
-  """readlines but map each function in fs to fp's lines in order (fs[0]: first, ..., fs[-1]: last)"""
+  """Readlines but map each function in fs to fp's lines in order (fs[0]: first, ..., fs[-1]: last)."""
   return mapcomp(resolve(fp).read_text(encoding).splitlines(), *fs)
 
 
 def writelines(fp: str | Path, lines: str | list[str], encoding="utf8", newline="\n"):
-  """just writes lines as you normally would want to"""
+  """Just writes lines as you normally would want to."""
   return resolve(fp).write_text(lines if isinstance(lines, str) else newline.join(lines), encoding=encoding, newline=newline)
 
 
 def writelinesmap(fp: str | Path, lines: str | list[str], *fs: Callable, encoding="utf8", newline="\n"):
-  """writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)"""
+  """Writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)."""
   return resolve(fp).write_text(newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs), encoding=encoding, newline=newline)
 
 
@@ -690,7 +686,7 @@ def writelinesmap(fp: str | Path, lines: str | list[str], *fs: Callable, encodin
 
 
 def lev(s1: str, s2: str) -> int:
-  """calculate Levenshtein (edit) distance between strings"""
+  """Calculate Levenshtein (edit) distance between strings."""
   if s1 == s2:
     return 0
   l1, l2 = len(s1), len(s2)
@@ -722,14 +718,14 @@ def lev(s1: str, s2: str) -> int:
 
 
 class NonIntegerSliceBoundsTypeError(TypeError):
-  """Slice values must be integers"""
+  """Slice values must be integers."""
 
   def __init__(self) -> None:
     super().__init__(self.__doc__)
 
 
 class SliceAssignmentTypeError(TypeError):
-  """When assigning to a slice, the assigned values must be provided in an interable or sequence"""
+  """When assigning to a slice, the assigned values must be provided in an interable or sequence."""
 
   def __init__(self) -> None:
     super().__init__(self.__doc__)
