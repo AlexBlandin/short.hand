@@ -55,7 +55,7 @@ pip install -U geocoder skyfield --user --break-system-packages
 pip install -U Pillow matplotlib dearpygui --user --break-system-packages
 
 : # Temporary (until this is merged into Pillow, fingers crossed this is soon, seems to be on the precipice of being actually accepted now)
-pip install pillow-avif-plugin --user --break-system-packages
+pip install -U pillow-avif-plugin --user --break-system-packages
 
 : # Optional stuff (ML, win32 wrapper, readline in python, high quality plots, etc)
 : # pip install -U pywin32 pyreadline3
@@ -69,4 +69,4 @@ pip install pillow-avif-plugin --user --break-system-packages
 : # pypy -m pip install pip setuptools wheel mypy ruff pytest pdbpp psutil typing-extensions attrs icecream cffi humanize parse pendulum pylev langcodes numpy tqdm
 
 : # Type stubs
-pip install -U pandas-stubs types-Pillow types-openpyxl types-Pygments types-colorama types-decorator types-jsonschema types-six
+pip install -U pandas-stubs types-Pillow types-openpyxl types-Pygments types-colorama types-decorator types-jsonschema types-six --user --break-system-packages
