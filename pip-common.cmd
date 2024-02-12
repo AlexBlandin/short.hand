@@ -9,12 +9,14 @@ python -m pip install -qqq -U pip
 pip install -qqq -U setuptools wheel
 pip install -qqq -U virtualenv pipx
 pipx ensurepath
+pipx upgrade-all
 pipx install tldr
 pipx install hatch
+pipx install asciinema
+: # These are my essentials
 pipx install poetry
 pipx inject poetry poetry-plugin-export
-pipx install asciinema
-pipx upgrade-all
+: # This is until I migrate fully to hatch
 
 : # Cryptography
 pip install -U PyNaCl pyOpenSSL cryptography certifi blake3 --user --break-system-packages
@@ -29,7 +31,7 @@ pip install -U attrs icecream sortedcontainers more-itertools toolz cffi fastcor
 pip install -U jupyter notebook graphviz --user --break-system-packages
 
 : # Numeric python
-pip install -U numpy pandas scipy --user --break-system-packages
+pip install -U imageio numpy pandas scipy --user --break-system-packages
 pip install gmpy2==2.2.0a1 --user --break-system-packages
 : # This is because gmpy2 2.2.0 is still a release candidate and has not fully released yet, but does have 3.12 support so we need it for now
 
