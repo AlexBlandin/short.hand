@@ -16,7 +16,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 indent-width = 2
-format.line-ending = "lf"
 target-version = "py310"
 line-length = 160
 preview = true
@@ -27,6 +26,12 @@ ignore = ["CPY", "TD003", "S311", "T201", "ANN401", "PLR2004", "W191", "E111", "
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+line-ending = "lf"
+indent-style = "space"
+skip-magic-trailing-comma = false
 
 [tool.isort]
 ensure_newline_before_comments = true
