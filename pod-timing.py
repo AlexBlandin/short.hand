@@ -1,4 +1,7 @@
-"""POD testing.
+"""
+POD testing.
+
+Copyright 2022 Alex Blandin
 
 ██████╗ ██╗      █████╗ ██╗███╗   ██╗
 ██╔══██╗██║     ██╔══██╗██║████╗  ██║
@@ -21,7 +24,7 @@
 ██████╔╝██║  ██║   ██║   ██║  ██║
 ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
 
-for when you can't use attrs
+- for when you can't use attrs
 """
 
 import ast

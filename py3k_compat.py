@@ -1,24 +1,21 @@
-import sys
+"""
+Fixes the compat from the defunct https://pypi.org/project/pyreadline/.
 
-if sys.version_info[0] >= 3:
-  import collections.abc
+The only thing that needs setting is unicode as str, and the horrific execfile.
+All else was redundant, slower, or actually worse than the builtin callable.
+Oh, and Python 2 is dead and buried. So that simplified things.
 
-  PY3 = True
+Copyright 2020 Alex Blandin
+"""
 
-  def callable(x):
-    return isinstance(x, collections.abc.Callable)
+PY3 = True
 
-  def execfile(fname, glob, loc=None):
-    loc = loc if (loc is not None) else glob
-    with open(fname, encoding="locale") as fil:  # noqa: FURB101
-      txt = fil.read()
-    exec(compile(txt, fname, "exec"), glob, loc)
 
-  unicode = str
-  bytes = bytes  # noqa: PLW0127
-else:
-  PY3 = False
-  callable = callable  # noqa: PLW0127
-  execfile = execfile  # noqa: PLW0127
-  bytes = str
-  unicode = unicode  # noqa: PLW0127
+def execfile(fname, glob, loc=None):
+  loc = loc if (loc is not None) else glob
+  with open(fname, encoding="locale") as fil:
+    txt = fil.read()
+  exec(compile(txt, fname, "exec"), glob, loc)
+
+
+unicode = str

@@ -1,8 +1,11 @@
-"""short.hand!
+"""
+short.hand!
 
 Here we collect useful functions and classes, which are often "fast enough".
 Star-importing this includes a few handy stdlib imports, great for the REPL.
 The addition of Type Parameter Syntax means this only support >= 3.12.
+
+Copyright 2022 Alex Blandin
 """
 
 # Imports used here

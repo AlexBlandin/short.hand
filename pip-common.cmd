@@ -10,6 +10,7 @@ pip install -qqq -U setuptools wheel
 pip install -qqq -U virtualenv pipx
 pipx ensurepath
 pipx upgrade-all
+pipx install uv
 pipx install tldr
 pipx install hatch
 pipx install asciinema
@@ -69,4 +70,4 @@ pip install -U pillow-avif-plugin --user --break-system-packages
 : # pypy -m pip install pip setuptools wheel mypy ruff pytest pdbpp psutil typing-extensions attrs icecream cffi humanize parse pendulum pylev langcodes numpy tqdm
 
 : # Type stubs
-pip install -U pandas-stubs types-Pillow types-openpyxl types-Pygments types-colorama types-decorator types-jsonschema types-six --user --break-system-packages
+pip install -U pandas-stubs types-Pillow types-requests types-openpyxl types-Pygments types-colorama types-decorator types-jsonschema types-six --user --break-system-packages
