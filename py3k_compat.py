@@ -11,11 +11,11 @@ Copyright 2020 Alex Blandin
 PY3 = True
 
 
-def execfile(fname, glob, loc=None):
+def execfile(fname, glob, loc=None) -> None:  # noqa: ANN001, D103
   loc = loc if (loc is not None) else glob
-  with open(fname, encoding="locale") as fil:
+  with open(fname, encoding="locale") as fil:  # noqa: PTH123
     txt = fil.read()
-  exec(compile(txt, fname, "exec"), glob, loc)
+  exec(compile(txt, fname, "exec"), glob, loc)  # noqa: S102
 
 
 unicode = str

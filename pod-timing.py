@@ -75,7 +75,9 @@ def row(name: str, new: str, access: str) -> None:
   """Another row in the table."""
   # 1000* gives ms
   with contextlib.suppress(Exception):
-    print(f"| {name:>23} | {getsizeof(ast.literal_eval(new)):04} | {1000 * time(new): >9.4f} | {1000 * time("var" + access, setup = "var=" + new): >9.4f} |")
+    print(
+      f"| {name:>23} | {getsizeof(ast.literal_eval(new)):04} | {1000 * time(new): >9.4f} | {1000 * time("var" + access, setup = "var=" + new): >9.4f} |"  # noqa: E501
+    )
 
 
 #################
@@ -86,7 +88,7 @@ def row(name: str, new: str, access: str) -> None:
 class Regular:
   """regular class."""
 
-  def __init__(self, sender, receiver, date, amount) -> None:
+  def __init__(self, sender, receiver, date, amount) -> None:  # noqa: ANN001, ANN101, D107
     self.sender = sender
     self.receiver = receiver
     self.date = date
@@ -98,7 +100,7 @@ class Slots:
 
   __slots__ = ["sender", "amount", "receiver", "date"]
 
-  def __init__(self, sender, receiver, date, amount) -> None:
+  def __init__(self, sender, receiver, date, amount) -> None:  # noqa: ANN001, ANN101, D107
     self.sender = sender
     self.receiver = receiver
     self.date = date
@@ -184,93 +186,93 @@ class FrozenDataSlotsAuto:
 
 
 @cache
-def cls_to_tuple(cls):
+def cls_to_tuple(cls):  # noqa: ANN001, ANN201
   """This converts a class to a NamedTuple; cached because this is expensive!"""
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
 
 @dataclass(slots=True)
 class Struct:
-  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that."""
+  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that."""  # noqa: E501
 
   sender: str
   receiver: str
   date: str
   amount: float
 
-  def __iter__(self):
+  def __iter__(self):  # noqa: ANN101, ANN204
     """Iterating over the values, rather than the __slots__."""
     yield from map(self.__getattribute__, self.__slots__)
 
-  def __len__(self) -> int:
+  def __len__(self) -> int:  # noqa: ANN101
     """How many slots there are, useful for slices, iteration, and reversing."""
     return len(self.__slots__)  # type: ignore[reportArgumentType]
 
-  def __getitem__(self, n: int | slice):
+  def __getitem__(self, n: int | slice):  # noqa: ANN101, ANN204
     """Generic __slots__[n] -> val, because subscripting (and slicing) is handy at times."""
     if isinstance(n, int):
       return self.__getattribute__(self.__slots__[n])  # type: ignore[reportArgumentType]
-    else:
+    else:  # noqa: RET505
       return list(map(self.__getattribute__, self.__slots__[n]))  # type: ignore[reportArgumentType]
 
-  def _astuple(self):
+  def _astuple(self):  # noqa: ANN101, ANN202
     """Generic __slots__ -> tuple; super fast, low quality of life."""
     return tuple(map(self.__getattribute__, self.__slots__))  # type: ignore[reportArgumentType]
 
-  def aslist(self):
+  def aslist(self):  # noqa: ANN101, ANN201
     """Generic __slots__ -> list; super fast, low quality of life, a shallow copy."""
     return list(map(self.__getattribute__, self.__slots__))  # type: ignore[reportArgumentType]
 
-  def asdict(self):
+  def asdict(self):  # noqa: ANN101, ANN201
     """Generic __slots__ -> dict; helpful for introspection, limited uses outside debugging."""
     return {slot: self.__getattribute__(slot) for slot in self.__slots__}  # type: ignore[reportArgumentType]
 
-  def astuple(self):
+  def astuple(self):  # noqa: ANN101, ANN201
     """Generic __slots__ -> NamedTuple; a named shallow copy."""
     return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__))  # type: ignore[reportArgumentType]
 
 
 @dataclass(slots=True)
 class StructSubclassable:
-  """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed."""
+  """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed."""  # noqa: E501
 
   sender: str
   receiver: str
   date: str
   amount: float
 
-  def __iter__(self):
+  def __iter__(self):  # noqa: ANN101, ANN204
     """Iterating over the values, rather than the __slots__."""
     yield from map(self.__getattribute__, self.fields())
 
-  def __len__(self) -> int:
+  def __len__(self) -> int:  # noqa: ANN101
     """How many slots there are, useful for slices, iteration, and reversing."""
     return len(self.fields())
 
-  def __getitem__(self, n: int | slice):
+  def __getitem__(self, n: int | slice):  # noqa: ANN101, ANN204
     """Generic __slots__[n] -> val, because subscripting (and slicing) is handy at times."""
     if isinstance(n, int):
       return self.__getattribute__(self.fields()[n])
-    else:
+    else:  # noqa: RET505
       return list(map(self.__getattribute__, self.fields()[n]))
 
-  def _astuple(self):
+  def _astuple(self):  # noqa: ANN101, ANN202
     """Generic __slots__ -> tuple; super fast, low quality of life, a shallow copy."""
     return tuple(map(self.__getattribute__, self.fields()))
 
-  def aslist(self):
+  def aslist(self):  # noqa: ANN101, ANN201
     """Generic __slots__ -> list; super fast, low quality of life, a shallow copy."""
     return list(map(self.__getattribute__, self.fields()))
 
-  def asdict(self):
+  def asdict(self):  # noqa: ANN101, ANN201
     """Generic __slots__ -> dict; helpful for introspection, limited uses outside debugging, a shallow copy."""
     return {slot: self.__getattribute__(slot) for slot in self.fields()}
 
-  def astuple(self):
+  def astuple(self):  # noqa: ANN101, ANN201
     """Generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict."""
     return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.fields()))
 
-  def fields(self):
+  def fields(self):  # noqa: ANN101, ANN201
     """__slots__ equivalent using the proper fields approach."""
     return list(map(attrgetter("name"), dataclasses.fields(self)))
 
@@ -300,16 +302,28 @@ row("tuple from literal", "(1.0, 'me', '2022-01-01', 'you')", "[1]")
 row("regular class", "Regular(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
 row("class using slots", "Slots(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
 row("collections namedtuple", "NTuple(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row("proc. typed NamedTuple", "ProcTypedNTuple(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
+row(
+  "proc. typed NamedTuple", "ProcTypedNTuple(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver"
+)
 row("typed NamedTuple", "TypedNTuple(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
 row("regular dataclass", "DataClass(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
 row("regular dataclass slots", "DataSlots(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
 row("autogen dataclass slots", "DataSlotsAuto(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
 row("frozen dataclass", "FrozenData(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row("frozen dataclass slots", "FrozenDataSlots(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row("autogen frozen dc slots", "FrozenDataSlotsAuto(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
+row(
+  "frozen dataclass slots", "FrozenDataSlots(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver"
+)
+row(
+  "autogen frozen dc slots",
+  "FrozenDataSlotsAuto(amount=1.0, receiver='me', date='2022-01-01', sender='you')",
+  ".receiver",
+)
 row("handier dataclass slots", "Struct(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row("even handier dataclasss", "StructSubclassable(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
+row(
+  "even handier dataclasss",
+  "StructSubclassable(amount=1.0, receiver='me', date='2022-01-01', sender='you')",
+  ".receiver",
+)
 
 print(sep)
 print()
@@ -332,9 +346,7 @@ print()
 # 2x8 GB 6400 MT/s 19-15-17-34 LPDDR5
 # running in the Windows 11 "performance" mode for this
 
-# ruff: noqa: N816
-
-win_cpython_3_12_7980HS_plugged = """
+win_cpython_3_12_7980hs_plugged = """
 POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -357,7 +369,7 @@ POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-win_cpython_3_10_7980HS_plugged = """
+win_cpython_3_10_7980hs_plugged = """
 POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -380,7 +392,7 @@ POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-win_cpython_3_10_4700U_plugged = """
+win_cpython_3_10_4700u_plugged = """
 POD test results for 1000000 iterations, best of 100 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -401,7 +413,7 @@ POD test results for 1000000 iterations, best of 100 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-win_cpython_3_10_4700U_battery = """
+win_cpython_3_10_4700u_battery = """
 POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -462,7 +474,7 @@ POD test results for 1000000 iterations, best of 100 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-deb_cpython_3_9_7980HS_plugged = """
+deb_cpython_3_9_7980hs_plugged = """
 POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -485,7 +497,7 @@ POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-deb_cpython_3_9_4700U_plugged = """
+deb_cpython_3_9_4700u_plugged = """
 POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -504,7 +516,7 @@ POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-deb_cpython_3_9_4700U_battery = """
+deb_cpython_3_9_4700u_battery = """
 POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -523,7 +535,7 @@ POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-win_pypy_3_10_13_7980HS_plugged = """
+win_pypy_3_10_13_7980hs_plugged = """
 POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -565,7 +577,7 @@ POD test results for 1000000 iterations, best of 100 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-win_pypy_3_10_7980HS_plugged = """
+win_pypy_3_10_7980hs_plugged = """
 POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -588,7 +600,7 @@ POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-win_pypy_3_9_4700U_plugged = """
+win_pypy_3_9_4700u_plugged = """
 POD test results for 1000000 iterations, best of 10000 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -607,7 +619,7 @@ POD test results for 1000000 iterations, best of 10000 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-win_pypy_3_9_4700U_battery = """
+win_pypy_3_9_4700u_battery = """
 POD test results for 1000000 iterations, best of 10 runs:
 +-------------------------+------+-----------+-----------+
 |                    name | size | make (ms) | item (ms) |
@@ -649,14 +661,14 @@ POD test results for 1000000 iterations, best of 100 runs:
 # Statistics #
 ##############
 
-print = print if PRINTSTATS else id
+print = print if PRINTSTATS else id  # noqa: A001
 
 
-def stats(x) -> None:
+def stats(x) -> None:  # noqa: ANN001, D103
   print(f"{x:.6f}" if isinstance(x, float) else " ".join(f"{_x:.6f}" for _x in x))
 
 
-ratios_4700U_to_8700k = [
+ratios_4700u_to_8700k = [
   85.1526 / 77.4804,
   8.2798 / 7.7768,
   393.2533 / 419.9600,
@@ -744,18 +756,18 @@ from these ratios of 4700U's performance to the 8700k's performance, we observe:
 - variance: 0.011234
 """
 print("Satistics from ratio of 4700U / 8700k performance")
-stats(min(ratios_4700U_to_8700k))
-stats(max(ratios_4700U_to_8700k))
-stats(mean(ratios_4700U_to_8700k))
-stats(geometric_mean(ratios_4700U_to_8700k))
-stats(harmonic_mean(ratios_4700U_to_8700k))
-stats(median(ratios_4700U_to_8700k))
-stats(quantiles(ratios_4700U_to_8700k))
-stats(quantiles(ratios_4700U_to_8700k, n=10))
-stats(pstdev(ratios_4700U_to_8700k))
-stats(pvariance(ratios_4700U_to_8700k))
-stats(stdev(ratios_4700U_to_8700k))
-stats(variance(ratios_4700U_to_8700k))
+stats(min(ratios_4700u_to_8700k))
+stats(max(ratios_4700u_to_8700k))
+stats(mean(ratios_4700u_to_8700k))
+stats(geometric_mean(ratios_4700u_to_8700k))
+stats(harmonic_mean(ratios_4700u_to_8700k))
+stats(median(ratios_4700u_to_8700k))
+stats(quantiles(ratios_4700u_to_8700k))
+stats(quantiles(ratios_4700u_to_8700k, n=10))
+stats(pstdev(ratios_4700u_to_8700k))
+stats(pvariance(ratios_4700u_to_8700k))
+stats(stdev(ratios_4700u_to_8700k))
+stats(variance(ratios_4700u_to_8700k))
 print("")
 
 ratios_cpython_to_pypy = [
@@ -834,7 +846,7 @@ stats(stdev(ratios_cpython_to_pypy))
 stats(variance(ratios_cpython_to_pypy))
 print("")
 
-ratios_4700U_battery_to_4700U_plugged = [
+ratios_4700u_battery_to_4700u_plugged = [
   77.4804 / 129.8398,
   7.7768 / 13.1828,
   419.9600 / 775.1731,
@@ -922,16 +934,16 @@ from these ratios of unplugged performance to plugged performance for the 4700U,
 - variance: 0.039889
 """
 print("Satistics from ratio of 4700U battery / 4700U plugged performance")
-stats(min(ratios_4700U_battery_to_4700U_plugged))
-stats(max(ratios_4700U_battery_to_4700U_plugged))
-stats(mean(ratios_4700U_battery_to_4700U_plugged))
-stats(geometric_mean(ratios_4700U_battery_to_4700U_plugged))
-stats(harmonic_mean(ratios_4700U_battery_to_4700U_plugged))
-stats(median(ratios_4700U_battery_to_4700U_plugged))
-stats(quantiles(ratios_4700U_battery_to_4700U_plugged))
-stats(quantiles(ratios_4700U_battery_to_4700U_plugged, n=10))
-stats(pstdev(ratios_4700U_battery_to_4700U_plugged))
-stats(pvariance(ratios_4700U_battery_to_4700U_plugged))
-stats(stdev(ratios_4700U_battery_to_4700U_plugged))
-stats(variance(ratios_4700U_battery_to_4700U_plugged))
+stats(min(ratios_4700u_battery_to_4700u_plugged))
+stats(max(ratios_4700u_battery_to_4700u_plugged))
+stats(mean(ratios_4700u_battery_to_4700u_plugged))
+stats(geometric_mean(ratios_4700u_battery_to_4700u_plugged))
+stats(harmonic_mean(ratios_4700u_battery_to_4700u_plugged))
+stats(median(ratios_4700u_battery_to_4700u_plugged))
+stats(quantiles(ratios_4700u_battery_to_4700u_plugged))
+stats(quantiles(ratios_4700u_battery_to_4700u_plugged, n=10))
+stats(pstdev(ratios_4700u_battery_to_4700u_plugged))
+stats(pvariance(ratios_4700u_battery_to_4700u_plugged))
+stats(stdev(ratios_4700u_battery_to_4700u_plugged))
+stats(variance(ratios_4700u_battery_to_4700u_plugged))
 print("")
