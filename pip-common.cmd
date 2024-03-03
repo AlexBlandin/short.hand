@@ -43,7 +43,7 @@ pip install -U colorama termcolor rich tqdm proselint --user --break-system-pack
 : # pip install -U "plotext[image]" pytermgui textual textual-dev
 
 : # Webstuff
-pip install -U aiohttp async-timeout beautifulsoup4 httpie soupsieve requests urllib3 websockets --user --break-system-packages
+pip install -U aiohttp async-timeout beautifulsoup4 lxml httpie soupsieve requests urllib3 websockets --user --break-system-packages
 
 : # Wrappers around external tools (CLIs, DBs, etc)
 pip install -U pypandoc rethinkdb yt-dlp mutagen --user --break-system-packages
