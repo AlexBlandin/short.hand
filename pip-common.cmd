@@ -33,7 +33,7 @@ pip install -U attrs icecream sortedcontainers more-itertools toolz cffi fastcor
 pip install -U jupyter notebook graphviz --user --break-system-packages
 
 : # Numeric python
-pip install -U imageio numpy pandas scipy --user --break-system-packages
+pip install -U imageio numpy pandas scipy numba tbb intel-cmplr-lib-rt --user --break-system-packages
 pip install gmpy2==2.2.0a1 --user --break-system-packages
 : # This is because gmpy2 2.2.0 is still a release candidate and has not fully released yet, but does have 3.12 support so we need it for now
 
