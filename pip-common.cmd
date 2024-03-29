@@ -20,11 +20,10 @@ pipx inject poetry poetry-plugin-export
 : # This is until I migrate fully to hatch
 
 : # Cryptography
-pip install -U PyNaCl pyOpenSSL cryptography certifi blake3 --user --break-system-packages
+pip install -U PyNaCl pyOpenSSL cryptography certifi blake3 pycryptodome --user --break-system-packages
 
 : # Python tooling, style, typing, debugging, system info, etc
 pip install -U ruff mypy pytest typing-extensions pdbpp psutil --user --break-system-packages
-
 
 : # Useful tools
 pip install -U attrs icecream sortedcontainers more-itertools toolz cffi fastcore pytomlpp humanize parse regex pendulum pylev langcodes --user --break-system-packages
@@ -46,7 +45,7 @@ pip install -U colorama termcolor rich tqdm proselint --user --break-system-pack
 pip install -U aiohttp async-timeout beautifulsoup4 lxml httpie soupsieve requests urllib3 websockets --user --break-system-packages
 
 : # Wrappers around external tools (CLIs, DBs, etc)
-pip install -U pypandoc rethinkdb duckdb yt-dlp mutagen --user --break-system-packages
+pip install -U yt-dlp[default,curl_cffi] pypandoc rethinkdb duckdb mutagen --user --break-system-packages
 
 : # Astronomy & Cartography
 pip install -U geocoder skyfield --user --break-system-packages
