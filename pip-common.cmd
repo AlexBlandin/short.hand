@@ -42,10 +42,10 @@ pip install -U colorama termcolor rich tqdm proselint --user --break-system-pack
 : # pip install -U "plotext[image]" pytermgui textual textual-dev
 
 : # Webstuff
-pip install -U aiohttp async-timeout beautifulsoup4 lxml httpie soupsieve requests urllib3 websockets --user --break-system-packages
+pip install -U aiohttp async-timeout beautifulsoup4 lxml httpie soupsieve curl_cffi requests urllib3 websockets --user --break-system-packages
 
 : # Wrappers around external tools (CLIs, DBs, etc)
-pip install -U yt-dlp[default,curl_cffi] pypandoc rethinkdb duckdb mutagen --user --break-system-packages
+pip install -U yt-dlp pypandoc rethinkdb duckdb brotli mutagen --user --break-system-packages
 
 : # Astronomy & Cartography
 pip install -U geocoder skyfield --user --break-system-packages
