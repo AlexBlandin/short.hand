@@ -1,19 +1,44 @@
-[tool.poetry]
+[project]
 name = "short.hand"
-version = "1.0.0"
 description = "A series of useful shorthands originally devised during Advent of Code 2017."
-authors = ["AlexBlandin"]
-package-mode = false
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "AlexBlandin" }]
+dependencies = []
+dynamic = ["version"]
 
-[tool.poetry.dependencies]
-python = "^3.10"
+[project.optional-dependencies]
+toml = ["pytomlpp"]
+cli = ["colorama; platform_system == 'Windows'"]
+all = ["toml", "cli"]
+lint = ["ruff"]
+check = ["mypy"]
+dev = ["all", "lint", "check"]
 
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.2.1"
+[project.urls]
+Documentation = "https://github.com/alexblandin/short.hand#readme"
+Issues = "https://github.com/alexblandin/short.hand/issues"
+Source = "https://github.com/alexblandin/short.hand"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/__init__.py"
+
+[tool.hatch.envs.default]
+dependencies = []
+features = ["toml", "cli"]
+
+[tool.hatch.envs.lint]
+dependencies = ["lint"]
+detached = true
+
+[tool.hatch.envs.dev]
+features = ["dev"]
+post-install-commands = ["mypy --install-types --non-interactive src/mymodule"]
 
 [tool.ruff]
 indent-width = 2
@@ -22,12 +47,25 @@ line-length = 120
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["ERA", # code comments actually help 
+ignore = [
+  "ERA",    # code comments actually help 
   "INP001", # useless before hatch
-  "TD003", # not using github to track todo/issues
-  "S311", # I know when to use secrets
-  "T20", # print is good, actually 
- "W191", "E111", "E114", "E117", "E203", "D206", "D212", "D300", "Q", "COM812", "COM819", "ISC001", "ISC002", # these are all formatted away
+  "TD003",  # not using github to track todo/issues
+  "S311",   # I know when to use secrets
+  "T20",    # print is good, actually 
+  "W191",   # ruff format
+  "E111",   # ruff format
+  "E114",   # ruff format
+  "E117",   # ruff format
+  "E203",   # ruff format
+  "D206",   # ruff format
+  "D212",   # ruff format
+  "D300",   # ruff format
+  "Q",      # ruff format
+  "COM812", # ruff format
+  "COM819", # ruff format
+  "ISC001", # ruff format
+  "ISC002", # ruff format
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -38,92 +76,3 @@ quote-style = "double"
 line-ending = "lf"
 indent-style = "space"
 skip-magic-trailing-comma = false
-
-[tool.isort]
-ensure_newline_before_comments = true
-include_trailing_comma = true
-use_parentheses = true
-comment_prefix = " #"
-multi_line_output = 3
-force_grid_wrap = 0
-reverse_sort = true
-length_sort = true
-line_length = 120
-from_first = true
-indent = "  "
-
-#####
-# Got to figure out Hatch, clearly a better choice than Poetry for the future, but damn if the barrier to entry isn't higher... but that's what a template like this is great for handling
-#####
-
-# [build-system]
-# requires = ["hatchling"]
-# build-backend = "hatchling.build"
-
-# [project]
-# name = "template"
-# description = ''
-# readme = "README.md"
-# requires-python = ">=3.10"
-# license = "MIT"
-# # keywords = []
-# # authors = [
-# #   { name = "Alex Blandin", email = "20842735+AlexBlandin@users.noreply.github.com" },
-# # ]
-# # classifiers = [
-# #   "Development Status :: 1 - Planning",
-# #   "Development Status :: 2 - Pre-Alpha",
-# #   "Development Status :: 3 - Alpha",
-# #   "Development Status :: 4 - Beta",
-# #   "Development Status :: 5 - Production/Stable",
-# #   "Development Status :: 6 - Mature",
-# #   "Development Status :: 7 - Inactive",
-# #   "Framework :: Hatch",
-# #   "License :: OSI Approved :: MIT License",
-# #   "Programming Language :: Python",
-# #   "Programming Language :: Python :: 3",
-# #   "Programming Language :: Python :: 3 :: Only",
-# #   "Programming Language :: Python :: 3.10",
-# #   "Programming Language :: Python :: 3.11",
-# #   "Programming Language :: Python :: 3.12",
-# #   "Programming Language :: Python :: 3.13",
-# #   "Programming Language :: Python :: Implementation :: CPython",
-# #   "Programming Language :: Python :: Implementation :: PyPy",
-# # ]
-# # dynamic = ["version"]
-# dependencies = []
-
-# [project.urls]
-# Documentation = "https://github.com/unknown/template#readme"
-# Issues = "https://github.com/unknown/template/issues"
-# Source = "https://github.com/unknown/template"
-
-# [tool.hatch.envs.default]
-# dependencies = [
-#   "pytest",
-#   "pytest-cov",
-# ]
-
-# # [tool.hatch.version]
-# # path = "template/__about__.py"
-
-# # [tool.hatch.envs.default.scripts]
-# # cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=template --cov=tests {args}"
-# # no-cov = "cov --no-cov {args}"
-
-# [[tool.hatch.envs.test.matrix]]
-# python = ["310", "311", "312"]
-
-# # [tool.coverage.run]
-# # branch = true
-# # parallel = true
-# # omit = [
-# #   "template/__about__.py",
-# # ]
-
-# # [tool.coverage.report]
-# # exclude_lines = [
-# #   "no cov",
-# #   "if __name__ == .__main__.:",
-# #   "if TYPE_CHECKING:",
-# # ]

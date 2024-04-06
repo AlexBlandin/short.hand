@@ -14,10 +14,6 @@ pipx install uv
 pipx install tldr
 pipx install hatch
 pipx install asciinema
-: # These are my essentials
-pipx install poetry
-pipx inject poetry poetry-plugin-export
-: # This is until I migrate fully to hatch
 
 : # Cryptography
 pip install -U PyNaCl pyOpenSSL cryptography certifi blake3 pycryptodome --user --break-system-packages

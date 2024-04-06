@@ -1,9 +1,12 @@
-alias ls="lsd"
+alias ls="lsd" # https://github.com/lsd-rs/lsd
 alias python="python3"
 alias py="python3"
 alias wdiff="git diff --no-index --word-diff"
 alias cdiff="git diff --no-index --color-words"
-# source ~/.poetry/env
+set -x CC x86_64-unknown-cosmo-cc # https://github.com/jart/cosmopolitan
+set -x CXX x86_64-unknown-cosmo-c++
+set -x INSTALL cosmoinstall
+set -x AR cosmoar
 
 function giit
   git commit -am $argv
@@ -23,7 +26,7 @@ function sunrisesunset
       rm -f ~/.config/fish/sun/*.txt
     end
     touch $FILE
-    echo (python3 ~/code/py/sunrise/sunrise.py) > $FILE
+    echo (python3 ~/code/tools/sunrise/src/sunrise.py) > $FILE
   end
   cat $FILE
 end
