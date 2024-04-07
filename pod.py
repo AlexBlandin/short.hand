@@ -56,75 +56,22 @@ else:
 
 
 maybe_slots = {"slots": True} if sys.version_info >= (3, 10) else {}
-
-###########
-## Dials ##
-###########
-
-N_ITERATIONS, N_RUNS = 10**6, 1000
-PRINTSTATS = False  # only need to print out when there's something new
-
-################
-## Formatting ##
-################
-
 MILLI = 10**3
 MICRO = 10**6
 NANO = 10**9
 UNIT = {MILLI: "ms", MICRO: "μs", NANO: "ns"}
 
-TIMESCALE = NANO
+###########
+## Dials ##
+###########
 
-version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-output = Path(__file__).parent.parent / "pods"
-output.mkdir(exist_ok=True)
-output = output / f"pod_{sys.platform}_{sys.implementation.name}_{version}_{datetime.now():%Y-%m-%d-%H-%M-%S}.txt"  # noqa: DTZ005
-output.touch()
-buffer = output.open(mode="+a", encoding="utf8", newline="\n")
+N_ITERATIONS, N_RUNS = 10**6, 1000  # how long a run is, and how many runs to pick the best average/total from
+TIMESCALE = NANO  # set
 
 
-def print2(*args, **kwargs) -> None:  # noqa: ANN002, ANN003
-  "We print to both the terminal and this pod's buffer."
-  print(*args, **kwargs)
-  print(*args, **kwargs, file=buffer)
-
-
-print("Welcome to the Plain Old Data testing pod.")
-print("This pod is running on ", end="")
-if sys.platform == "win32" and sys.getwindowsversion().platform_version:
-  major, minor, build = sys.getwindowsversion().platform_version
-  print2(f"Windows {major}.{minor} build {build} at {sys.executable}")
-else:
-  print2(f"{sys.platform} at {sys.executable}")
-print2(sys.version)
-print2()
-
-print("POD results for ", end="")
-print2(f"{N_ITERATIONS} iterations, averaged, best of {N_RUNS} runs:")
-sep = f"+-{'':->23}-+-{'':->4}-+-{'':->11}-+-{'':->11}-+{''}"  # extra {''} is to appease syntax highlighting
-print2(sep)
-print2(f"| {'name':>23} | size | create ({UNIT[TIMESCALE]}) | access ({UNIT[TIMESCALE]}) |")
-print2(sep)
-
-
-def time(code: str, iterations: int = N_ITERATIONS, runs: int = N_RUNS, setup: str = "") -> float:
-  """Time how long something takes, result is min recorded time for an entire run in seconds."""
-  return min(timeit.repeat(code, setup=setup, number=iterations, repeat=runs, globals=globals()))
-
-
-def row(name: str, new: str, access: str) -> None:
-  """Another row in the table."""
-  with contextlib.suppress(Exception):
-    to_new = TIMESCALE * time(new) / N_ITERATIONS
-    to_access = TIMESCALE * time("var" + access, setup="var=" + new) / N_ITERATIONS
-    print2(
-      f"| {name:>23} | {getsizeof(eval(new)):04} | {to_new:>11.4f} | {to_access:>11.4f} |"  # noqa: S307, PGH001
-    )
-
-
-###################
-## Test Subjects ##
-###################
+#################
+## POD Formats ##
+#################
 
 
 class Regular:
@@ -324,6 +271,59 @@ class StructSubclassable:
     return list(map(attrgetter("name"), dataclasses.fields(self)))
 
 
+################
+## Formatting ##
+################
+
+
+start_time = datetime.now()  # noqa: DTZ005
+version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+output = Path(__file__).parent.parent / "pods"  # TODO(alex): don't fix this just yet, (only .parent) as handy to tell!
+output.mkdir(exist_ok=True)
+output = output / f"pod_{sys.platform}_{sys.implementation.name}_{version}_{start_time:%Y-%m-%d-%H-%M-%S}.txt"
+output.touch()
+buffer = output.open(mode="+a", encoding="utf8", newline="\n")
+
+
+def print2(*args, **kwargs) -> None:  # noqa: ANN002, ANN003
+  "We print to both the terminal and this pod's buffer."
+  print(*args, **kwargs)
+  print(*args, **kwargs, file=buffer)
+
+
+print2(f"POD run commencing {start_time:%Y-%m-%d-%H-%M-%S}")
+print("This pod is running on ", end="")
+if sys.platform == "win32" and sys.getwindowsversion().platform_version:
+  major, minor, build = sys.getwindowsversion().platform_version
+  print2(f"Windows {major}.{minor} build {build} at {sys.executable}")
+else:
+  print2(f"{sys.platform} at {sys.executable}")
+print2(sys.version)  # TODO(alex): merge onto one line (looking at you, pypy), a split and join should be fine
+print2()
+
+print("POD results for ", end="")
+print2(f"{N_ITERATIONS} iterations, averaged, best of {N_RUNS} runs:")
+sep = f"+-{'':->23}-+-{'':->4}-+-{'':->11}-+-{'':->11}-+{''}"  # extra {''} is to appease syntax highlighting
+print2(sep)
+print2(f"| {'name':>23} | size | create ({UNIT[TIMESCALE]}) | access ({UNIT[TIMESCALE]}) |")
+print2(sep)
+
+
+def time(code: str, iterations: int = N_ITERATIONS, runs: int = N_RUNS, setup: str = "") -> float:
+  """Time how long something takes, result is min recorded time for an entire run in seconds."""
+  return min(timeit.repeat(code, setup=setup, number=iterations, repeat=runs, globals=globals()))
+
+
+def row(name: str, new: str, access: str) -> None:
+  """Another row in the table."""
+  with contextlib.suppress(Exception):
+    to_new = TIMESCALE * time(new) / N_ITERATIONS
+    to_access = TIMESCALE * time("var" + access, setup="var=" + new) / N_ITERATIONS
+    print2(
+      f"| {name:>23} | {getsizeof(eval(new)):04} | {to_new:>11.4f} | {to_access:>11.4f} |"  # noqa: S307, PGH001
+    )
+
+
 PODS = [
   Regular,
   Slots,
@@ -372,8 +372,11 @@ row(
   ".receiver",
 )
 
+finish_time = datetime.now()  # noqa: DTZ005
 print2(sep)
 print2()
+print2(f"POD run completed {finish_time:%Y-%m-%d-%H-%M-%S}")
+print()
 
 buffer.close()
 
@@ -710,289 +713,288 @@ POD test results for 1000000 iterations, best of 100 runs:
 ## Statistics ##
 ################
 
-maybe_print = print if PRINTSTATS else id
-
 
 def stats(x) -> None:  # noqa: ANN001, D103
-  maybe_print(f"{x:.6f}" if isinstance(x, float) else " ".join(f"{_x:.6f}" for _x in x))
+  print(f"{x:.6f}" if isinstance(x, float) else " ".join(f"{_x:.6f}" for _x in x))
 
 
-ratios_4700u_to_8700k = [
-  85.1526 / 77.4804,
-  8.2798 / 7.7768,
-  393.2533 / 419.9600,
-  341.9360 / 370.3981,
-  358.9367 / 404.1549,
-  358.3562 / 406.0698,
-  361.5343 / 402.0191,
-  395.0910 / 417.8476,
-  345.4267 / 367.6712,
-  348.0640 / 377.8337,
-  746.4775 / 794.3493,
-  677.4594 / 752.0625,
-  679.9086 / 760.5823,
-  22.5792 / 24.0198,
-  20.2340 / 24.3028,
-  23.0611 / 22.1962,
-  22.6880 / 21.2082,
-  20.7772 / 19.9666,
-  23.3201 / 19.7323,
-  21.2919 / 20.0104,
-  24.0210 / 22.4429,
-  21.2310 / 21.0758,
-  22.3947 / 21.2881,
-  23.1717 / 22.7376,
-  20.7030 / 21.3258,
-  21.2003 / 21.7042,
-  68.9289 / 67.4939,
-  5.6050 / 4.8811,
-  321.4695 / 343.6451,
-  292.5633 / 314.6168,
-  294.4185 / 324.5867,
-  296.6719 / 325.6120,
-  294.3780 / 325.4169,
-  321.2171 / 344.2590,
-  291.5041 / 316.9539,
-  634.3641 / 697.5164,
-  594.0366 / 645.1800,
-  16.5077 / 16.3071,
-  15.3206 / 14.7222,
-  17.6356 / 19.4977,
-  20.0772 / 20.3658,
-  17.1632 / 18.5107,
-  17.6866 / 18.3033,
-  17.1658 / 18.2874,
-  18.1571 / 19.5564,
-  18.7349 / 20.3715,
-  17.6353 / 19.4942,
-  20.1110 / 20.6960,
-  0.6991 / 0.5567,
-  0.5326 / 0.5622,
-  0.5349 / 0.5567,
-  0.5353 / 0.5614,
-  0.5343 / 0.5600,
-  0.6858 / 0.5567,
-  0.5342 / 0.5567,
-  0.5354 / 0.5567,
-  0.5357 / 0.5680,
-  0.5369 / 0.5567,
-  0.5372 / 0.5567,
-  13.5548 / 13.4704,
-  0.6842 / 0.5600,
-  0.6003 / 0.5568,
-  0.5346 / 0.7157,
-  0.6852 / 0.5600,
-  0.5335 / 0.5567,
-  0.6834 / 0.5570,
-  0.6847 / 0.5567,
-  0.5351 / 0.5658,
-  0.6849 / 0.5568,
-  0.5815 / 0.5567,
-]
-"""
-from these ratios of 4700U's performance to the 8700k's performance, we observe:
-- min: 0.746961
-- max: 1.255793
-- mean: 0.992118
-- geometric_mean: 0.986834
-- harmonic_mean: 0.981818
-- median: 0.958955
-- quartiles: 0.922671 0.958955 1.041622
-- deciles: 0.901171 0.919671 0.930853 0.941268 0.958955 0.971359 1.020610 1.064552 1.217790
-- pstdev: 0.105231
-- pvariance: 0.011074
-- stdev: 0.105991
-- variance: 0.011234
-"""
-maybe_print("Satistics from ratio of 4700U / 8700k performance")
-stats(min(ratios_4700u_to_8700k))
-stats(max(ratios_4700u_to_8700k))
-stats(mean(ratios_4700u_to_8700k))
-stats(geometric_mean(ratios_4700u_to_8700k))
-stats(harmonic_mean(ratios_4700u_to_8700k))
-stats(median(ratios_4700u_to_8700k))
-stats(quantiles(ratios_4700u_to_8700k))
-stats(quantiles(ratios_4700u_to_8700k, n=10))
-stats(pstdev(ratios_4700u_to_8700k))
-stats(pvariance(ratios_4700u_to_8700k))
-stats(stdev(ratios_4700u_to_8700k))
-stats(variance(ratios_4700u_to_8700k))
-maybe_print("")
+def check_stats() -> None:  # noqa: D103
+  ratios_4700u_to_8700k = [
+    85.1526 / 77.4804,
+    8.2798 / 7.7768,
+    393.2533 / 419.9600,
+    341.9360 / 370.3981,
+    358.9367 / 404.1549,
+    358.3562 / 406.0698,
+    361.5343 / 402.0191,
+    395.0910 / 417.8476,
+    345.4267 / 367.6712,
+    348.0640 / 377.8337,
+    746.4775 / 794.3493,
+    677.4594 / 752.0625,
+    679.9086 / 760.5823,
+    22.5792 / 24.0198,
+    20.2340 / 24.3028,
+    23.0611 / 22.1962,
+    22.6880 / 21.2082,
+    20.7772 / 19.9666,
+    23.3201 / 19.7323,
+    21.2919 / 20.0104,
+    24.0210 / 22.4429,
+    21.2310 / 21.0758,
+    22.3947 / 21.2881,
+    23.1717 / 22.7376,
+    20.7030 / 21.3258,
+    21.2003 / 21.7042,
+    68.9289 / 67.4939,
+    5.6050 / 4.8811,
+    321.4695 / 343.6451,
+    292.5633 / 314.6168,
+    294.4185 / 324.5867,
+    296.6719 / 325.6120,
+    294.3780 / 325.4169,
+    321.2171 / 344.2590,
+    291.5041 / 316.9539,
+    634.3641 / 697.5164,
+    594.0366 / 645.1800,
+    16.5077 / 16.3071,
+    15.3206 / 14.7222,
+    17.6356 / 19.4977,
+    20.0772 / 20.3658,
+    17.1632 / 18.5107,
+    17.6866 / 18.3033,
+    17.1658 / 18.2874,
+    18.1571 / 19.5564,
+    18.7349 / 20.3715,
+    17.6353 / 19.4942,
+    20.1110 / 20.6960,
+    0.6991 / 0.5567,
+    0.5326 / 0.5622,
+    0.5349 / 0.5567,
+    0.5353 / 0.5614,
+    0.5343 / 0.5600,
+    0.6858 / 0.5567,
+    0.5342 / 0.5567,
+    0.5354 / 0.5567,
+    0.5357 / 0.5680,
+    0.5369 / 0.5567,
+    0.5372 / 0.5567,
+    13.5548 / 13.4704,
+    0.6842 / 0.5600,
+    0.6003 / 0.5568,
+    0.5346 / 0.7157,
+    0.6852 / 0.5600,
+    0.5335 / 0.5567,
+    0.6834 / 0.5570,
+    0.6847 / 0.5567,
+    0.5351 / 0.5658,
+    0.6849 / 0.5568,
+    0.5815 / 0.5567,
+  ]
+  """
+  from these ratios of 4700U's performance to the 8700k's performance, we observe:
+  - min: 0.746961
+  - max: 1.255793
+  - mean: 0.992118
+  - geometric_mean: 0.986834
+  - harmonic_mean: 0.981818
+  - median: 0.958955
+  - quartiles: 0.922671 0.958955 1.041622
+  - deciles: 0.901171 0.919671 0.930853 0.941268 0.958955 0.971359 1.020610 1.064552 1.217790
+  - pstdev: 0.105231
+  - pvariance: 0.011074
+  - stdev: 0.105991
+  - variance: 0.011234
+  """
+  print("Satistics from ratio of 4700U / 8700k performance")
+  stats(min(ratios_4700u_to_8700k))
+  stats(max(ratios_4700u_to_8700k))
+  stats(mean(ratios_4700u_to_8700k))
+  stats(geometric_mean(ratios_4700u_to_8700k))
+  stats(harmonic_mean(ratios_4700u_to_8700k))
+  stats(median(ratios_4700u_to_8700k))
+  stats(quantiles(ratios_4700u_to_8700k))
+  stats(quantiles(ratios_4700u_to_8700k, n=10))
+  stats(pstdev(ratios_4700u_to_8700k))
+  stats(pvariance(ratios_4700u_to_8700k))
+  stats(stdev(ratios_4700u_to_8700k))
+  stats(variance(ratios_4700u_to_8700k))
+  print("")
 
-ratios_cpython_to_pypy = [
-  68.9289 / 0.6991,
-  5.6050 / 0.5326,
-  321.4695 / 0.5349,
-  292.5633 / 0.5353,
-  294.4185 / 0.5343,
-  296.6719 / 0.6858,
-  294.3780 / 0.5342,
-  321.2171 / 0.5354,
-  291.5041 / 0.5357,
-  634.3641 / 0.5369,
-  594.0366 / 0.5372,
-  16.5077 / 13.5548,
-  15.3206 / 0.6842,
-  17.6356 / 0.6003,
-  20.0772 / 0.5346,
-  17.1632 / 0.6852,
-  17.6866 / 0.5335,
-  17.1658 / 0.6834,
-  18.1571 / 0.6847,
-  18.7349 / 0.5351,
-  17.6353 / 0.6849,
-  20.1110 / 0.5815,
-  67.4939 / 0.5567,
-  4.8811 / 0.5622,
-  343.6451 / 0.5567,
-  314.6168 / 0.5614,
-  324.5867 / 0.5600,
-  325.6120 / 0.5567,
-  325.4169 / 0.5567,
-  344.2590 / 0.5567,
-  316.9539 / 0.5680,
-  697.5164 / 0.5567,
-  645.1800 / 0.5567,
-  16.3071 / 13.4704,
-  14.7222 / 0.5600,
-  19.4977 / 0.5568,
-  20.3658 / 0.7157,
-  18.5107 / 0.5600,
-  18.3033 / 0.5567,
-  18.2874 / 0.5570,
-  19.5564 / 0.5567,
-  20.3715 / 0.5658,
-  19.4942 / 0.5568,
-  20.6960 / 0.5567,
-]
-"""
-from these ratios of CPython's performance to PyPy's performance, we observe:
-- min: 1.210588
-- max: 1252.948446
-- mean: 306.739916
-- geometric_mean: 94.033356
-- harmonic_mean: 17.201756
-- median: 36.590494
-- quartiles: 28.686328 36.590494 574.818000
-- deciles: 16.457918 26.289643 32.855084 35.011135 36.590494 432.592447 554.540351 584.896713 862.096938
-- pstdev: 367.905574
-- pvariance: 135354.511379
-- stdev: 372.158959
-- variance: 138502.290713
-"""
-maybe_print("Satistics from ratio of CPython / PyPy performance")
-stats(min(ratios_cpython_to_pypy))
-stats(max(ratios_cpython_to_pypy))
-stats(mean(ratios_cpython_to_pypy))
-stats(geometric_mean(ratios_cpython_to_pypy))
-stats(harmonic_mean(ratios_cpython_to_pypy))
-stats(median(ratios_cpython_to_pypy))
-stats(quantiles(ratios_cpython_to_pypy))
-stats(quantiles(ratios_cpython_to_pypy, n=10))
-stats(pstdev(ratios_cpython_to_pypy))
-stats(pvariance(ratios_cpython_to_pypy))
-stats(stdev(ratios_cpython_to_pypy))
-stats(variance(ratios_cpython_to_pypy))
-maybe_print("")
+  ratios_cpython_to_pypy = [
+    68.9289 / 0.6991,
+    5.6050 / 0.5326,
+    321.4695 / 0.5349,
+    292.5633 / 0.5353,
+    294.4185 / 0.5343,
+    296.6719 / 0.6858,
+    294.3780 / 0.5342,
+    321.2171 / 0.5354,
+    291.5041 / 0.5357,
+    634.3641 / 0.5369,
+    594.0366 / 0.5372,
+    16.5077 / 13.5548,
+    15.3206 / 0.6842,
+    17.6356 / 0.6003,
+    20.0772 / 0.5346,
+    17.1632 / 0.6852,
+    17.6866 / 0.5335,
+    17.1658 / 0.6834,
+    18.1571 / 0.6847,
+    18.7349 / 0.5351,
+    17.6353 / 0.6849,
+    20.1110 / 0.5815,
+    67.4939 / 0.5567,
+    4.8811 / 0.5622,
+    343.6451 / 0.5567,
+    314.6168 / 0.5614,
+    324.5867 / 0.5600,
+    325.6120 / 0.5567,
+    325.4169 / 0.5567,
+    344.2590 / 0.5567,
+    316.9539 / 0.5680,
+    697.5164 / 0.5567,
+    645.1800 / 0.5567,
+    16.3071 / 13.4704,
+    14.7222 / 0.5600,
+    19.4977 / 0.5568,
+    20.3658 / 0.7157,
+    18.5107 / 0.5600,
+    18.3033 / 0.5567,
+    18.2874 / 0.5570,
+    19.5564 / 0.5567,
+    20.3715 / 0.5658,
+    19.4942 / 0.5568,
+    20.6960 / 0.5567,
+  ]
+  """
+  from these ratios of CPython's performance to PyPy's performance, we observe:
+  - min: 1.210588
+  - max: 1252.948446
+  - mean: 306.739916
+  - geometric_mean: 94.033356
+  - harmonic_mean: 17.201756
+  - median: 36.590494
+  - quartiles: 28.686328 36.590494 574.818000
+  - deciles: 16.457918 26.289643 32.855084 35.011135 36.590494 432.592447 554.540351 584.896713 862.096938
+  - pstdev: 367.905574
+  - pvariance: 135354.511379
+  - stdev: 372.158959
+  - variance: 138502.290713
+  """
+  print("Satistics from ratio of CPython / PyPy performance")
+  stats(min(ratios_cpython_to_pypy))
+  stats(max(ratios_cpython_to_pypy))
+  stats(mean(ratios_cpython_to_pypy))
+  stats(geometric_mean(ratios_cpython_to_pypy))
+  stats(harmonic_mean(ratios_cpython_to_pypy))
+  stats(median(ratios_cpython_to_pypy))
+  stats(quantiles(ratios_cpython_to_pypy))
+  stats(quantiles(ratios_cpython_to_pypy, n=10))
+  stats(pstdev(ratios_cpython_to_pypy))
+  stats(pvariance(ratios_cpython_to_pypy))
+  stats(stdev(ratios_cpython_to_pypy))
+  stats(variance(ratios_cpython_to_pypy))
+  print("")
 
-ratios_4700u_battery_to_4700u_plugged = [
-  77.4804 / 129.8398,
-  7.7768 / 13.1828,
-  419.9600 / 775.1731,
-  370.3981 / 461.8491,
-  404.1549 / 463.4976,
-  406.0698 / 468.3234,
-  402.0191 / 449.3548,
-  417.8476 / 459.1070,
-  367.6712 / 424.1747,
-  377.8337 / 452.0948,
-  794.3493 / 1191.4967,
-  752.0625 / 901.3104,
-  760.5823 / 843.3253,
-  24.0198 / 46.1178,
-  24.3028 / 51.6418,
-  22.1962 / 44.0287,
-  21.2082 / 26.3737,
-  19.9666 / 20.9656,
-  19.7323 / 19.5120,
-  20.0104 / 19.7859,
-  22.4429 / 22.4903,
-  21.0758 / 21.3831,
-  21.2881 / 28.5871,
-  22.7376 / 37.7340,
-  21.3258 / 21.8362,
-  21.7042 / 23.4631,
-  67.4939 / 114.3563,
-  4.8811 / 8.4461,
-  343.6451 / 640.5819,
-  314.6168 / 577.8327,
-  324.5867 / 493.8302,
-  325.6120 / 348.2305,
-  325.4169 / 342.9820,
-  344.2590 / 393.6214,
-  316.9539 / 370.9233,
-  697.5164 / 861.5859,
-  645.1800 / 1050.7468,
-  16.3071 / 28.1532,
-  14.7222 / 26.9623,
-  19.4977 / 31.9918,
-  20.3658 / 32.3710,
-  18.5107 / 33.8196,
-  18.3033 / 18.1998,
-  18.2874 / 19.0184,
-  19.5564 / 21.3467,
-  20.3715 / 21.2177,
-  19.4942 / 34.6186,
-  20.6960 / 29.0954,
-  0.5567 / 0.9427,
-  0.5622 / 0.9630,
-  0.5567 / 0.9559,
-  0.5614 / 0.9464,
-  0.5600 / 0.9443,
-  0.5567 / 0.9441,
-  0.5567 / 0.9447,
-  0.5567 / 1.6885,
-  0.5680 / 1.7018,
-  0.5567 / 3.6359,
-  0.5567 / 0.9501,
-  13.4704 / 25.8458,
-  0.5600 / 0.9480,
-  0.5568 / 1.2427,
-  0.7157 / 0.9418,
-  0.5600 / 0.9432,
-  0.5567 / 0.9437,
-  0.5570 / 1.1097,
-  0.5567 / 1.2091,
-  0.5658 / 0.9422,
-  0.5568 / 2.1674,
-  0.5567 / 0.9422,
-]
-"""
-from these ratios of unplugged performance to plugged performance for the 4700U, we observe:
-- min: 0.153112
-- max: 1.011346
-- mean: 0.687106
-- geometric_mean: 0.653819
-- harmonic_mean: 0.610916
-- median: 0.601543
-- quartiles: 0.574212 0.601543 0.872624
-- deciles: 0.473737 0.544788 0.584442 0.590610 0.601543 0.731331 0.848872 0.908482 0.961419
-- pstdev: 0.198292
-- pvariance: 0.039320
-- stdev: 0.199723
-- variance: 0.039889
-"""
-maybe_print("Satistics from ratio of 4700U battery / 4700U plugged performance")
-stats(min(ratios_4700u_battery_to_4700u_plugged))
-stats(max(ratios_4700u_battery_to_4700u_plugged))
-stats(mean(ratios_4700u_battery_to_4700u_plugged))
-stats(geometric_mean(ratios_4700u_battery_to_4700u_plugged))
-stats(harmonic_mean(ratios_4700u_battery_to_4700u_plugged))
-stats(median(ratios_4700u_battery_to_4700u_plugged))
-stats(quantiles(ratios_4700u_battery_to_4700u_plugged))
-stats(quantiles(ratios_4700u_battery_to_4700u_plugged, n=10))
-stats(pstdev(ratios_4700u_battery_to_4700u_plugged))
-stats(pvariance(ratios_4700u_battery_to_4700u_plugged))
-stats(stdev(ratios_4700u_battery_to_4700u_plugged))
-stats(variance(ratios_4700u_battery_to_4700u_plugged))
-maybe_print("")
+  ratios_4700u_battery_to_4700u_plugged = [
+    77.4804 / 129.8398,
+    7.7768 / 13.1828,
+    419.9600 / 775.1731,
+    370.3981 / 461.8491,
+    404.1549 / 463.4976,
+    406.0698 / 468.3234,
+    402.0191 / 449.3548,
+    417.8476 / 459.1070,
+    367.6712 / 424.1747,
+    377.8337 / 452.0948,
+    794.3493 / 1191.4967,
+    752.0625 / 901.3104,
+    760.5823 / 843.3253,
+    24.0198 / 46.1178,
+    24.3028 / 51.6418,
+    22.1962 / 44.0287,
+    21.2082 / 26.3737,
+    19.9666 / 20.9656,
+    19.7323 / 19.5120,
+    20.0104 / 19.7859,
+    22.4429 / 22.4903,
+    21.0758 / 21.3831,
+    21.2881 / 28.5871,
+    22.7376 / 37.7340,
+    21.3258 / 21.8362,
+    21.7042 / 23.4631,
+    67.4939 / 114.3563,
+    4.8811 / 8.4461,
+    343.6451 / 640.5819,
+    314.6168 / 577.8327,
+    324.5867 / 493.8302,
+    325.6120 / 348.2305,
+    325.4169 / 342.9820,
+    344.2590 / 393.6214,
+    316.9539 / 370.9233,
+    697.5164 / 861.5859,
+    645.1800 / 1050.7468,
+    16.3071 / 28.1532,
+    14.7222 / 26.9623,
+    19.4977 / 31.9918,
+    20.3658 / 32.3710,
+    18.5107 / 33.8196,
+    18.3033 / 18.1998,
+    18.2874 / 19.0184,
+    19.5564 / 21.3467,
+    20.3715 / 21.2177,
+    19.4942 / 34.6186,
+    20.6960 / 29.0954,
+    0.5567 / 0.9427,
+    0.5622 / 0.9630,
+    0.5567 / 0.9559,
+    0.5614 / 0.9464,
+    0.5600 / 0.9443,
+    0.5567 / 0.9441,
+    0.5567 / 0.9447,
+    0.5567 / 1.6885,
+    0.5680 / 1.7018,
+    0.5567 / 3.6359,
+    0.5567 / 0.9501,
+    13.4704 / 25.8458,
+    0.5600 / 0.9480,
+    0.5568 / 1.2427,
+    0.7157 / 0.9418,
+    0.5600 / 0.9432,
+    0.5567 / 0.9437,
+    0.5570 / 1.1097,
+    0.5567 / 1.2091,
+    0.5658 / 0.9422,
+    0.5568 / 2.1674,
+    0.5567 / 0.9422,
+  ]
+  """
+  from these ratios of unplugged performance to plugged performance for the 4700U, we observe:
+  - min: 0.153112
+  - max: 1.011346
+  - mean: 0.687106
+  - geometric_mean: 0.653819
+  - harmonic_mean: 0.610916
+  - median: 0.601543
+  - quartiles: 0.574212 0.601543 0.872624
+  - deciles: 0.473737 0.544788 0.584442 0.590610 0.601543 0.731331 0.848872 0.908482 0.961419
+  - pstdev: 0.198292
+  - pvariance: 0.039320
+  - stdev: 0.199723
+  - variance: 0.039889
+  """
+  print("Satistics from ratio of 4700U battery / 4700U plugged performance")
+  stats(min(ratios_4700u_battery_to_4700u_plugged))
+  stats(max(ratios_4700u_battery_to_4700u_plugged))
+  stats(mean(ratios_4700u_battery_to_4700u_plugged))
+  stats(geometric_mean(ratios_4700u_battery_to_4700u_plugged))
+  stats(harmonic_mean(ratios_4700u_battery_to_4700u_plugged))
+  stats(median(ratios_4700u_battery_to_4700u_plugged))
+  stats(quantiles(ratios_4700u_battery_to_4700u_plugged))
+  stats(quantiles(ratios_4700u_battery_to_4700u_plugged, n=10))
+  stats(pstdev(ratios_4700u_battery_to_4700u_plugged))
+  stats(pvariance(ratios_4700u_battery_to_4700u_plugged))
+  stats(stdev(ratios_4700u_battery_to_4700u_plugged))
+  stats(variance(ratios_4700u_battery_to_4700u_plugged))
+  print("")
