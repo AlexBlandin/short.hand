@@ -27,14 +27,15 @@ Copyright 2022 Alex Blandin
 - for when you can't use attrs
 """
 
-import ast
 import contextlib
 import dataclasses
+import sys
 import timeit
 from collections import namedtuple
 from dataclasses import dataclass
-from functools import cache
+from datetime import datetime
 from operator import attrgetter
+from pathlib import Path
 from statistics import geometric_mean, harmonic_mean, mean, median, pstdev, pvariance, quantiles, stdev, variance
 from typing import NamedTuple
 
@@ -48,22 +49,62 @@ except TypeError:
     return -1
 
 
-#########
-# Dials #
-#########
+if sys.version_info >= (3, 9):  # noqa: UP036
+  from functools import cache
+else:
+  from functools import lru_cache as cache
 
-N_ITERATIONS, N_RUNS = 10**6, 10
+
+maybe_slots = {"slots": True} if sys.version_info >= (3, 10) else {}
+
+###########
+## Dials ##
+###########
+
+N_ITERATIONS, N_RUNS = 10**6, 1000
 PRINTSTATS = False  # only need to print out when there's something new
 
-##############
-# Formatting #
-##############
+################
+## Formatting ##
+################
 
-print(f"POD test results for {N_ITERATIONS} iterations, best of {N_RUNS} runs:")
-sep = f"+-{"":->23}-+-{"":->4}-+-{"":->9}-+-{"":->9}-+"
-print(sep)
-print(f"| {"name":>23} | size | make (ms) | item (ms) |")
-print(sep)
+MILLI = 10**3
+MICRO = 10**6
+NANO = 10**9
+UNIT = {MILLI: "ms", MICRO: "μs", NANO: "ns"}
+
+TIMESCALE = NANO
+
+version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+output = Path(__file__).parent.parent / "pods"
+output.mkdir(exist_ok=True)
+output = output / f"pod_{sys.platform}_{sys.implementation.name}_{version}_{datetime.now():%Y-%m-%d-%H-%M-%S}.txt"  # noqa: DTZ005
+output.touch()
+buffer = output.open(mode="+a", encoding="utf8", newline="\n")
+
+
+def print2(*args, **kwargs) -> None:  # noqa: ANN002, ANN003
+  "We print to both the terminal and this pod's buffer."
+  print(*args, **kwargs)
+  print(*args, **kwargs, file=buffer)
+
+
+print("Welcome to the Plain Old Data testing pod.")
+print("This pod is running on ", end="")
+if sys.platform == "win32" and sys.getwindowsversion().platform_version:
+  major, minor, build = sys.getwindowsversion().platform_version
+  print2(f"Windows {major}.{minor} build {build} at {sys.executable}")
+else:
+  print2(f"{sys.platform} at {sys.executable}")
+print2(sys.version)
+print2()
+
+print("POD results for ", end="")
+print2(f"{N_ITERATIONS} iterations, averaged, best of {N_RUNS} runs:")
+sep = f"+-{'':->23}-+-{'':->4}-+-{'':->11}-+-{'':->11}-+{''}"  # extra {''} is to appease syntax highlighting
+print2(sep)
+print2(f"| {'name':>23} | size | create ({UNIT[TIMESCALE]}) | access ({UNIT[TIMESCALE]}) |")
+print2(sep)
 
 
 def time(code: str, iterations: int = N_ITERATIONS, runs: int = N_RUNS, setup: str = "") -> float:
@@ -73,16 +114,17 @@ def time(code: str, iterations: int = N_ITERATIONS, runs: int = N_RUNS, setup: s
 
 def row(name: str, new: str, access: str) -> None:
   """Another row in the table."""
-  # 1000* gives ms
   with contextlib.suppress(Exception):
-    print(
-      f"| {name:>23} | {getsizeof(ast.literal_eval(new)):04} | {1000 * time(new): >9.4f} | {1000 * time("var" + access, setup = "var=" + new): >9.4f} |"  # noqa: E501
+    to_new = TIMESCALE * time(new) / N_ITERATIONS
+    to_access = TIMESCALE * time("var" + access, setup="var=" + new) / N_ITERATIONS
+    print2(
+      f"| {name:>23} | {getsizeof(eval(new)):04} | {to_new:>11.4f} | {to_access:>11.4f} |"  # noqa: S307, PGH001
     )
 
 
-#################
-# Test Subjects #
-#################
+###################
+## Test Subjects ##
+###################
 
 
 class Regular:
@@ -144,7 +186,7 @@ class DataSlots:
   amount: float
 
 
-@dataclass(slots=True)
+@dataclass(**maybe_slots)
 class DataSlotsAuto:
   """dataclass with slots, requires python 3.10+."""
 
@@ -175,7 +217,7 @@ class FrozenDataSlots:
   amount: float
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(**maybe_slots, frozen=True)
 class FrozenDataSlotsAuto:
   """frozen dataclass with slots, requires python 3.10+."""
 
@@ -191,7 +233,12 @@ def cls_to_tuple(cls):  # noqa: ANN001, ANN201
   return NamedTuple(cls.__name__, **cls.__annotations__)
 
 
-@dataclass(slots=True)
+def cls_to_tuple_uncached(cls):  # noqa: ANN001, ANN201
+  """This converts a class to a NamedTuple."""
+  return NamedTuple(cls.__name__, **cls.__annotations__)
+
+
+@dataclass(**maybe_slots)
 class Struct:
   """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that."""  # noqa: E501
 
@@ -202,13 +249,13 @@ class Struct:
 
   def __iter__(self):  # noqa: ANN101, ANN204
     """Iterating over the values, rather than the __slots__."""
-    yield from map(self.__getattribute__, self.__slots__)
+    yield from map(self.__getattribute__, self.__slots__)  # type: ignore[reportAttributeAccessIssue]
 
   def __len__(self) -> int:  # noqa: ANN101
     """How many slots there are, useful for slices, iteration, and reversing."""
     return len(self.__slots__)  # type: ignore[reportArgumentType]
 
-  def __getitem__(self, n: int | slice):  # noqa: ANN101, ANN204
+  def __getitem__(self, n: "int | slice"):  # noqa: ANN101, ANN204
     """Generic __slots__[n] -> val, because subscripting (and slicing) is handy at times."""
     if isinstance(n, int):
       return self.__getattribute__(self.__slots__[n])  # type: ignore[reportArgumentType]
@@ -232,7 +279,7 @@ class Struct:
     return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__))  # type: ignore[reportArgumentType]
 
 
-@dataclass(slots=True)
+@dataclass(**maybe_slots)
 class StructSubclassable:
   """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed."""  # noqa: E501
 
@@ -249,7 +296,7 @@ class StructSubclassable:
     """How many slots there are, useful for slices, iteration, and reversing."""
     return len(self.fields())
 
-  def __getitem__(self, n: int | slice):  # noqa: ANN101, ANN204
+  def __getitem__(self, n: "int | slice"):  # noqa: ANN101, ANN204
     """Generic __slots__[n] -> val, because subscripting (and slicing) is handy at times."""
     if isinstance(n, int):
       return self.__getattribute__(self.fields()[n])
@@ -293,9 +340,9 @@ PODS = [
   StructSubclassable,
 ]
 
-#########
-# Tests #
-#########
+###########
+## Tests ##
+###########
 
 row("dict from literal", "{'amount': 1.0, 'receiver': 'me', 'date': '2022-01-01', 'sender': 'you'}", "['receiver']")
 row("tuple from literal", "(1.0, 'me', '2022-01-01', 'you')", "[1]")
@@ -325,12 +372,14 @@ row(
   ".receiver",
 )
 
-print(sep)
-print()
+print2(sep)
+print2()
 
-###########
-# Results #
-###########
+buffer.close()
+
+#############
+## Results ##
+#############
 
 # 8700k is an Intel 8700k equipped desktop
 # 95 W, 3.7 GHz base, clocked at 4.3 GHz, turbo disabled
@@ -657,15 +706,15 @@ POD test results for 1000000 iterations, best of 100 runs:
 +-------------------------+------+-----------+-----------+
 """
 
-##############
-# Statistics #
-##############
+################
+## Statistics ##
+################
 
-print = print if PRINTSTATS else id  # noqa: A001
+maybe_print = print if PRINTSTATS else id
 
 
 def stats(x) -> None:  # noqa: ANN001, D103
-  print(f"{x:.6f}" if isinstance(x, float) else " ".join(f"{_x:.6f}" for _x in x))
+  maybe_print(f"{x:.6f}" if isinstance(x, float) else " ".join(f"{_x:.6f}" for _x in x))
 
 
 ratios_4700u_to_8700k = [
@@ -755,7 +804,7 @@ from these ratios of 4700U's performance to the 8700k's performance, we observe:
 - stdev: 0.105991
 - variance: 0.011234
 """
-print("Satistics from ratio of 4700U / 8700k performance")
+maybe_print("Satistics from ratio of 4700U / 8700k performance")
 stats(min(ratios_4700u_to_8700k))
 stats(max(ratios_4700u_to_8700k))
 stats(mean(ratios_4700u_to_8700k))
@@ -768,7 +817,7 @@ stats(pstdev(ratios_4700u_to_8700k))
 stats(pvariance(ratios_4700u_to_8700k))
 stats(stdev(ratios_4700u_to_8700k))
 stats(variance(ratios_4700u_to_8700k))
-print("")
+maybe_print("")
 
 ratios_cpython_to_pypy = [
   68.9289 / 0.6991,
@@ -831,7 +880,7 @@ from these ratios of CPython's performance to PyPy's performance, we observe:
 - stdev: 372.158959
 - variance: 138502.290713
 """
-print("Satistics from ratio of CPython / PyPy performance")
+maybe_print("Satistics from ratio of CPython / PyPy performance")
 stats(min(ratios_cpython_to_pypy))
 stats(max(ratios_cpython_to_pypy))
 stats(mean(ratios_cpython_to_pypy))
@@ -844,7 +893,7 @@ stats(pstdev(ratios_cpython_to_pypy))
 stats(pvariance(ratios_cpython_to_pypy))
 stats(stdev(ratios_cpython_to_pypy))
 stats(variance(ratios_cpython_to_pypy))
-print("")
+maybe_print("")
 
 ratios_4700u_battery_to_4700u_plugged = [
   77.4804 / 129.8398,
@@ -933,7 +982,7 @@ from these ratios of unplugged performance to plugged performance for the 4700U,
 - stdev: 0.199723
 - variance: 0.039889
 """
-print("Satistics from ratio of 4700U battery / 4700U plugged performance")
+maybe_print("Satistics from ratio of 4700U battery / 4700U plugged performance")
 stats(min(ratios_4700u_battery_to_4700u_plugged))
 stats(max(ratios_4700u_battery_to_4700u_plugged))
 stats(mean(ratios_4700u_battery_to_4700u_plugged))
@@ -946,4 +995,4 @@ stats(pstdev(ratios_4700u_battery_to_4700u_plugged))
 stats(pvariance(ratios_4700u_battery_to_4700u_plugged))
 stats(stdev(ratios_4700u_battery_to_4700u_plugged))
 stats(variance(ratios_4700u_battery_to_4700u_plugged))
-print("")
+maybe_print("")

@@ -1,0 +1,24 @@
+Windows 10.0 build 22621 at C:\bin\python\Python311\python.exe
+3.11.8 (main, Feb 25 2024, 03:41:44) [MSC v.1929 64 bit (AMD64)]
+
+1000000 iterations, best of 10 runs:
++-------------------------+------+-----------+-----------+
+|                    name | size | make (ms) | item (ms) |
++-------------------------+------+-----------+-----------+
+|       dict from literal | 0184 |  136.9712 |   27.5695 |
+|      tuple from literal | 0072 |   14.0475 |   22.5543 |
+|           regular class | 0056 |  368.7239 |   21.5500 |
+|       class using slots | 0064 |  360.4553 |   20.0485 |
+|  collections namedtuple | 0072 |  448.7741 |   28.7266 |
+|  proc. typed NamedTuple | 0072 |  447.6869 |   35.3887 |
+|        typed NamedTuple | 0072 |  445.5519 |   31.6344 |
+|       regular dataclass | 0056 |  369.5906 |   20.0478 |
+| regular dataclass slots | 0064 |  361.3361 |   20.0831 |
+| autogen dataclass slots | 0064 |  363.4076 |   15.5415 |
+|        frozen dataclass | 0056 |  876.4685 |   15.5543 |
+|  frozen dataclass slots | 0064 |  881.8714 |   15.5422 |
+| autogen frozen dc slots | 0064 |  881.4517 |   16.0518 |
+| handier dataclass slots | 0064 |  358.8620 |   20.0473 |
+| even handier dataclasss | 0064 |  359.8326 |   20.0554 |
++-------------------------+------+-----------+-----------+
+

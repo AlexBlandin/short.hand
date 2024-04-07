@@ -1,0 +1,7 @@
+Windows 10.0 build 22621 at C:\Users\alexb\AppData\Local\Programs\Python\Python312\python.exe
+3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]
+
+1000000 iterations, averaged, best of 100 runs:
++-------------------------+------+-------------+-------------+
+|                    name | size | create (μs) | access (μs) |
++-------------------------+------+-------------+-------------+

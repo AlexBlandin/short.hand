@@ -21,9 +21,9 @@ from pathlib import Path
 from random import randrange, sample
 from time import time
 
-####################
-# Import Shorthand #
-####################
+######################
+## Import Shorthand ##
+######################
 """for when `from shorthand import *` is used"""
 
 # ruff: noqa: E402 F401
@@ -45,9 +45,9 @@ RE_HTTP = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", flags=re.I | re.M | re.U) 
 CPYTHON = sys.implementation.name == "cpython"
 PYPY = sys.implementation.name == "pypy"
 
-#################
-# POD Shorthand #
-#################
+###################
+## POD Shorthand ##
+###################
 
 
 class Dot(dict):
@@ -187,9 +187,9 @@ class SubStruct:
     return tuple(map(attrgetter("name"), dataclasses.fields(self)))
 
 
-#######################
-# Iterables Shorthand #
-#######################
+#########################
+## Iterables Shorthand ##
+#########################
 
 flatten = chain.from_iterable
 
@@ -438,9 +438,9 @@ class DeepChainMap[K, V](ChainMap[K, V]):
     raise KeyError(key)
 
 
-###################
-# Maths Shorthand #
-###################
+#####################
+## Maths Shorthand ##
+#####################
 
 
 def avg(xs: Sequence[float], start: float = 0.0) -> float:
@@ -532,9 +532,9 @@ def fastprime(n: int, trials: int = 8) -> bool:
   return all(not witness(a) for a in b)
 
 
-####################
-# Timing Shorthand #
-####################
+######################
+## Timing Shorthand ##
+######################
 
 
 def now() -> str:
@@ -591,9 +591,9 @@ def hours_minutes_seconds(t: float) -> None:
   print()
 
 
-################
-# IO Shorthand #
-################
+##################
+## IO Shorthand ##
+##################
 
 
 def yesno(
@@ -642,9 +642,9 @@ def from_bytes(b: bytes, *, signed: bool = False, byteorder: Literal["little", "
   return int.from_bytes(b, byteorder, signed=signed)
 
 
-##################
-# Path Shorthand #
-##################
+####################
+## Path Shorthand ##
+####################
 
 # convenience functions to not write as much
 
@@ -689,9 +689,9 @@ def writelinesmap(
   )
 
 
-####################
-# String Shorthand #
-####################
+######################
+## String Shorthand ##
+######################
 
 
 def lev(s1: str, s2: str) -> int:
@@ -721,9 +721,9 @@ def lev(s1: str, s2: str) -> int:
   return d0[-1]
 
 
-########################
-# Exceptions Shorthand #
-########################
+##########################
+## Exceptions Shorthand ##
+##########################
 
 
 class NonIntegerSliceBoundsTypeError(TypeError):
@@ -747,9 +747,9 @@ class IndexTypeError(TypeError):
     super().__init__(self.__doc__)
 
 
-#########################
-# Performance & Testing #
-#########################
+###########################
+## Performance & Testing ##
+###########################
 
 if __name__ == "__main__":
   from dataclasses import asdict, astuple

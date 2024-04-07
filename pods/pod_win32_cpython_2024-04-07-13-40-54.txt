@@ -1,0 +1,7 @@
+Windows 10.0 build 22621 at C:\bin\python\Python39\python.exe
+3.9.18 (main, Feb 25 2024, 03:46:04) [MSC v.1929 64 bit (AMD64)]
+
+1000000 iterations, best of 10 runs:
++-------------------------+------+-----------+-----------+
+|                    name | size | make (ms) | item (ms) |
++-------------------------+------+-----------+-----------+

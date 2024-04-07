@@ -1,0 +1,25 @@
+win32 at C:\bin\python\pypy\pypy.exe
+3.10.13 (fc59e61cfbff, Jan 14 2024, 16:27:58)
+[PyPy 7.3.15 with MSC v.1929 64 bit (AMD64)]
+
+1000000 iterations, averaged, best of 100 runs:
++-------------------------+------+-------------+-------------+
+|                    name | size | create (ms) | access (ms) |
++-------------------------+------+-------------+-------------+
+|       dict from literal | -001 |     0.58040 |    10.29550 |
+|      tuple from literal | -001 |     0.58790 |     0.58800 |
+|           regular class | -001 |     0.58830 |     0.58800 |
+|       class using slots | -001 |     0.58840 |     0.58800 |
+|  collections namedtuple | -001 |     0.58800 |     0.58780 |
+|  proc. typed NamedTuple | -001 |     0.58800 |     0.58770 |
+|        typed NamedTuple | -001 |     0.58530 |     0.58810 |
+|       regular dataclass | -001 |     0.58870 |     0.58170 |
+| regular dataclass slots | -001 |     0.58560 |     0.58520 |
+| autogen dataclass slots | -001 |     0.58440 |     0.58520 |
+|        frozen dataclass | -001 |     0.57720 |     0.58510 |
+|  frozen dataclass slots | -001 |     0.58580 |     0.57950 |
+| autogen frozen dc slots | -001 |     0.59170 |     0.57950 |
+| handier dataclass slots | -001 |     0.58680 |     0.58510 |
+| even handier dataclasss | -001 |     0.58580 |     0.58810 |
++-------------------------+------+-------------+-------------+
+

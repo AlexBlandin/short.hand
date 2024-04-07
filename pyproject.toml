@@ -3,7 +3,7 @@ name = "short.hand"
 description = "A series of useful shorthands originally devised during Advent of Code 2017."
 version = "0.0.0"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = "MIT"
 authors = [{ name = "AlexBlandin" }]
 dependencies = []
@@ -22,7 +22,7 @@ Source = "https://github.com/alexblandin/short.hand"
 
 [tool.ruff]
 indent-width = 2
-target-version = "py310"
+target-version = "py312"
 line-length = 120
 
 [tool.ruff.lint]
