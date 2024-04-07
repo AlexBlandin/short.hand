@@ -1,44 +1,24 @@
 [project]
 name = "short.hand"
 description = "A series of useful shorthands originally devised during Advent of Code 2017."
+version = "0.0.0"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{ name = "AlexBlandin" }]
 dependencies = []
-dynamic = ["version"]
 
 [project.optional-dependencies]
 toml = ["pytomlpp"]
 cli = ["colorama; platform_system == 'Windows'"]
 all = ["toml", "cli"]
 lint = ["ruff"]
-check = ["mypy"]
-dev = ["all", "lint", "check"]
+dev = ["all", "lint"]
 
 [project.urls]
 Documentation = "https://github.com/alexblandin/short.hand#readme"
 Issues = "https://github.com/alexblandin/short.hand/issues"
 Source = "https://github.com/alexblandin/short.hand"
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.version]
-path = "src/__init__.py"
-
-[tool.hatch.envs.default]
-dependencies = []
-features = ["toml", "cli"]
-
-[tool.hatch.envs.lint]
-dependencies = ["lint"]
-detached = true
-
-[tool.hatch.envs.dev]
-features = ["dev"]
-post-install-commands = ["mypy --install-types --non-interactive src/mymodule"]
 
 [tool.ruff]
 indent-width = 2
@@ -48,8 +28,7 @@ line-length = 120
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-  "ERA",    # code comments actually help 
-  "INP001", # useless before hatch
+  "ERA",    # code comments actually help
   "TD003",  # not using github to track todo/issues
   "S311",   # I know when to use secrets
   "T20",    # print is good, actually 

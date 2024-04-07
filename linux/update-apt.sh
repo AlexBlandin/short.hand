@@ -5,4 +5,3 @@ sudo apt-get dist-upgrade -qy
 sudo apt-get check -qy
 sudo apt-get autoclean -qy
 sudo apt autoremove -qy
-
