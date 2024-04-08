@@ -1,0 +1,26 @@
+POD run commencing 2024-04-08-11-56-02
+Windows 10.0 build 19041 at C:\Users\alex\AppData\Local\Programs\Python\Python39\python.exe
+3.9.13 (tags/v3.9.13:6de2ca5, May 17 2022, 16:36:42) [MSC v.1929 64 bit (AMD64)]
+
+1000000 iterations, averaged, best of 1000 runs:
++-------------------------+------+-------------+-------------+
+|                    name | size | create (ns) | access (ns) |
++-------------------------+------+-------------+-------------+
+|       dict from literal | 0232 |     78.7054 |     19.9850 |
+|      tuple from literal | 0072 |      5.7360 |     18.9089 |
+|           regular class | 0048 |    368.1428 |     21.9206 |
+|       class using slots | 0064 |    342.9569 |     18.0534 |
+|  collections namedtuple | 0072 |    347.7111 |     17.6310 |
+|  proc. typed NamedTuple | 0072 |    349.9144 |     17.6643 |
+|        typed NamedTuple | 0072 |    346.6168 |     17.6170 |
+|       regular dataclass | 0048 |    367.2637 |     21.7367 |
+| regular dataclass slots | 0064 |    342.1512 |     18.0992 |
+| autogen dataclass slots | 0048 |    365.9257 |     23.1107 |
+|        frozen dataclass | 0048 |    732.8136 |     21.6179 |
+|  frozen dataclass slots | 0064 |    665.0778 |     18.0446 |
+| autogen frozen dc slots | 0048 |    746.2000 |     21.7019 |
+| handier dataclass slots | 0048 |    396.1781 |     23.2788 |
+| even handier dataclasss | 0048 |    398.3488 |     23.2971 |
++-------------------------+------+-------------+-------------+
+
+POD run completed 2024-04-08-13-45-15

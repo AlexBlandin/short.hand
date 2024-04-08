@@ -27,6 +27,8 @@ Copyright 2022 Alex Blandin
 - for when you can't use attrs
 """
 
+# TODO(alex): large refurb into something actually usable and not a dirty hack of a test
+
 import contextlib
 import dataclasses
 import sys
@@ -278,7 +280,7 @@ class StructSubclassable:
 
 start_time = datetime.now()  # noqa: DTZ005
 version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-output = Path(__file__).parent.parent / "pods"  # TODO(alex): don't fix this just yet, (only .parent) as handy to tell!
+output = Path(__file__).parent / "pods"
 output.mkdir(exist_ok=True)
 output = output / f"pod_{sys.platform}_{sys.implementation.name}_{version}_{start_time:%Y-%m-%d-%H-%M-%S}.txt"
 output.touch()
@@ -298,7 +300,7 @@ if sys.platform == "win32" and sys.getwindowsversion().platform_version:
   print2(f"Windows {major}.{minor} build {build} at {sys.executable}")
 else:
   print2(f"{sys.platform} at {sys.executable}")
-print2(sys.version)  # TODO(alex): merge onto one line (looking at you, pypy), a split and join should be fine
+print2(" ".join(sys.version.splitlines()).replace("  ", " "))
 print2()
 
 print("POD results for ", end="")
