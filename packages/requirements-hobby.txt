@@ -18,10 +18,12 @@ brotli==1.1.0
     # via yt-dlp
 certifi==2024.2.2
     # via
+    #   curl-cffi
     #   requests
     #   skyfield
     #   yt-dlp
 cffi==1.16.0
+    # via curl-cffi
 charset-normalizer==3.3.2
     # via
     #   httpie
@@ -34,6 +36,8 @@ colorama==0.4.6
     # via
     #   click
     #   httpie
+    #   tqdm
+curl-cffi==0.6.2
 decorator==5.1.1
     # via ratelim
 defusedxml==0.7.1
@@ -68,6 +72,7 @@ h5py==3.10.0
     #   keras
     #   tensorflow-intel
 httpie==3.2.2
+humanize==4.9.0
 idna==3.6
     # via
     #   requests
@@ -80,6 +85,7 @@ jplephem==2.21
     # via skyfield
 keras==3.2.0
     # via tensorflow-intel
+langcodes==3.3.0
 libclang==18.1.1
     # via tensorflow-intel
 llvmlite==0.42.0
@@ -160,6 +166,7 @@ pysocks==1.7.1
     # via requests
 python-dateutil==2.9.0.post0
     # via pandas
+pytomlpp==1.0.13
 pytz==2024.1
     # via pandas
 ratelim==0.1.6
@@ -212,6 +219,7 @@ tensorflow-intel==2.16.1
     # via tensorflow
 termcolor==2.4.0
     # via tensorflow-intel
+tqdm==4.66.2
 typing-extensions==4.11.0
     # via
     #   optree

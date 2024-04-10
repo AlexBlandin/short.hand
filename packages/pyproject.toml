@@ -7,15 +7,18 @@ authors = [{ name = "AlexBlandin" }]
 dependencies = ["pip", "setuptools", "wheel", "virtualenv"]
 
 [project.optional-dependencies]
-# Convenience wrappers
+# Convenience wrappers, but everything must be indirect via shorthand_packages[] yay~
 all = ["shorthand_packages[common]", "shorthand_packages[extra]", "shorthand_packages[hobby]", "shorthand_packages[dev]", "shorthand_packages[extra_speed]",]
-common = ["yt-dlp", "shorthand_packages[lint]",]
+common = ["shorthand_packages[pytdl]", "shorthand_packages[sunrise]", "shorthand_packages[lint]",]
 hobby = ["shorthand_packages[common]", "shorthand_packages[astro]", "shorthand_packages[writing]", "shorthand_packages[web]", "shorthand_packages[ml]", "shorthand_packages[external]"]
 extra = ["shorthand_packages[crypto]", "shorthand_packages[cli_plus]", "shorthand_packages[handy]", "shorthand_packages[notebook]", "shorthand_packages[numeric]", "shorthand_packages[img]", "shorthand_packages[gui]", "shorthand_packages[speed]",]
 dev = ["shorthand_packages[lint]", "shorthand_packages[type]", "shorthand_packages[test]", "shorthand_packages[debug]", "shorthand_packages[cli]", "shorthand_packages[external]", "shorthand_packages[stubs]"]
 extra_speed = ["shorthand_packages[speed]", "shorthand_packages[numba_fast]"]
 
 yt-dlp = ["yt-dlp", "curl_cffi"]
+pytdl = ["shorthand_packages[yt-dlp]", "langcodes", "pytomlpp", "humanize", "tqdm"]
+sunrise = ["geocoder==1.38.1"]
+
 lint = ["ruff"]
 type = ["mypy"]
 test = ["pytest"]
@@ -25,7 +28,7 @@ cli_plus = ["shorthand_packages[cli]", "plotext[image]", "pytermgui", "textual",
 speed = ["pytomlpp", "sortedcontainers"]
 crypto = ["pynacl", "cryptography", "certifi", "blake3"]
 handy = ["attrs", "more-itertools", "toolz", "fastcore", "humanize", "parse", "regex", "pendulum", "pylev", "langcodes", "psutil"]
-astro = ["geocoder", "skyfield"]
+astro = ["skyfield"]
 carto = ["geopandas"]
 external = ["cffi", "rethinkdb", "duckdb"]
 writing = ["pypandoc", "proselint"]
