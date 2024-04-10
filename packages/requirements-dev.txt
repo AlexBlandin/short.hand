@@ -3,13 +3,12 @@
 asttokens==2.4.1
     # via icecream
 attrs==23.2.0
-    # via
-    #   referencing
-    #   wmctrl
+    # via referencing
 cffi==1.16.0
 colorama==0.4.6
     # via
     #   icecream
+    #   pdbp
     #   pytest
     #   tqdm
 distlib==0.3.8
@@ -17,8 +16,6 @@ distlib==0.3.8
 duckdb==0.10.1
 executing==2.0.1
     # via icecream
-fancycompleter==0.9.1
-    # via pdbpp
 filelock==3.13.4
     # via virtualenv
 icecream==2.1.3
@@ -38,7 +35,7 @@ numpy==1.26.4
 packaging==24.0
     # via pytest
 pandas-stubs==2.2.1.240316
-pdbpp==0.10.3
+pdbp==1.5.0
 pip==24.0
 platformdirs==4.2.0
     # via virtualenv
@@ -49,12 +46,10 @@ pycparser==2.22
 pygments==2.17.2
     # via
     #   icecream
-    #   pdbpp
+    #   pdbp
     #   rich
-pyreadline==2.1
-    # via fancycompleter
-pyrepl==0.9.0
-    # via fancycompleter
+pyreadline3==3.4.1
+    # via tabcompleter
 pytest==8.1.1
 referencing==0.34.0
     # via types-jsonschema
@@ -68,6 +63,8 @@ six==1.16.0
     # via
     #   asttokens
     #   rethinkdb
+tabcompleter==1.3.0
+    # via pdbp
 termcolor==2.4.0
 tqdm==4.66.2
 types-colorama==0.4.15.20240311
@@ -90,5 +87,3 @@ urllib3==2.2.1
     # via types-requests
 virtualenv==20.25.1
 wheel==0.43.0
-wmctrl==0.5
-    # via pdbpp
