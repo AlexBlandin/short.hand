@@ -1,0 +1,62 @@
+[project]
+name = "shorthand_packages"
+description = '`uv pip compile pyproject.toml -o requirements.txt` and `uv pip install -p \bin\python\Python312\python.exe -r requirements.txt` is great'
+version = "1.0.0"
+license = "MIT"
+authors = [{ name = "AlexBlandin" }]
+dependencies = ["pip", "setuptools", "wheel", "virtualenv"]
+
+[project.optional-dependencies]
+# Convenience wrappers
+all = ["shorthand_packages[common]", "shorthand_packages[extra]", "shorthand_packages[hobby]", "shorthand_packages[dev]", "shorthand_packages[extra_speed]",]
+common = ["yt-dlp", "shorthand_packages[lint]",]
+hobby = ["shorthand_packages[common]", "shorthand_packages[astro]", "shorthand_packages[writing]", "shorthand_packages[web]", "shorthand_packages[ml]", "shorthand_packages[external]"]
+extra = ["shorthand_packages[crypto]", "shorthand_packages[cli_plus]", "shorthand_packages[handy]", "shorthand_packages[notebook]", "shorthand_packages[numeric]", "shorthand_packages[img]", "shorthand_packages[gui]", "shorthand_packages[speed]",]
+dev = ["shorthand_packages[lint]", "shorthand_packages[type]", "shorthand_packages[test]", "shorthand_packages[debug]", "shorthand_packages[cli]", "shorthand_packages[external]", "shorthand_packages[stubs]"]
+extra_speed = ["shorthand_packages[speed]", "shorthand_packages[numba_fast]"]
+
+yt-dlp = ["yt-dlp", "curl_cffi"]
+lint = ["ruff"]
+type = ["mypy"]
+test = ["pytest"]
+debug = ["pdbpp"]
+cli = ["tqdm", "rich", "icecream", "colorama", "termcolor"]
+cli_plus = ["shorthand_packages[cli]", "plotext[image]", "pytermgui", "textual", "textual-dev"]
+speed = ["pytomlpp", "sortedcontainers"]
+crypto = ["pynacl", "cryptography", "certifi", "blake3"]
+handy = ["attrs", "more-itertools", "toolz", "fastcore", "humanize", "parse", "regex", "pendulum", "pylev", "langcodes", "psutil"]
+astro = ["geocoder", "skyfield"]
+carto = ["geopandas"]
+external = ["cffi", "rethinkdb", "duckdb"]
+writing = ["pypandoc", "proselint"]
+web = ["aiohttp", "async-timeout", "beautifulsoup4", "lxml", "httpie", "soupsieve", "requests", "urllib3"]
+notebook = ["jupyter", "notebook", "graphviz", "tqdm", "img"]
+img = ["Pillow", "matplotlib", "seaborn[stats]", "pillow-avif-plugin"]
+gui = ["shorthand_packages[img]", "dearpygui"]
+numeric = ["shorthand_packages[numpy]", "pandas", "scipy", "gmpy2==2.2.0a1", "numba", "imageio"]
+ml = ["shorthand_packages[numeric]", "keras", "tensorflow", "jax[cpu]"]
+numba_fast = ["tbb", "intel-cmplr-lib-rt"]
+
+stubs = ["typing-extensions", "pandas-stubs", "types-Pillow", "types-requests", "types-openpyxl", "types-Pygments", "types-colorama", "types-decorator", "types-jsonschema", "types-six"]
+
+consider = ["pywin32", "pyreadline3", "mpl_plotter", "pre-commit"]
+
+compat = ["numpy==1.24.4",
+  "pandas==2.1.2",                        # pd.query issue breaks imodels
+  "scipy==1.12.0",
+  "tqdm==4.66.2",
+  "numba==0.57.1",
+  "notebook==7.1.2",
+  "ipywidgets==8.1.2",
+  "imgkit==1.2.3",
+  "tensorflow==2.14.1",
+  "matplotlib==3.8.3",
+  "dtreeviz==2.2.2",
+  "graphviz==0.20.3",
+  "xgboost==2.0.3",
+  "dice-ml==0.8",
+  "scikit-learn==1.4.1.post1",
+  "pdpbox==0.3.0",
+  "imodels==1.4.1",
+  "tensorflow-io-gcs-filesystem==0.31.0",
+]

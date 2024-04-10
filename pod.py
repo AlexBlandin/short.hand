@@ -29,6 +29,10 @@ Copyright 2022 Alex Blandin
 
 # TODO(alex): large refurb into something actually usable and not a dirty hack of a test
 
+# currently not identifying machines properly, so here's the Windows versions to machine/CPU mappings
+# 10.0.19045 is i7-8700k (look, I didn't realise I hadn't updated from 19041 the first time, have rerun with that now)
+# 10.0.22621 is 7980HS (windows 11 shows as windows 10 by major version, ain't that "funny")
+
 import contextlib
 import dataclasses
 import sys
