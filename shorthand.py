@@ -80,7 +80,7 @@ class Struct:
 
   __slots__ = ()
 
-  def __iter__(self: Self) -> Generator[Any, Any, None]:
+  def __iter__(self: Self) -> Iterator[Any]:
     """Iterating over the values, rather than the __slots__."""
     yield from map(self.__getattribute__, self.__slots__)
 
@@ -135,7 +135,7 @@ class SubStruct:
   we recommend this approach, this has consistently "good" performance and can also be subclassed.
   """
 
-  def __iter__(self: Self) -> Generator[Any, Any, None]:
+  def __iter__(self: Self) -> Iterator[Any]:
     """Iterating over the values, rather than the __slots__."""
     yield from map(self.__getattribute__, self.fields)
 
