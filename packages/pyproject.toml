@@ -3,12 +3,11 @@ name = "shorthand_packages"
 description = '`uv pip compile pyproject.toml -o requirements.txt` and `uv pip install -p \bin\python\Python312\python.exe -r requirements.txt` is great'
 version = "1.0.0"
 license = "MIT"
-authors = [{ name = "AlexBlandin" }]
+authors = ["AlexBlandin"]
 dependencies = ["pip", "setuptools", "wheel", "virtualenv"]
 
 [project.optional-dependencies]
 # Convenience wrappers, but everything must be indirect via shorthand_packages[] yay~
-all = ["shorthand_packages[common]", "shorthand_packages[extra]", "shorthand_packages[hobby]", "shorthand_packages[dev]", "shorthand_packages[extra_speed]",]
 common = ["shorthand_packages[pytdl]", "shorthand_packages[sunrise]", "shorthand_packages[lint]",]
 hobby = ["shorthand_packages[common]", "shorthand_packages[astro]", "shorthand_packages[writing]", "shorthand_packages[web]", "shorthand_packages[ml]", "shorthand_packages[external]"]
 extra = ["shorthand_packages[crypto]", "shorthand_packages[cli_plus]", "shorthand_packages[handy]", "shorthand_packages[notebook]", "shorthand_packages[numeric]", "shorthand_packages[img]", "shorthand_packages[gui]", "shorthand_packages[speed]",]
@@ -19,7 +18,6 @@ yt-dlp = ["yt-dlp", "curl_cffi"]
 pytdl = ["shorthand_packages[yt-dlp]", "langcodes", "pytomlpp", "humanize", "tqdm"]
 sunrise = ["geocoder==1.38.1"]
 
-lint = ["ruff"]
 type = ["mypy"]
 test = ["pytest"]
 debug = ["pdbp"]
@@ -42,24 +40,24 @@ numba_fast = ["tbb", "intel-cmplr-lib-rt"]
 
 stubs = ["typing-extensions", "pandas-stubs", "types-Pillow", "types-requests", "types-openpyxl", "types-Pygments", "types-colorama", "types-decorator", "types-jsonschema", "types-six"]
 
-consider = ["pywin32", "pyreadline3", "mpl_plotter", "pre-commit"]
+# consider = ["pywin32", "pyreadline3", "mpl_plotter", "pre-commit"]
 
-compat = ["numpy==1.24.4",
-  "pandas==2.1.2",                        # pd.query issue breaks imodels
-  "scipy==1.12.0",
-  "tqdm==4.66.2",
-  "numba==0.57.1",
-  "notebook==7.1.2",
-  "ipywidgets==8.1.2",
-  "imgkit==1.2.3",
-  "tensorflow==2.14.1",
-  "matplotlib==3.8.3",
-  "dtreeviz==2.2.2",
-  "graphviz==0.20.3",
-  "xgboost==2.0.3",
-  "dice-ml==0.8",
-  "scikit-learn==1.4.1.post1",
-  "pdpbox==0.3.0",
-  "imodels==1.4.1",
-  "tensorflow-io-gcs-filesystem==0.31.0",
-]
+# compat = ["numpy==1.24.4",
+  # "pandas==2.1.2",                        # pd.query issue breaks imodels
+  # "scipy==1.12.0",
+  # "tqdm==4.66.2",
+  # "numba==0.57.1",
+  # "notebook==7.1.2",
+  # "ipywidgets==8.1.2",
+  # "imgkit==1.2.3",
+  # "tensorflow==2.14.1",
+  # "matplotlib==3.8.3",
+  # "dtreeviz==2.2.2",
+  # "graphviz==0.20.3",
+  # "xgboost==2.0.3",
+  # "dice-ml==0.8",
+  # "scikit-learn==1.4.1.post1",
+  # "pdpbox==0.3.0",
+  # "imodels==1.4.1",
+  # "tensorflow-io-gcs-filesystem==0.31.0",
+# ]
