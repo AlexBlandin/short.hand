@@ -33,6 +33,8 @@ Copyright 2022 Alex Blandin
 # 10.0.19045 is i7-8700k (look, I didn't realise I hadn't updated from 19041 the first time, have rerun with that now)
 # 10.0.22621 is 7980HS (windows 11 shows as windows 10 by major version, ain't that "funny")
 
+import tabulate
+
 import contextlib
 import dataclasses
 import sys

@@ -9,6 +9,7 @@ authors = [{ name = "AlexBlandin" }]
 dependencies = []
 
 [project.optional-dependencies]
+pod = ["tabulate"]
 dev = ["ruff"]
 
 [project.urls]
