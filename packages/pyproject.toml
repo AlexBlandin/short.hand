@@ -1,6 +1,6 @@
 [project]
 name = "shorthand_packages"
-description = '`uv pip compile pyproject.toml -o requirements.txt` and `uv pip install -p \bin\python\Python312\python.exe -r requirements.txt` is great, common < hobby < extra, dev + extra < all'
+description = "common < hobby < extra + dev < all"
 version = "1.0.0"
 license = "MIT"
 authors = [{ name = "AlexBlandin" }]
@@ -8,7 +8,7 @@ dependencies = ["pip", "setuptools", "wheel", "virtualenv"]
 
 [project.optional-dependencies]
 
-# Convenience features, common < hobby < extra, all = dev + extra
+# Convenience features
 common = ["ruff", "shorthand_packages[pytdl]", "shorthand_packages[sunrise]"]
 hobby = [
   "shorthand_packages[common]",
@@ -52,7 +52,7 @@ pytdl = [
 sunrise = ["geocoder==1.38.1"]
 
 # Toolbox features
-type = ["mypy"]
+type = []
 test = ["pytest"]
 debug = ["pdbp"]
 cli = ["tqdm", "rich", "icecream", "tabulate", "colorama", "termcolor"]
@@ -97,7 +97,15 @@ web = [
 notebook = ["jupyter", "notebook", "graphviz", "tqdm", "img"]
 img = ["Pillow", "matplotlib", "seaborn[stats]", "pillow-avif-plugin"]
 gui = ["shorthand_packages[img]", "dearpygui"]
-numeric = ["numpy", "pandas", "scipy", "gmpy2==2.2.0a1", "numba", "imageio"]
+numeric = [
+  "numpy",
+  "pandas",
+  "scipy",
+  "sympy",
+  "gmpy2==2.2.0a1",
+  "numba",
+  "imageio",
+]
 autograd = [
   "shorthand_packages[numeric]",
   "jax[cpu]",
@@ -107,6 +115,7 @@ autograd = [
   "diffrax",
   "optimistix",
   "lineax",
+  "sympy2jax",
   "jaxtyping",
 ]
 ml_jax = [
@@ -114,12 +123,10 @@ ml_jax = [
   "pgx",
   "jumanji",
   "gymnax",
-  "envpool",
+  # "envpool", # <3.12
   "pysr",
   "elegy",
   "trax",
-  "levanter",
-  "haliax",
   "jraph",
   "neural-tangents",
   "distrax",
@@ -138,9 +145,9 @@ ml_tf = [
   "dm-sonnet",
 ]
 ml = ["keras", "shorthand_packages[ml_jax]", "shorthand_packages[ml_tf]"]
-taichi = ["taichi"]
+# taichi = ["taichi"] # <3.12 # and actually had (beta) windows support now!
 numba_fast = ["tbb", "intel-cmplr-lib-rt"]
-# consider = ["pywin32", "mpl_plotter", "pre-commit", "sympy", "sympy2jax"]
+# consider = ["pywin32", "mpl_plotter", "pre-commit"]
 # pip install -U "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 
 # Type stubs, try to keep uptodate
