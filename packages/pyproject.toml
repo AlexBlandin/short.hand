@@ -52,7 +52,7 @@ pytdl = [
 sunrise = ["geocoder==1.38.1"]
 
 # Toolbox features
-type = []
+type = ["mypy"]
 test = ["pytest"]
 debug = ["pdbp"]
 cli = ["tqdm", "rich", "icecream", "tabulate", "colorama", "termcolor"]
@@ -69,6 +69,7 @@ handy = [
   "pytomlpp",
   "sortedcontainers",
   "attrs",
+  "cattrs",
   "more-itertools",
   "toolz",
   "fastcore",
@@ -121,7 +122,7 @@ autograd = [
 ml_jax = [
   "shorthand_packages[autograd]",
   "pgx",
-  "jumanji",
+  # "jumanji",
   "gymnax",
   # "envpool", # <3.12
   "pysr",

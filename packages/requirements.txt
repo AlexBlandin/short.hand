@@ -17,6 +17,7 @@ absl-py==2.1.0
     #   tensorboard
     #   tensorflow-datasets
     #   tensorflow-intel
+    #   tensorflow-metadata
     #   tensorflow-probability
     #   tf2jax
     #   trax
@@ -46,6 +47,7 @@ async-timeout==4.0.3
 attrs==23.2.0
     # via
     #   aiohttp
+    #   cattrs
     #   fiona
     #   jsonschema
     #   referencing
@@ -57,7 +59,7 @@ blackjax==1.1.1
 blake3==0.4.1
 bleach==6.1.0
     # via nbconvert
-blinker==1.7.0
+blinker==1.8.1
     # via flask
 brotli==1.1.0
     # via yt-dlp
@@ -65,6 +67,7 @@ bz2file==0.98
     # via tensor2tensor
 cachetools==5.3.3
     # via google-auth
+cattrs==23.2.3
 certifi==2024.2.2
     # via
     #   curl-cffi
@@ -90,7 +93,6 @@ chex==0.1.86
     # via
     #   distrax
     #   gymnax
-    #   jumanji
     #   optax
     #   rlax
 clarabel==0.7.1
@@ -137,7 +139,7 @@ cvxpy==1.4.3
 cvxpylayers==0.1.6
 cycler==0.12.1
     # via matplotlib
-dataclasses-json==0.6.4
+dataclasses-json==0.6.5
     # via orbax-export
 dearpygui==1.11.1
 debugpy==1.8.1
@@ -159,9 +161,7 @@ distlib==0.3.8
 distrax==0.1.5
     # via rlax
 dm-env==1.6
-    # via
-    #   jumanji
-    #   rlax
+    # via rlax
 dm-sonnet==2.0.2
 dm-tree==0.1.8
     # via
@@ -195,12 +195,12 @@ executing==2.0.1
     #   stack-data
 farama-notifications==0.0.4
     # via gymnasium
-fastcore==1.5.29
+fastcore==1.5.33
 fastjsonschema==2.19.1
     # via nbformat
 fastprogress==1.0.3
     # via blackjax
-filelock==3.13.4
+filelock==3.14.0
     # via virtualenv
 fiona==1.9.6
     # via geopandas
@@ -208,7 +208,7 @@ flask==3.0.3
     # via tensor2tensor
 flatbuffers==24.3.25
     # via tensorflow-intel
-flax==0.8.2
+flax==0.8.3
     # via gymnax
 fonttools==4.51.0
     # via matplotlib
@@ -224,7 +224,7 @@ fsspec==2024.3.1
     # via etils
 funcsigs==1.0.2
     # via trax
-future==1.0.0
+future==0.18.3
     # via
     #   geocoder
     #   mesh-tensorflow
@@ -235,7 +235,7 @@ gast==0.5.4
     #   tensorflow-intel
     #   tensorflow-probability
 geocoder==1.38.1
-geopandas==0.14.3
+geopandas==0.14.4
 gevent==24.2.1
     # via tensor2tensor
 gin-config==0.5.0
@@ -245,9 +245,9 @@ gin-config==0.5.0
     #   tensor2tensor
     #   trax
 gmpy2==2.2.0a1
-google-api-core==2.18.0
+google-api-core==2.19.0
     # via google-api-python-client
-google-api-python-client==2.126.0
+google-api-python-client==2.127.0
     # via tensor2tensor
 google-auth==2.29.0
     # via
@@ -265,7 +265,7 @@ googleapis-common-protos==1.63.0
 graphviz==0.20.3
 greenlet==3.0.3
     # via gevent
-grpcio==1.62.2
+grpcio==1.63.0
     # via
     #   tensor2tensor
     #   tensorboard
@@ -276,7 +276,6 @@ gym==0.26.2
     # via
     #   dopamine-rl
     #   gymnax
-    #   jumanji
     #   tensor2tensor
     #   trax
 gym-notices==0.0.8
@@ -323,7 +322,7 @@ ipykernel==6.29.4
     #   jupyter-console
     #   jupyterlab
     #   qtconsole
-ipython==8.23.0
+ipython==8.24.0
     # via
     #   ipykernel
     #   ipywidgets
@@ -345,7 +344,6 @@ jax==0.4.26
     #   gymnax
     #   jaxopt
     #   jraph
-    #   jumanji
     #   lineax
     #   neural-tangents
     #   numpyro
@@ -393,16 +391,16 @@ jinja2==3.1.3
     #   jupyterlab
     #   jupyterlab-server
     #   nbconvert
-joblib==1.4.0
+joblib==1.4.2
     # via scikit-learn
-jplephem==2.21
+jplephem==2.22
     # via skyfield
 jraph==0.0.6.dev0
 json5==0.9.25
     # via jupyterlab-server
 jsonpointer==2.4
     # via jsonschema
-jsonschema==4.21.1
+jsonschema==4.22.0
     # via
     #   jupyter-events
     #   jupyterlab-server
@@ -413,7 +411,6 @@ juliacall==0.9.19
     # via pysr
 juliapkg==0.1.11
     # via juliacall
-jumanji==0.3.1
 jupyter==1.0.0
 jupyter-client==8.6.1
     # via
@@ -448,23 +445,25 @@ jupyter-server==2.14.0
     #   notebook-shim
 jupyter-server-terminals==0.5.3
     # via jupyter-server
-jupyterlab==4.1.6
+jupyterlab==4.1.8
     # via notebook
 jupyterlab-pygments==0.3.0
     # via nbconvert
-jupyterlab-server==2.27.0
+jupyterlab-server==2.27.1
     # via
     #   jupyterlab
     #   notebook
 jupyterlab-widgets==3.0.10
     # via ipywidgets
-keras==3.3.2
+keras==3.3.3
     # via tensorflow-intel
 kfac==0.2.0
     # via tensor2tensor
 kiwisolver==1.4.5
     # via matplotlib
-langcodes==3.3.0
+langcodes==3.4.0
+language-data==1.2.0
+    # via langcodes
 libclang==18.1.1
     # via tensorflow-intel
 lineax==0.0.5
@@ -478,6 +477,8 @@ llvmlite==0.42.0
 looseversion==1.3.0
     # via rethinkdb
 lxml==5.2.1
+marisa-trie==1.1.0
+    # via language-data
 markdown==3.6
     # via tensorboard
 markdown-it-py==3.0.0
@@ -490,12 +491,11 @@ markupsafe==2.1.5
     #   jinja2
     #   nbconvert
     #   werkzeug
-marshmallow==3.21.1
+marshmallow==3.21.2
     # via dataclasses-json
 matplotlib==3.8.4
     # via
     #   gymnax
-    #   jumanji
     #   seaborn
 matplotlib-inline==0.1.7
     # via
@@ -533,13 +533,16 @@ multipledispatch==1.0.0
     # via numpyro
 mutagen==1.47.0
     # via yt-dlp
+mypy==1.10.0
 mypy-extensions==1.0.0
-    # via typing-inspect
+    # via
+    #   mypy
+    #   typing-inspect
 namex==0.0.8
     # via keras
 nbclient==0.10.0
     # via nbconvert
-nbconvert==7.16.3
+nbconvert==7.16.4
     # via
     #   jupyter
     #   jupyter-server
@@ -574,6 +577,7 @@ numpy==1.26.4
     #   ecos
     #   etils
     #   flax
+    #   geopandas
     #   gym
     #   gymnasium
     #   h5py
@@ -584,7 +588,6 @@ numpy==1.26.4
     #   jaxtyping
     #   jplephem
     #   jraph
-    #   jumanji
     #   keras
     #   kfac
     #   matplotlib
@@ -691,17 +694,14 @@ pillow==10.3.0
     # via
     #   dopamine-rl
     #   imageio
-    #   jumanji
     #   matplotlib
     #   objax
     #   plotext
     #   tensor2tensor
 pillow-avif-plugin==1.4.3
 pip==24.0
-    # via
-    #   fastcore
-    #   httpie
-platformdirs==4.2.0
+    # via httpie
+platformdirs==4.2.1
     # via
     #   jupyter-core
     #   virtualenv
@@ -716,10 +716,10 @@ prompt-toolkit==3.0.43
     # via
     #   ipython
     #   jupyter-console
-proselint==0.10.2
+proselint==0.13.0
 proto-plus==1.23.0
     # via google-api-core
-protobuf==3.20.3
+protobuf==4.25.3
     # via
     #   google-api-core
     #   googleapis-common-protos
@@ -778,9 +778,9 @@ pyreadline3==3.4.1
     # via tabcompleter
 pysocks==1.7.1
     # via requests
-pysr==0.18.2
+pysr==0.18.3
 pytermgui==7.7.1
-pytest==8.1.1
+pytest==8.2.0
 python-dateutil==2.9.0.post0
     # via
     #   arrow
@@ -807,7 +807,7 @@ pyyaml==6.0.1
     #   gymnax
     #   jupyter-events
     #   orbax-checkpoint
-pyzmq==26.0.2
+pyzmq==26.0.3
     # via
     #   ipykernel
     #   jupyter-client
@@ -822,13 +822,13 @@ qtpy==2.4.1
     # via qtconsole
 ratelim==0.1.6
     # via geocoder
-referencing==0.34.0
+referencing==0.35.1
     # via
     #   jsonschema
     #   jsonschema-specifications
     #   jupyter-events
     #   types-jsonschema
-regex==2024.4.16
+regex==2024.4.28
 requests==2.31.0
     # via
     #   geocoder
@@ -866,7 +866,7 @@ rsa==4.9
     # via
     #   google-auth
     #   oauth2client
-ruff==0.4.1
+ruff==0.4.2
 scikit-learn==1.4.2
     # via pysr
 scipy==1.13.0
@@ -903,6 +903,7 @@ setuptools==69.5.1
     #   chex
     #   distrax
     #   httpie
+    #   marisa-trie
     #   pysr
     #   tensorboard
     #   tensorflow-intel
@@ -982,7 +983,7 @@ tensorflow-hub==0.16.1
     # via tensorflow-gan
 tensorflow-intel==2.16.1
     # via tensorflow
-tensorflow-metadata==0.22.2
+tensorflow-metadata==1.15.0
     # via tensorflow-datasets
 tensorflow-probability==0.24.0
     # via
@@ -990,7 +991,7 @@ tensorflow-probability==0.24.0
     #   kfac
     #   tensor2tensor
     #   tensorflow-gan
-tensorstore==0.1.56
+tensorstore==0.1.58
     # via
     #   flax
     #   orbax-checkpoint
@@ -1002,20 +1003,20 @@ terminado==0.18.1
     # via
     #   jupyter-server
     #   jupyter-server-terminals
-textual==0.57.1
+textual==0.58.1
     # via textual-dev
 textual-dev==1.5.1
 tf-keras==2.16.0
     # via tensorflow-hub
 tf2jax==0.3.6
     # via neural-tangents
-threadpoolctl==3.4.0
+threadpoolctl==3.5.0
     # via
     #   diffcp
     #   scikit-learn
 time-machine==2.14.1
     # via pendulum
-tinycss2==1.2.1
+tinycss2==1.3.0
     # via nbconvert
 toml==0.10.2
     # via tensorflow-datasets
@@ -1029,7 +1030,7 @@ tornado==6.4
     #   jupyterlab
     #   notebook
     #   terminado
-tqdm==4.66.2
+tqdm==4.66.4
     # via
     #   etils
     #   numpyro
@@ -1057,20 +1058,20 @@ typeguard==2.13.3
     # via jaxtyping
 types-colorama==0.4.15.20240311
 types-decorator==5.1.8.20240310
-types-docutils==0.20.0.20240406
+types-docutils==0.21.0.20240423
     # via types-pygments
-types-jsonschema==4.21.0.20240331
-types-openpyxl==3.1.0.20240408
-types-pillow==10.2.0.20240415
+types-jsonschema==4.22.0.20240501
+types-openpyxl==3.1.0.20240428
+types-pillow==10.2.0.20240423
 types-pygments==2.17.0.20240310
 types-python-dateutil==2.9.0.20240316
     # via arrow
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
 types-requests==2.31.0.20240406
-types-setuptools==69.5.0.20240415
+types-setuptools==69.5.0.20240423
     # via types-pygments
-types-six==1.16.21.20240311
+types-six==1.16.21.20240425
 typing-extensions==4.11.0
     # via
     #   blackjax
@@ -1080,8 +1081,8 @@ typing-extensions==4.11.0
     #   etils
     #   flax
     #   gymnasium
-    #   jumanji
     #   lineax
+    #   mypy
     #   optimistix
     #   optree
     #   orbax-checkpoint
@@ -1108,7 +1109,7 @@ urllib3==2.2.1
     #   requests
     #   types-requests
     #   yt-dlp
-virtualenv==20.25.3
+virtualenv==20.26.1
 wcwidth==0.2.13
     # via
     #   prompt-toolkit
@@ -1119,7 +1120,7 @@ webencodings==0.5.1
     # via
     #   bleach
     #   tinycss2
-websocket-client==1.7.0
+websocket-client==1.8.0
     # via jupyter-server
 websockets==12.0
     # via yt-dlp
