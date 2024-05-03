@@ -9,7 +9,8 @@ dependencies = ["pip", "setuptools", "wheel", "virtualenv"]
 [project.optional-dependencies]
 
 # Convenience features
-common = ["ruff", "shorthand_packages[pytdl]", "shorthand_packages[sunrise]"]
+base = ["ruff", "attrs", "cattrs"]
+common = ["shorthand_packages[base]", "shorthand_packages[pytdl]", "shorthand_packages[sunrise]"]
 hobby = [
   "shorthand_packages[common]",
   "shorthand_packages[cli]",
@@ -31,7 +32,7 @@ extra = [
   "shorthand_packages[numba_fast]",
 ]
 dev = [
-  "ruff",
+  "shorthand_packages[base]",
   "shorthand_packages[type]",
   "shorthand_packages[test]",
   "shorthand_packages[debug]",
@@ -44,12 +45,13 @@ dev = [
 yt-dlp = ["yt-dlp", "curl_cffi"]
 pytdl = [
   "shorthand_packages[yt-dlp]",
+  "shorthand_packages[base]",
   "langcodes",
   "pytomlpp",
   "humanize",
   "tqdm",
 ]
-sunrise = ["geocoder==1.38.1"]
+sunrise = ["geocoder==1.38.1", "shorthand_packages[base]"]
 
 # Toolbox features
 type = ["mypy"]
@@ -65,6 +67,7 @@ cli_plus = [
 ]
 crypto = ["pynacl", "cryptography", "certifi", "blake3"]
 handy = [
+  "shorthand_packages[base]",
   "tabulate",
   "pytomlpp",
   "sortedcontainers",
