@@ -1,12 +1,12 @@
 [project]
-name = "short.hand"
-description = "A series of useful shorthands originally devised during Advent of Code 2017."
-version = "0.0.0"
+name = "POD"
+description = "."
+version = "0.1.0"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.8"
 license = "MIT"
 authors = [{ name = "AlexBlandin" }]
-dependencies = []
+dependencies = ["tabulate", "attrs", "cattrs"]
 
 [project.optional-dependencies]
 dev = ["ruff", "pdbp", "basedmypy", "basedpyright"]
@@ -18,7 +18,7 @@ Source = "https://github.com/alexblandin/short.hand"
 
 [tool.ruff]
 indent-width = 2
-target-version = "py312"
+target-version = "py38"
 line-length = 120
 
 [tool.ruff.lint]

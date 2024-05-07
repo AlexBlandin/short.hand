@@ -11,6 +11,7 @@ Copyright 2022 Alex Blandin
 # Imports used here
 import dataclasses
 import platform
+import string
 from collections import ChainMap, defaultdict
 from contextlib import suppress
 from dataclasses import dataclass
@@ -53,7 +54,7 @@ PYPY = sys.implementation.name == "pypy"
 class Dot(dict):
   """a "dot dict", a dict you can access by a `.` - inefficient vs dataclass, but convenient."""
 
-  __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__  # type: ignore[reportAssignmentType]
+  __getattr__, __setattr__ = dict.__getitem__, dict.__setitem__
 
 
 @cache
@@ -263,13 +264,13 @@ class Circular[T](list[T]):
             raise NonIntegerSliceBoundsTypeError
         indices = count(start, step) if name.stop is None else range(start, stop, step)
         try:
-          __iter = iter(__value)  # type: ignore[reportArgumentType]
+          __iter = iter(__value)
         except TypeError as err:
           raise SliceAssignmentTypeError from err
         for i, v in zip(indices, __iter, strict=False):
           super()[i % m] = v
       case int(__n), __value:
-        super()[__n % max(1, len(self))] = __value  # type: ignore[reportCallIssue,reportArgumentType]
+        super()[__n % max(1, len(self))] = __value
       case _:
         raise IndexTypeError
 
@@ -551,9 +552,9 @@ def tf[T](func: Callable[..., T], *args: Any, __pretty_tf: bool = True, **kwargs
     fargs = list(map(str, (a.__name__ if hasattr(a, "__name__") else a for a in args))) + [
       f"{k}={v}" for k, v in kwargs.items()
     ]
-    print(f"{func.__qualname__}({', '.join(fargs)}) = {r} ({human_time(end - start)})")
+    print(f"{func.__qualname__}({', '.join(fargs)}) = {r} ({human_time(end - start)})")  # noqa: T201
   else:
-    print(human_time(end - start))
+    print(human_time(end - start))  # noqa: T201
   return r
 
 
@@ -573,22 +574,22 @@ def human_time(t: float, *, seconds: bool = True) -> str:
 def hours_minutes_seconds(t: float) -> None:
   """How many (years) (weeks) (days) (hours) minutes and seconds is this?"""
   seconds = int(t)
-  print(f"{seconds}s")
+  print(f"{seconds}s")  # noqa: T201
   minutes, seconds = seconds // 60, seconds % 60
-  print(f"{minutes}m{seconds}s")
+  print(f"{minutes}m{seconds}s")  # noqa: T201
   if minutes >= 60:  # noqa: PLR2004
     hours, minutes = minutes // 60, minutes % 60
-    print(f"{hours}h{minutes}m{seconds}s")
+    print(f"{hours}h{minutes}m{seconds}s")  # noqa: T201
     if hours >= 24:  # noqa: PLR2004
       days, hours = hours // 24, hours % 24
-      print(f"{days}d{hours}h{minutes}m{seconds}s")
+      print(f"{days}d{hours}h{minutes}m{seconds}s")  # noqa: T201
       if days >= 7:  # noqa: PLR2004
         weeks, days = days // 7, days % 7
-        print(f"{weeks}w{days}d{hours}h{minutes}m{seconds}s")
+        print(f"{weeks}w{days}d{hours}h{minutes}m{seconds}s")  # noqa: T201
         if weeks >= 52:  # noqa: PLR2004
           years, weeks = weeks // 52, weeks % 52
-          print(f"{years}y{weeks}w{days}d{hours}h{minutes}m{seconds}s")
-  print()
+          print(f"{years}y{weeks}w{days}d{hours}h{minutes}m{seconds}s")  # noqa: T201
+  print()  # noqa: T201
 
 
 ##################
@@ -668,7 +669,7 @@ def readlines(fp: str | Path, encoding: str = "utf8") -> list[str]:
 
 def readlinesmap[T](fp: str | Path, *fs: Callable[..., T], encoding: str = "utf8") -> list[T]:
   """Readlines but map each function in fs to fp's lines in order (fs[0]: first, ..., fs[-1]: last)."""
-  return list(mapcomp(resolve(fp).read_text(encoding).splitlines(), *fs))  # type: ignore[reportReturnType]
+  return list(mapcomp(resolve(fp).read_text(encoding).splitlines(), *fs))
 
 
 def writelines(fp: str | Path, lines: str | list[str], encoding: str = "utf8", newline: str = "\n") -> int:
@@ -719,6 +720,107 @@ def lev(s1: str, s2: str) -> int:
       d1[j + 1] = cost
     d0, d1 = d1, d0
   return d0[-1]
+
+
+def cross_platform_filename(
+  name: str | bytes,
+  *,
+  permit_unicode: bool = False,
+  permit_syntax: bool = False,
+  permit_hidden: bool = False,
+  permit_leading: bool = False,
+  permit_dotfile: bool = False,
+  permit_upper: bool = False,
+) -> bool:
+  """
+  If you _really_ want a file to be name in a cross platform way.
+
+  Strictly speaking, only \\/:*?"<>| are dejure disallowed characters.
+  This is because they are the ones rejected by the OS (i.e. Windows & Unix).
+  However, because people interact with their OS with all this extra stuff...
+  This means we need to avoid issues with most shells and file managers.
+
+  So, avoid unicode and the defacto disallowed: `<>'()"[] {};?+|=\\#@*:,%~/!^&$
+  And, of course, the null byte, \x00, and control characters: \t\n\r\x0b\x0c
+
+  So, From lowest value to highest, in the strictest ASCII mode, DO use:
+      -.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz
+
+  But don't put the - or . first. Yes, that includes not using spaces.
+  (I know, it's silly, but don't blame me.)
+
+  Beyond that:
+  - No null bytes (ASCII = 0).
+  - Avoid Unicode; it's amazing, I know, but older systems may not recognise it
+  - Don't start with a - or a .
+    - Unix and some Windows/Powershell programs read a leading - as an argument
+    - Leading . WAS the first leftover printable, but Unix defacto hides it
+      as people used that fact to put configuration files at the top, which
+      means it's been robbed from the rest of us. Putting 0 in the front is
+      literally the only cross-platform option left because of it. Really.
+      - You may be able to get away with it, so it's an option.
+  - Oh, and just have it lower case; case-sensitivity on Windows is weird!
+
+  If you want, you can opt-in to Unicode, shell/manager syntax, leading - or .
+  leading ., and non-lower case. But if you mess up from there, that's on you.
+  """
+  match (permit_syntax, permit_hidden):
+    case (True, True):
+      disallowed = b'\\/:*?"<>|\x00'
+    case (True, False):
+      disallowed = b'\\/:*?"<>|\x00\t\n\r\x0b\x0c'
+    case (False, True):
+      disallowed = b"`<>'()\"[] {};?+|=\\#@*:,%~/!^&$\x00"
+    case (False, False):
+      disallowed = b"`<>'()\"[] {};?+|=\\#@*:,%~/!^&$\x00\t\n\r\x0b\x0c"
+  match name:
+    case str(name):
+      disallowed = disallowed.decode(encoding="ascii")
+      not_leading = ("-") if permit_dotfile else ("-", ".")
+    case bytes(name):
+      not_leading = (b"-") if permit_dotfile else (b"-", b".")
+    case _:
+      raise TypeError
+  characters = set(name)
+  return (
+    (permit_leading or not name.startswith(not_leading))
+    and (permit_upper or name.islower())
+    and (permit_unicode or characters.issubset(string.printable))
+    and characters.isdisjoint(disallowed)
+  )
+
+
+def top_cross_platform_filename(
+  *,
+  permit_unicode: bool = False,
+  permit_syntax: bool = False,
+  permit_hidden: bool = False,
+  permit_leading: bool = False,
+  permit_dotfile: bool = False,
+  permit_upper: bool = False,
+) -> str:
+  """
+  Doesn't work right now, not sure why.
+  
+  TLDR:
+    - use `!` if you can (`permit_syntax`)
+    - or `(` which is usually available (but `permit_syntax` also)
+    - or `.` (`permit_dotfile`)
+    - otherwise `0`.
+  """
+  return next(
+    c
+    for c in map(chr, sorted(map(ord, string.printable)))
+    if cross_platform_filename(
+      c,
+      permit_unicode=permit_unicode,
+      permit_syntax=permit_syntax,
+      permit_hidden=permit_hidden,
+      permit_leading=permit_leading,
+      permit_dotfile=permit_dotfile,
+      permit_upper=permit_upper,
+    )
+  )
 
 
 ##########################
@@ -831,9 +933,9 @@ if __name__ == "__main__":
   CPU = table[platform.processor()]
   device = f"{platform.node()} (ROG Flow X13) w/ {CPU}" if CPU == "AMD 7980HS" else f"{platform.node()} w/ {CPU}"
 
-  print(sys.version)
-  print(f"Benchmarked on {device} using {'CPython' if CPYTHON else 'PyPy' if PYPY else 'Python'}")
-  print(f"Lowest time over {N_RUNS} runs of {N_ITERATIONS} iterations of each microbench: ")
+  print(sys.version)  # noqa: T201
+  print(f"Benchmarked on {device} using {'CPython' if CPYTHON else 'PyPy' if PYPY else 'Python'}")  # noqa: T201
+  print(f"Lowest time over {N_RUNS} runs of {N_ITERATIONS} iterations of each microbench: ")  # noqa: T201
 
   # best times for N_ITERATIONS = 10**6 is on Asteria (ROG Flow X13) w/ 7980HS using CPython 3.12.0, PyPy 3.10.13/7.3.13
   tests = [
@@ -867,7 +969,7 @@ if __name__ == "__main__":
   ]
 
   base_data = [1.2, 3.4, 5.6, 7.8]
-  print("code           | struct \t | substruct \t | comment")
+  print("code           | struct \t | substruct \t | comment")  # noqa: T201
   for test in tests:
     struct_time = min(
       repeat(test.code, "d = Vec4Struct(*base_data)", number=N_ITERATIONS, repeat=N_RUNS, globals=globals())
@@ -875,10 +977,10 @@ if __name__ == "__main__":
     substruct_time = min(
       repeat(test.code, "d = Vec4SubStruct(*base_data)", number=N_ITERATIONS, repeat=N_RUNS, globals=globals())
     )
-    print(TimingRow(test.code, BestTime.new(struct_time), BestTime.new(substruct_time), test.comment), flush=True)
+    print(TimingRow(test.code, BestTime.new(struct_time), BestTime.new(substruct_time), test.comment), flush=True)  # noqa: T201
     test.struct.log_time(struct_time)
     test.substruct.log_time(substruct_time)
-  print()
-  print("The best times now stand at:")
+  print()  # noqa: T201
+  print("The best times now stand at:")  # noqa: T201
   for test in tests:
-    print(repr(test))
+    print(repr(test))  # noqa: T201

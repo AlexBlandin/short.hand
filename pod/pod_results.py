@@ -1,391 +1,10 @@
 """
-POD testing.
+POD Results.
 
 Copyright 2022 Alex Blandin
-
-██████╗ ██╗      █████╗ ██╗███╗   ██╗
-██╔══██╗██║     ██╔══██╗██║████╗  ██║
-██████╔╝██║     ███████║██║██╔██╗ ██║
-██╔═══╝ ██║     ██╔══██║██║██║╚██╗██║
-██║     ███████╗██║  ██║██║██║ ╚████║
-╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝.
-
- ██████╗ ██╗     ██████╗
-██╔═══██╗██║     ██╔══██╗
-██║   ██║██║     ██║  ██║
-██║   ██║██║     ██║  ██║
-╚██████╔╝███████╗██████╔╝
- ╚═════╝ ╚══════╝╚═════╝
-
-██████╗  █████╗ ████████╗ █████╗
-██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗
-██║  ██║███████║   ██║   ███████║
-██║  ██║██╔══██║   ██║   ██╔══██║
-██████╔╝██║  ██║   ██║   ██║  ██║
-╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
-
-- for when you can't use attrs
 """
 
-# TODO(alex): large refurb into something actually usable and not a dirty hack of a test
-
-# currently not identifying machines properly, so here's the Windows versions to machine/CPU mappings
-# 10.0.19045 is i7-8700k (look, I didn't realise I hadn't updated from 19041 the first time, have rerun with that now)
-# 10.0.22621 is 7980HS (windows 11 shows as windows 10 by major version, ain't that "funny")
-
-
-import contextlib
-import dataclasses
-import sys
-import timeit
-from collections import namedtuple
-from dataclasses import dataclass
-from datetime import datetime
-from operator import attrgetter
-from pathlib import Path
 from statistics import geometric_mean, harmonic_mean, mean, median, pstdev, pvariance, quantiles, stdev, variance
-from typing import NamedTuple
-
-try:
-  from sys import getsizeof
-
-  getsizeof("sorry pypy, but cry about it, I want the overhead, not the recursive size")
-except TypeError:
-
-  def getsizeof(obj: object, default: int = -1) -> int:  # noqa: D103, ARG001
-    return -1
-
-
-if sys.version_info >= (3, 9):  # noqa: UP036
-  from functools import cache
-else:
-  from functools import lru_cache as cache
-
-
-maybe_slots = {"slots": True} if sys.version_info >= (3, 10) else {}
-MILLI = 10**3
-MICRO = 10**6
-NANO = 10**9
-UNIT = {MILLI: "ms", MICRO: "μs", NANO: "ns"}
-
-###########
-## Dials ##
-###########
-
-N_ITERATIONS, N_RUNS = 10**6, 1000  # how long a run is, and how many runs to pick the best average/total from
-TIMESCALE = NANO  # set
-
-
-#################
-## POD Formats ##
-#################
-
-
-class Regular:
-  """regular class."""
-
-  def __init__(self, sender, receiver, date, amount) -> None:  # noqa: ANN001, ANN101, D107
-    self.sender = sender
-    self.receiver = receiver
-    self.date = date
-    self.amount = amount
-
-
-class Slots:
-  """regular class with slots."""
-
-  __slots__ = ["sender", "amount", "receiver", "date"]
-
-  def __init__(self, sender, receiver, date, amount) -> None:  # noqa: ANN001, ANN101, D107
-    self.sender = sender
-    self.receiver = receiver
-    self.date = date
-    self.amount = amount
-
-
-NTuple = namedtuple("NTuple", ["sender", "receiver", "date", "amount"])  # noqa: PYI024
-"""named tuple"""
-
-ProcTypedNTuple = NamedTuple("_TypedNTuple", sender=str, receiver=str, date=str, amount=float)  # noqa: UP014
-"""typed named tuple, using the procedural kwargs approach"""
-
-
-class TypedNTuple(NamedTuple):
-  """typed named tuple."""
-
-  sender: str
-  receiver: str
-  date: str
-  amount: float
-
-
-@dataclass
-class DataClass:  # RECOMMENDED WHEN YOU CAN'T USE attrs
-  """dataclass."""
-
-  sender: str
-  receiver: str
-  date: str
-  amount: float
-
-
-@dataclass
-class DataSlots:
-  """dataclass with slots, uses manual entry."""
-
-  __slots__ = ["sender", "amount", "receiver", "date"]
-  sender: str
-  receiver: str
-  date: str
-  amount: float
-
-
-@dataclass(**maybe_slots)
-class DataSlotsAuto:
-  """dataclass with slots, requires python 3.10+."""
-
-  sender: str
-  receiver: str
-  date: str
-  amount: float
-
-
-@dataclass(frozen=True)
-class FrozenData:
-  """frozen dataclass."""
-
-  sender: str
-  receiver: str
-  date: str
-  amount: float
-
-
-@dataclass(frozen=True)
-class FrozenDataSlots:
-  """frozen dataclass with slots, uses manual entry."""
-
-  __slots__ = ["sender", "amount", "receiver", "date"]
-  sender: str
-  receiver: str
-  date: str
-  amount: float
-
-
-@dataclass(**maybe_slots, frozen=True)
-class FrozenDataSlotsAuto:
-  """frozen dataclass with slots, requires python 3.10+."""
-
-  sender: str
-  receiver: str
-  date: str
-  amount: float
-
-
-@cache
-def cls_to_tuple(cls):  # noqa: ANN001, ANN201
-  """This converts a class to a NamedTuple; cached because this is expensive!"""
-  return NamedTuple(cls.__name__, **cls.__annotations__)
-
-
-def cls_to_tuple_uncached(cls):  # noqa: ANN001, ANN201
-  """This converts a class to a NamedTuple."""
-  return NamedTuple(cls.__name__, **cls.__annotations__)
-
-
-@dataclass(**maybe_slots)
-class Struct:
-  """a struct-like Plain Old Data base class, this is consistently much faster but breaks when subclassed, use StructSubclassable if you need that."""  # noqa: E501
-
-  sender: str
-  receiver: str
-  date: str
-  amount: float
-
-  def __iter__(self):  # noqa: ANN101, ANN204
-    """Iterating over the values, rather than the __slots__."""
-    yield from map(self.__getattribute__, self.__slots__)  # type: ignore[reportAttributeAccessIssue]
-
-  def __len__(self) -> int:  # noqa: ANN101
-    """How many slots there are, useful for slices, iteration, and reversing."""
-    return len(self.__slots__)  # type: ignore[reportArgumentType]
-
-  def __getitem__(self, n: "int | slice"):  # noqa: ANN101, ANN204
-    """Generic __slots__[n] -> val, because subscripting (and slicing) is handy at times."""
-    if isinstance(n, int):
-      return self.__getattribute__(self.__slots__[n])  # type: ignore[reportArgumentType]
-    else:  # noqa: RET505
-      return list(map(self.__getattribute__, self.__slots__[n]))  # type: ignore[reportArgumentType]
-
-  def _astuple(self):  # noqa: ANN101, ANN202
-    """Generic __slots__ -> tuple; super fast, low quality of life."""
-    return tuple(map(self.__getattribute__, self.__slots__))  # type: ignore[reportArgumentType]
-
-  def aslist(self):  # noqa: ANN101, ANN201
-    """Generic __slots__ -> list; super fast, low quality of life, a shallow copy."""
-    return list(map(self.__getattribute__, self.__slots__))  # type: ignore[reportArgumentType]
-
-  def asdict(self):  # noqa: ANN101, ANN201
-    """Generic __slots__ -> dict; helpful for introspection, limited uses outside debugging."""
-    return {slot: self.__getattribute__(slot) for slot in self.__slots__}  # type: ignore[reportArgumentType]
-
-  def astuple(self):  # noqa: ANN101, ANN201
-    """Generic __slots__ -> NamedTuple; a named shallow copy."""
-    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.__slots__))  # type: ignore[reportArgumentType]
-
-
-@dataclass(**maybe_slots)
-class StructSubclassable:
-  """a struct-like Plain Old Data base class, we recommend this approach, this has consistently "good" performance and can still be subclassed."""  # noqa: E501
-
-  sender: str
-  receiver: str
-  date: str
-  amount: float
-
-  def __iter__(self):  # noqa: ANN101, ANN204
-    """Iterating over the values, rather than the __slots__."""
-    yield from map(self.__getattribute__, self.fields())
-
-  def __len__(self) -> int:  # noqa: ANN101
-    """How many slots there are, useful for slices, iteration, and reversing."""
-    return len(self.fields())
-
-  def __getitem__(self, n: "int | slice"):  # noqa: ANN101, ANN204
-    """Generic __slots__[n] -> val, because subscripting (and slicing) is handy at times."""
-    if isinstance(n, int):
-      return self.__getattribute__(self.fields()[n])
-    else:  # noqa: RET505
-      return list(map(self.__getattribute__, self.fields()[n]))
-
-  def _astuple(self):  # noqa: ANN101, ANN202
-    """Generic __slots__ -> tuple; super fast, low quality of life, a shallow copy."""
-    return tuple(map(self.__getattribute__, self.fields()))
-
-  def aslist(self):  # noqa: ANN101, ANN201
-    """Generic __slots__ -> list; super fast, low quality of life, a shallow copy."""
-    return list(map(self.__getattribute__, self.fields()))
-
-  def asdict(self):  # noqa: ANN101, ANN201
-    """Generic __slots__ -> dict; helpful for introspection, limited uses outside debugging, a shallow copy."""
-    return {slot: self.__getattribute__(slot) for slot in self.fields()}
-
-  def astuple(self):  # noqa: ANN101, ANN201
-    """Generic __slots__ -> NamedTuple; nicer but just slightly slower than asdict."""
-    return cls_to_tuple(type(self))._make(map(self.__getattribute__, self.fields()))
-
-  def fields(self):  # noqa: ANN101, ANN201
-    """__slots__ equivalent using the proper fields approach."""
-    return list(map(attrgetter("name"), dataclasses.fields(self)))
-
-
-################
-## Formatting ##
-################
-
-
-start_time = datetime.now()  # noqa: DTZ005
-version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-output = Path(__file__).parent / "pods"
-output.mkdir(exist_ok=True)
-output = output / f"pod_{sys.platform}_{sys.implementation.name}_{version}_{start_time:%Y-%m-%d-%H-%M-%S}.txt"
-output.touch()
-buffer = output.open(mode="+a", encoding="utf8", newline="\n")
-
-
-def print2(*args, **kwargs) -> None:  # noqa: ANN002, ANN003
-  "We print to both the terminal and this pod's buffer."
-  print(*args, **kwargs)
-  print(*args, **kwargs, file=buffer)
-
-
-print2(f"POD run commencing {start_time:%Y-%m-%d-%H-%M-%S}")
-print("This pod is running on ", end="")
-if sys.platform == "win32" and sys.getwindowsversion().platform_version:
-  major, minor, build = sys.getwindowsversion().platform_version
-  print2(f"Windows {major}.{minor} build {build} at {sys.executable}")
-else:
-  print2(f"{sys.platform} at {sys.executable}")
-print2(" ".join(sys.version.splitlines()).replace("  ", " "))
-print2()
-
-print("POD results for ", end="")
-print2(f"{N_ITERATIONS} iterations, averaged, best of {N_RUNS} runs:")
-sep = f"+-{'':->23}-+-{'':->4}-+-{'':->11}-+-{'':->11}-+{''}"  # extra {''} is to appease syntax highlighting
-print2(sep)
-print2(f"| {'name':>23} | size | create ({UNIT[TIMESCALE]}) | access ({UNIT[TIMESCALE]}) |")
-print2(sep)
-
-
-def time(code: str, iterations: int = N_ITERATIONS, runs: int = N_RUNS, setup: str = "") -> float:
-  """Time how long something takes, result is min recorded time for an entire run in seconds."""
-  return min(timeit.repeat(code, setup=setup, number=iterations, repeat=runs, globals=globals()))
-
-
-def row(name: str, new: str, access: str) -> None:
-  """Another row in the table."""
-  with contextlib.suppress(Exception):
-    to_new = TIMESCALE * time(new) / N_ITERATIONS
-    to_access = TIMESCALE * time("var" + access, setup="var=" + new) / N_ITERATIONS
-    print2(
-      f"| {name:>23} | {getsizeof(eval(new)):04} | {to_new:>11.4f} | {to_access:>11.4f} |"  # noqa: S307, PGH001
-    )
-
-
-PODS = [
-  Regular,
-  Slots,
-  NTuple,
-  ProcTypedNTuple,
-  TypedNTuple,
-  DataClass,
-  DataSlots,
-  DataSlotsAuto,
-  FrozenData,
-  FrozenDataSlots,
-  FrozenDataSlotsAuto,
-  Struct,
-  StructSubclassable,
-]
-
-###########
-## Tests ##
-###########
-
-row("dict from literal", "{'amount': 1.0, 'receiver': 'me', 'date': '2022-01-01', 'sender': 'you'}", "['receiver']")
-row("tuple from literal", "(1.0, 'me', '2022-01-01', 'you')", "[1]")
-row("regular class", "Regular(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row("class using slots", "Slots(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row("collections namedtuple", "NTuple(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row(
-  "proc. typed NamedTuple", "ProcTypedNTuple(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver"
-)
-row("typed NamedTuple", "TypedNTuple(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row("regular dataclass", "DataClass(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row("regular dataclass slots", "DataSlots(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row("autogen dataclass slots", "DataSlotsAuto(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row("frozen dataclass", "FrozenData(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row(
-  "frozen dataclass slots", "FrozenDataSlots(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver"
-)
-row(
-  "autogen frozen dc slots",
-  "FrozenDataSlotsAuto(amount=1.0, receiver='me', date='2022-01-01', sender='you')",
-  ".receiver",
-)
-row("handier dataclass slots", "Struct(amount=1.0, receiver='me', date='2022-01-01', sender='you')", ".receiver")
-row(
-  "even handier dataclasss",
-  "StructSubclassable(amount=1.0, receiver='me', date='2022-01-01', sender='you')",
-  ".receiver",
-)
-
-finish_time = datetime.now()  # noqa: DTZ005
-print2(sep)
-print2()
-print2(f"POD run completed {finish_time:%Y-%m-%d-%H-%M-%S}")
-print()
-
-buffer.close()
 
 #############
 ## Results ##
@@ -721,8 +340,8 @@ POD test results for 1000000 iterations, best of 100 runs:
 ################
 
 
-def stats(x) -> None:  # noqa: ANN001, D103
-  print(f"{x:.6f}" if isinstance(x, float) else " ".join(f"{_x:.6f}" for _x in x))
+def stats(x) -> None:  # noqa: ANN001, D103 # pyright: ignore [reportUnknownParameterType,reportMissingParameterType]
+  print(f"{x:.6f}" if isinstance(x, float) else " ".join(f"{_x:.6f}" for _x in x))  # noqa: T201 # pyright: ignore[reportUnknownVariableType]
 
 
 def check_stats() -> None:  # noqa: D103
@@ -813,7 +432,7 @@ def check_stats() -> None:  # noqa: D103
   - stdev: 0.105991
   - variance: 0.011234
   """
-  print("Satistics from ratio of 4700U / 8700k performance")
+  print("Satistics from ratio of 4700U / 8700k performance")  # noqa: T201
   stats(min(ratios_4700u_to_8700k))
   stats(max(ratios_4700u_to_8700k))
   stats(mean(ratios_4700u_to_8700k))
@@ -826,7 +445,7 @@ def check_stats() -> None:  # noqa: D103
   stats(pvariance(ratios_4700u_to_8700k))
   stats(stdev(ratios_4700u_to_8700k))
   stats(variance(ratios_4700u_to_8700k))
-  print("")
+  print("")  # noqa: T201
 
   ratios_cpython_to_pypy = [
     68.9289 / 0.6991,
@@ -889,7 +508,7 @@ def check_stats() -> None:  # noqa: D103
   - stdev: 372.158959
   - variance: 138502.290713
   """
-  print("Satistics from ratio of CPython / PyPy performance")
+  print("Satistics from ratio of CPython / PyPy performance")  # noqa: T201
   stats(min(ratios_cpython_to_pypy))
   stats(max(ratios_cpython_to_pypy))
   stats(mean(ratios_cpython_to_pypy))
@@ -902,7 +521,7 @@ def check_stats() -> None:  # noqa: D103
   stats(pvariance(ratios_cpython_to_pypy))
   stats(stdev(ratios_cpython_to_pypy))
   stats(variance(ratios_cpython_to_pypy))
-  print("")
+  print("")  # noqa: T201
 
   ratios_4700u_battery_to_4700u_plugged = [
     77.4804 / 129.8398,
@@ -991,7 +610,7 @@ def check_stats() -> None:  # noqa: D103
   - stdev: 0.199723
   - variance: 0.039889
   """
-  print("Satistics from ratio of 4700U battery / 4700U plugged performance")
+  print("Satistics from ratio of 4700U battery / 4700U plugged performance")  # noqa: T201
   stats(min(ratios_4700u_battery_to_4700u_plugged))
   stats(max(ratios_4700u_battery_to_4700u_plugged))
   stats(mean(ratios_4700u_battery_to_4700u_plugged))
@@ -1004,4 +623,4 @@ def check_stats() -> None:  # noqa: D103
   stats(pvariance(ratios_4700u_battery_to_4700u_plugged))
   stats(stdev(ratios_4700u_battery_to_4700u_plugged))
   stats(variance(ratios_4700u_battery_to_4700u_plugged))
-  print("")
+  print("")  # noqa: T201
