@@ -51,19 +51,19 @@ attrs==23.2.0
     #   fiona
     #   jsonschema
     #   referencing
-babel==2.14.0
+babel==2.15.0
     # via jupyterlab-server
 basedmypy==2.4.0
-basedpyright==1.11.0
+basedpyright==1.12.1
 basedtyping==0.1.3
     # via basedmypy
 beautifulsoup4==4.12.3
     # via nbconvert
-blackjax==1.1.1
+blackjax==1.2.1
 blake3==0.4.1
 bleach==6.1.0
     # via nbconvert
-blinker==1.8.1
+blinker==1.8.2
     # via flask
 brotli==1.1.0
     # via yt-dlp
@@ -112,6 +112,7 @@ click==8.1.7
     #   pysr
     #   tensorflow-datasets
     #   textual-dev
+    #   typer
 click-plugins==1.1.1
     # via fiona
 cligj==0.7.2
@@ -136,14 +137,14 @@ comm==0.2.2
     #   ipywidgets
 contourpy==1.2.1
     # via matplotlib
-cryptography==42.0.5
+cryptography==42.0.7
 curl-cffi==0.6.3
-cvxpy==1.4.3
+cvxpy==1.5.0
     # via cvxpylayers
 cvxpylayers==0.1.6
 cycler==0.12.1
     # via matplotlib
-dataclasses-json==0.6.5
+dataclasses-json==0.6.6
     # via orbax-export
 dearpygui==1.11.1
 debugpy==1.8.1
@@ -199,7 +200,7 @@ executing==2.0.1
     #   stack-data
 farama-notifications==0.0.4
     # via gymnasium
-fastcore==1.5.33
+fastcore==1.5.34
 fastjsonschema==2.19.1
     # via nbformat
 fastprogress==1.0.3
@@ -218,7 +219,7 @@ fonttools==4.51.0
     # via matplotlib
 fqdn==1.5.1
     # via jsonschema
-frozendict==2.4.2
+frozendict==2.4.4
     # via neural-tangents
 frozenlist==1.4.1
     # via
@@ -251,7 +252,7 @@ gin-config==0.5.0
 gmpy2==2.2.0a1
 google-api-core==2.19.0
     # via google-api-python-client
-google-api-python-client==2.127.0
+google-api-python-client==2.129.0
     # via tensor2tensor
 google-auth==2.29.0
     # via
@@ -337,7 +338,7 @@ isoduration==20.11.0
     # via jsonschema
 itsdangerous==2.2.0
     # via flask
-jax==0.4.26
+jax==0.4.28
     # via
     #   blackjax
     #   chex
@@ -361,7 +362,7 @@ jax==0.4.26
     #   sympy2jax
     #   tf2jax
     #   trax
-jaxlib==0.4.26
+jaxlib==0.4.28
     # via
     #   blackjax
     #   chex
@@ -388,7 +389,7 @@ jaxtyping==0.2.28
     #   optimistix
 jedi==0.19.1
     # via ipython
-jinja2==3.1.3
+jinja2==3.1.4
     # via
     #   flask
     #   jupyter-server
@@ -411,7 +412,7 @@ jsonschema==4.22.0
     #   nbformat
 jsonschema-specifications==2023.12.1
     # via jsonschema
-juliacall==0.9.19
+juliacall==0.9.20
     # via pysr
 juliapkg==0.1.11
     # via juliacall
@@ -481,7 +482,7 @@ llvmlite==0.42.0
 looseversion==1.3.0
     # via rethinkdb
 lxml==5.2.1
-marisa-trie==1.1.0
+marisa-trie==1.1.1
     # via language-data
 markdown==3.6
     # via tensorboard
@@ -559,7 +560,7 @@ nest-asyncio==1.6.0
     #   ipykernel
     #   orbax-checkpoint
 neural-tangents==0.6.5
-nodejs-bin==18.4.0a4
+nodejs-wheel-binaries==20.13.0
     # via basedpyright
 notebook==7.1.3
     # via jupyter
@@ -648,7 +649,7 @@ optimistix==0.0.6
     # via diffrax
 optree==0.11.0
     # via keras
-orbax-checkpoint==0.5.10
+orbax-checkpoint==0.5.11
     # via
     #   flax
     #   orbax-export
@@ -751,14 +752,12 @@ pyasn1-modules==0.4.0
     #   google-auth
     #   oauth2client
 pybind11==2.12.0
-    # via
-    #   cvxpy
-    #   diffcp
+    # via diffcp
 pycparser==2.22
     # via cffi
 pycryptodomex==3.20.0
     # via yt-dlp
-pygments==2.17.2
+pygments==2.18.0
     # via
     #   httpie
     #   icecream
@@ -783,7 +782,7 @@ pyreadline3==3.4.1
     # via tabcompleter
 pysocks==1.7.1
     # via requests
-pysr==0.18.3
+pysr==0.18.4
 pytermgui==7.7.1
 pytest==8.2.0
 python-dateutil==2.9.0.post0
@@ -821,7 +820,7 @@ pyzmq==26.0.3
     #   qtconsole
 qdldl==0.1.7.post2
     # via osqp
-qtconsole==5.5.1
+qtconsole==5.5.2
     # via jupyter
 qtpy==2.4.1
     # via qtconsole
@@ -833,7 +832,7 @@ referencing==0.35.1
     #   jsonschema-specifications
     #   jupyter-events
     #   types-jsonschema
-regex==2024.4.28
+regex==2024.5.10
 requests==2.31.0
     # via
     #   geocoder
@@ -862,8 +861,9 @@ rich==13.7.1
     #   httpie
     #   keras
     #   textual
+    #   typer
 rlax==0.1.6
-rpds-py==0.18.0
+rpds-py==0.18.1
     # via
     #   jsonschema
     #   referencing
@@ -871,7 +871,7 @@ rsa==4.9
     # via
     #   google-auth
     #   oauth2client
-ruff==0.4.3
+ruff==0.4.4
 scikit-learn==1.4.2
     # via pysr
 scipy==1.13.0
@@ -918,6 +918,8 @@ sgp4==2.23
     # via skyfield
 shapely==2.0.4
     # via geopandas
+shellingham==1.5.4
+    # via typer
 six==1.16.0
     # via
     #   asttokens
@@ -996,7 +998,7 @@ tensorflow-probability==0.24.0
     #   kfac
     #   tensor2tensor
     #   tensorflow-gan
-tensorstore==0.1.58
+tensorstore==0.1.59
     # via
     #   flax
     #   orbax-checkpoint
@@ -1061,6 +1063,7 @@ traitlets==5.14.3
 trax==1.2.4
 typeguard==2.13.3
     # via jaxtyping
+typer==0.12.3
 types-colorama==0.4.15.20240311
 types-decorator==5.1.8.20240310
 types-docutils==0.21.0.20240423
@@ -1068,7 +1071,7 @@ types-docutils==0.21.0.20240423
 types-jsonschema==4.22.0.20240501
 types-openpyxl==3.1.0.20240428
 types-pillow==10.2.0.20240423
-types-pygments==2.17.0.20240310
+types-pygments==2.18.0.20240506
 types-python-dateutil==2.9.0.20240316
     # via arrow
 types-pytz==2024.1.0.20240417
@@ -1097,6 +1100,7 @@ typing-extensions==4.11.0
     #   tensorflow-intel
     #   textual
     #   textual-dev
+    #   typer
     #   typing-inspect
 typing-inspect==0.9.0
     # via dataclasses-json
@@ -1130,7 +1134,7 @@ websocket-client==1.8.0
     # via jupyter-server
 websockets==12.0
     # via yt-dlp
-werkzeug==3.0.2
+werkzeug==3.0.3
     # via
     #   flask
     #   tensorboard

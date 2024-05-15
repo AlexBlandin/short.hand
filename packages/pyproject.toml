@@ -64,7 +64,7 @@ sunrise = ["geocoder==1.38.1"]
 type = ["basedmypy", "basedpyright"]
 test = ["pytest"]
 debug = ["pdbp"]
-cli = ["tqdm", "rich", "icecream", "tabulate", "colorama", "termcolor"]
+cli = ["tqdm", "typer", "rich", "icecream", "tabulate", "colorama", "termcolor"]
 cli_plus = [
   "shorthand_packages[cli]",
   "plotext[image]",

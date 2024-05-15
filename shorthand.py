@@ -722,7 +722,7 @@ def lev(s1: str, s2: str) -> int:
   return d0[-1]
 
 
-def cross_platform_filename(
+def cross_platform_filename(  # noqa: PLR0913
   name: str | bytes,
   *,
   permit_unicode: bool = False,
@@ -732,15 +732,15 @@ def cross_platform_filename(
   permit_dotfile: bool = False,
   permit_upper: bool = False,
 ) -> bool:
-  """
+  r"""
   If you _really_ want a file to be name in a cross platform way.
 
-  Strictly speaking, only \\/:*?"<>| are dejure disallowed characters.
+  Strictly speaking, only \/:*?"<>| are dejure disallowed characters.
   This is because they are the ones rejected by the OS (i.e. Windows & Unix).
   However, because people interact with their OS with all this extra stuff...
   This means we need to avoid issues with most shells and file managers.
 
-  So, avoid unicode and the defacto disallowed: `<>'()"[] {};?+|=\\#@*:,%~/!^&$
+  So, avoid unicode and the defacto disallowed: `<>'()"[] {};?+|=\#@*:,%~/!^&$
   And, of course, the null byte, \x00, and control characters: \t\n\r\x0b\x0c
 
   So, From lowest value to highest, in the strictest ASCII mode, DO use:
@@ -790,7 +790,7 @@ def cross_platform_filename(
   )
 
 
-def top_cross_platform_filename(
+def top_cross_platform_filename(  # noqa: PLR0913
   *,
   permit_unicode: bool = False,
   permit_syntax: bool = False,
@@ -801,7 +801,7 @@ def top_cross_platform_filename(
 ) -> str:
   """
   Doesn't work right now, not sure why.
-  
+
   TLDR:
     - use `!` if you can (`permit_syntax`)
     - or `(` which is usually available (but `permit_syntax` also)
