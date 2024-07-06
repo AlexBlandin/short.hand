@@ -3,7 +3,7 @@ short.hand!
 
 Here we collect useful functions and classes, which are often "fast enough".
 Star-importing this includes a few handy stdlib imports, great for the REPL.
-The addition of Type Parameter Syntax means this only support >= 3.12.
+The addition of Type Parameter Syntax means this now supports >= 3.12.
 
 Copyright 2022 Alex Blandin
 """
@@ -392,7 +392,7 @@ def sorted_dict(d: dict, key: Callable = itemgetter(1), *, reverse: bool = False
 
 def sortas[T](first: Iterable[T], second: Iterable) -> list[T]:
   """Sorts the first as if it was the second."""
-  return list(map(itemgetter(0), sorted(zip(first, second, strict=True))))
+  return list(map(itemgetter(1), sorted(zip(second, first, strict=True))))
 
 
 def dedupe[T](it: Iterable[T]) -> Generator[T, Any, None]:
@@ -495,7 +495,7 @@ def isprime(n: int) -> bool:
   if n < 121:  # noqa: PLR2004
     return n > 1
   sqrt = isqrt(n)
-  return all(not (not n % i or not n % (i + 2)) for i in range(11, sqrt, 6))
+  return all(not (not n % i or not n % (i + 2)) for i in range(11, sqrt + 1, 6))
 
 
 def fastprime(n: int, trials: int = 8) -> bool:

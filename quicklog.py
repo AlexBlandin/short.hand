@@ -47,6 +47,7 @@ LOG_CONFIG = {
       "level": "DEBUG",
       "maxBytes": 10**6,
       "backupCount": 5,
+      "encoding": "utf-8",
     },
   },
   "root": {"level": "DEBUG", "handlers": ["stderr", "stdout", "file"]},
