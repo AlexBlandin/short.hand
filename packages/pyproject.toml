@@ -6,53 +6,21 @@ license = "MIT"
 authors = [{ name = "AlexBlandin" }]
 dependencies = [
   "pip",
-  "setuptools",
   "wheel",
+  "setuptools",
   "virtualenv",
   "ruff",
+  "pdbp",
   "attrs",
   "cattrs",
-  "pdbp",
   "basedmypy",
   "basedpyright",
 ]
 
 [project.optional-dependencies]
-# Convenience features
-common = ["shorthand_packages[pytdl]", "shorthand_packages[sunrise]"]
-hobby = [
-  "shorthand_packages[common]",
-  "shorthand_packages[cli]",
-  "shorthand_packages[astro]",
-  "shorthand_packages[writing]",
-  "shorthand_packages[web]",
-  "shorthand_packages[ml]",
-  "shorthand_packages[external]",
-]
-extra = [
-  "shorthand_packages[hobby]",
-  "shorthand_packages[crypto]",
-  "shorthand_packages[cli_plus]",
-  "shorthand_packages[handy]",
-  "shorthand_packages[notebook]",
-  "shorthand_packages[numeric]",
-  "shorthand_packages[img]",
-  "shorthand_packages[gui]",
-  "shorthand_packages[numba_fast]",
-]
-dev = [
-  "shorthand_packages[type]",
-  "shorthand_packages[test]",
-  "shorthand_packages[debug]",
-  "shorthand_packages[cli]",
-  "shorthand_packages[external]",
-  "shorthand_packages[stubs]",
-]
-
 # Specific hobby projects as features
 yt-dlp = ["yt-dlp", "curl_cffi"]
 pytdl = [
-  "shorthand_packages[yt-dlp]",
   "langcodes",
   "pytomlpp",
   "humanize",
@@ -61,12 +29,9 @@ pytdl = [
 sunrise = ["geocoder==1.38.1"]
 
 # Toolbox features
-type = ["basedmypy", "basedpyright"]
 test = ["pytest"]
-debug = ["pdbp"]
-cli = ["tqdm", "typer", "rich", "icecream", "tabulate", "colorama", "termcolor"]
+cli = ["tqdm", "typer", "rich", "icecream", "colorama", "termcolor"]
 cli_plus = [
-  "shorthand_packages[cli]",
   "plotext[image]",
   "pytermgui",
   "textual",
@@ -74,87 +39,92 @@ cli_plus = [
 ]
 crypto = ["pynacl", "cryptography", "certifi", "blake3"]
 handy = [
+  "cffi",
+  "toolz",
+  "duckdb",
+  "psutil",
+  "zipfly",
+  "ada_url",
+  "pendulum",
+  "humanize",
   "tabulate",
   "pytomlpp",
-  "sortedcontainers",
-  "attrs",
-  "cattrs",
-  "more-itertools",
-  "toolz",
   "fastcore",
-  "humanize",
+  "rethinkdb",
+  "more-itertools",
+  "sortedcontainers",
+]
+parsing = [
   "parse",
   "regex",
-  "pendulum",
   "pylev",
   "langcodes",
-  "psutil",
+  "tree-sitter",
 ]
 astro = ["skyfield"]
 carto = ["geopandas"]
-external = ["cffi", "rethinkdb", "duckdb"]
 writing = ["pypandoc", "proselint"]
 web = [
-  "aiohttp",
-  "async-timeout",
-  "beautifulsoup4",
   "lxml",
   "httpie",
-  "soupsieve",
-  "requests",
+  "aiohttp",
   "urllib3",
+  "requests",
+  "soupsieve",
+  "async-timeout",
+  "beautifulsoup4",
 ]
 notebook = ["jupyter", "notebook", "graphviz", "tqdm", "img"]
-img = ["Pillow", "matplotlib", "seaborn[stats]", "pillow-avif-plugin"]
-gui = ["shorthand_packages[img]", "dearpygui"]
+img = ["Pillow", "matplotlib", "seaborn[stats]", "pillow-avif-plugin", "dearpygui"]
 numeric = [
+  "pint",
   "numpy",
-  "pandas",
   "scipy",
   "sympy",
-  "gmpy2==2.2.0a1",
   "numba",
+  "pandas",
+  "polars",
   "imageio",
+  "pint-pandas",
+  "uncertainties",
+  "gmpy2==2.2.0rc1",
 ]
 autograd = [
-  "shorthand_packages[numeric]",
-  "jax[cpu]",
+  "lineax",
   "equinox",
-  "blackjax",
   "numpyro",
   "diffrax",
-  "optimistix",
-  "lineax",
+  "jax[cpu]",
+  "blackjax",
   "sympy2jax",
   "jaxtyping",
+  "optimistix",
 ]
+ml = ["keras"]
 ml_jax = [
-  "shorthand_packages[autograd]",
   "pgx",
-  # "jumanji",
-  "gymnax",
-  # "envpool", # <3.12
   "pysr",
-  "elegy",
   "trax",
-  "jraph",
-  "neural-tangents",
-  "distrax",
-  "cvxpylayers",
-  "objax",
   "rlax",
   "chex",
+  "elegy",
+  "objax",
   "optax",
-  "orbax-checkpoint",
+  "jraph",
+  "gymnax",
+  "distrax",
+  # "jumanji",
+  # "envpool", # <3.12
+  "cvxpylayers",
   "orbax-export",
+  "neural-tangents",
+  "orbax-checkpoint",
 ]
 ml_tf = [
-  "shorthand_packages[numeric]",
+  "dm-sonnet",
   "tensorflow",
   "tensorflow-probability",
-  "dm-sonnet",
 ]
-ml = ["keras", "shorthand_packages[ml_jax]", "shorthand_packages[ml_tf]"]
 # taichi = ["taichi"] # <3.12 # and actually had (beta) windows support now!
 numba_fast = ["tbb", "intel-cmplr-lib-rt"]
 # consider = ["pywin32", "mpl_plotter", "pre-commit"]
@@ -162,7 +132,7 @@ numba_fast = ["tbb", "intel-cmplr-lib-rt"]
 
 # Type stubs, try to keep uptodate
 stubs = [
-  "typing-extensions",
+  "types-six",
   "pandas-stubs",
   "types-Pillow",
   "types-requests",
@@ -171,5 +141,5 @@ stubs = [
   "types-colorama",
   "types-decorator",
   "types-jsonschema",
-  "types-six",
+  "typing-extensions",
 ]

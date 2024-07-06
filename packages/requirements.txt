@@ -21,14 +21,20 @@ absl-py==2.1.0
     #   tensorflow-probability
     #   tf2jax
     #   trax
+ada-url==1.13.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 aiohttp==3.9.5
-    # via textual-dev
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   textual-dev
 aiosignal==1.3.1
     # via aiohttp
-anyio==4.3.0
+anyio==4.4.0
     # via
     #   httpx
     #   jupyter-server
+appdirs==1.4.4
+    # via pint
 argon2-cffi==23.1.0
     # via jupyter-server
 argon2-cffi-bindings==21.2.0
@@ -44,23 +50,30 @@ astunparse==1.6.3
 async-lru==2.0.4
     # via jupyterlab
 async-timeout==4.0.3
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 attrs==23.2.0
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   aiohttp
     #   cattrs
-    #   fiona
     #   jsonschema
     #   referencing
 babel==2.15.0
     # via jupyterlab-server
-basedmypy==2.4.0
-basedpyright==1.12.1
-basedtyping==0.1.3
+basedmypy==2.5.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+basedpyright==1.13.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+basedtyping==0.1.4
     # via basedmypy
 beautifulsoup4==4.12.3
-    # via nbconvert
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   nbconvert
 blackjax==1.2.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 blake3==0.4.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 bleach==6.1.0
     # via nbconvert
 blinker==1.8.2
@@ -72,18 +85,22 @@ bz2file==0.98
 cachetools==5.3.3
     # via google-auth
 cattrs==23.2.3
-certifi==2024.2.2
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+certifi==2024.6.2
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   curl-cffi
-    #   fiona
     #   httpcore
     #   httpx
+    #   pyogrio
     #   pyproj
     #   requests
     #   skyfield
     #   yt-dlp
 cffi==1.16.0
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   ada-url
     #   argon2-cffi-bindings
     #   cryptography
     #   curl-cffi
@@ -95,17 +112,15 @@ charset-normalizer==3.3.2
     #   requests
 chex==0.1.86
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   distrax
     #   gymnax
     #   optax
     #   rlax
-clarabel==0.7.1
+clarabel==0.9.0
     # via cvxpy
 click==8.1.7
     # via
-    #   click-plugins
-    #   cligj
-    #   fiona
     #   flask
     #   geocoder
     #   proselint
@@ -113,10 +128,6 @@ click==8.1.7
     #   tensorflow-datasets
     #   textual-dev
     #   typer
-click-plugins==1.1.1
-    # via fiona
-cligj==0.7.2
-    # via fiona
 cloudpickle==3.0.0
     # via
     #   gym
@@ -124,6 +135,7 @@ cloudpickle==3.0.0
     #   tensorflow-probability
 colorama==0.4.6
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   click
     #   httpie
     #   icecream
@@ -137,17 +149,21 @@ comm==0.2.2
     #   ipywidgets
 contourpy==1.2.1
     # via matplotlib
-cryptography==42.0.7
-curl-cffi==0.6.3
-cvxpy==1.5.0
+cryptography==42.0.8
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+curl-cffi==0.6.4
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+cvxpy==1.5.2
     # via cvxpylayers
 cvxpylayers==0.1.6
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 cycler==0.12.1
     # via matplotlib
-dataclasses-json==0.6.6
+dataclasses-json==0.6.7
     # via orbax-export
 dearpygui==1.11.1
-debugpy==1.8.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+debugpy==1.8.2
     # via ipykernel
 decorator==5.1.1
     # via
@@ -160,14 +176,18 @@ defusedxml==0.7.1
     #   nbconvert
 diffcp==1.0.23
     # via cvxpylayers
-diffrax==0.5.0
+diffrax==0.6.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 distlib==0.3.8
     # via virtualenv
 distrax==0.1.5
-    # via rlax
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   rlax
 dm-env==1.6
     # via rlax
 dm-sonnet==2.0.2
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 dm-tree==0.1.8
     # via
     #   dm-env
@@ -175,21 +195,26 @@ dm-tree==0.1.8
     #   tensorflow-datasets
     #   tensorflow-probability
     #   tf2jax
+docstring-parser==0.16
+    # via simple-parsing
 dopamine-rl==3.0.1
     # via tensor2tensor
-duckdb==0.10.2
-ecos==2.0.13
+duckdb==1.0.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+ecos==2.0.14
     # via
     #   cvxpy
     #   diffcp
 elegy==0.1.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 equinox==0.11.4
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   diffrax
     #   lineax
     #   optimistix
     #   sympy2jax
-etils==1.8.0
+etils==1.9.2
     # via
     #   orbax-checkpoint
     #   orbax-export
@@ -200,22 +225,25 @@ executing==2.0.1
     #   stack-data
 farama-notifications==0.0.4
     # via gymnasium
-fastcore==1.5.34
-fastjsonschema==2.19.1
+fastcore==1.5.48
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+fastjsonschema==2.20.0
     # via nbformat
 fastprogress==1.0.3
     # via blackjax
-filelock==3.14.0
+filelock==3.15.4
     # via virtualenv
-fiona==1.9.6
-    # via geopandas
 flask==3.0.3
     # via tensor2tensor
 flatbuffers==24.3.25
     # via tensorflow-intel
-flax==0.8.3
+flax==0.8.5
     # via gymnax
-fonttools==4.51.0
+flexcache==0.3
+    # via pint
+flexparser==0.3.1
+    # via pint
+fonttools==4.53.0
     # via matplotlib
 fqdn==1.5.1
     # via jsonschema
@@ -225,22 +253,23 @@ frozenlist==1.4.1
     # via
     #   aiohttp
     #   aiosignal
-fsspec==2024.3.1
+fsspec==2024.6.1
     # via etils
 funcsigs==1.0.2
     # via trax
-future==0.18.3
+future==1.0.0
     # via
     #   geocoder
     #   mesh-tensorflow
-    #   proselint
     #   tensor2tensor
-gast==0.5.4
+gast==0.6.0
     # via
     #   tensorflow-intel
     #   tensorflow-probability
 geocoder==1.38.1
-geopandas==0.14.4
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+geopandas==1.0.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 gevent==24.2.1
     # via tensor2tensor
 gin-config==0.5.0
@@ -249,12 +278,13 @@ gin-config==0.5.0
     #   mesh-tensorflow
     #   tensor2tensor
     #   trax
-gmpy2==2.2.0a1
-google-api-core==2.19.0
+gmpy2==2.2.0rc1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+google-api-core==2.19.1
     # via google-api-python-client
-google-api-python-client==2.129.0
+google-api-python-client==2.136.0
     # via tensor2tensor
-google-auth==2.29.0
+google-auth==2.31.0
     # via
     #   google-api-core
     #   google-api-python-client
@@ -263,14 +293,15 @@ google-auth-httplib2==0.2.0
     # via google-api-python-client
 google-pasta==0.2.0
     # via tensorflow-intel
-googleapis-common-protos==1.63.0
+googleapis-common-protos==1.63.2
     # via
     #   google-api-core
     #   tensorflow-metadata
 graphviz==0.20.3
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 greenlet==3.0.3
     # via gevent
-grpcio==1.63.0
+grpcio==1.64.1
     # via
     #   tensor2tensor
     #   tensorboard
@@ -288,6 +319,7 @@ gym-notices==0.0.8
 gymnasium==0.29.1
     # via gymnax
 gymnax==0.0.8
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 h11==0.14.0
     # via httpcore
 h5py==3.11.0
@@ -298,6 +330,7 @@ h5py==3.11.0
 httpcore==1.0.5
     # via httpx
 httpie==3.2.2
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 httplib2==0.22.0
     # via
     #   google-api-python-client
@@ -306,7 +339,9 @@ httplib2==0.22.0
 httpx==0.27.0
     # via jupyterlab
 humanize==4.9.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 icecream==2.1.3
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 idna==3.7
     # via
     #   anyio
@@ -314,32 +349,38 @@ idna==3.7
     #   jsonschema
     #   requests
     #   yarl
-imageio==2.34.1
+imageio==2.34.2
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 img==2.5
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+immutabledict==4.2.0
+    # via tensorflow-datasets
 importlib-resources==6.4.0
     # via etils
 iniconfig==2.0.0
     # via pytest
-intel-cmplr-lib-rt==2024.1.0
-ipykernel==6.29.4
+intel-cmplr-lib-rt==2024.2.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+ipykernel==6.29.5
     # via
     #   jupyter
     #   jupyter-console
     #   jupyterlab
     #   qtconsole
-ipython==8.24.0
+ipython==8.26.0
     # via
     #   ipykernel
     #   ipywidgets
     #   jupyter-console
-ipywidgets==8.1.2
+ipywidgets==8.1.3
     # via jupyter
 isoduration==20.11.0
     # via jsonschema
 itsdangerous==2.2.0
     # via flask
-jax==0.4.28
+jax==0.4.30
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   blackjax
     #   chex
     #   diffrax
@@ -362,7 +403,7 @@ jax==0.4.28
     #   sympy2jax
     #   tf2jax
     #   trax
-jaxlib==0.4.28
+jaxlib==0.4.30
     # via
     #   blackjax
     #   chex
@@ -381,12 +422,14 @@ jaxlib==0.4.28
     #   trax
 jaxopt==0.8.3
     # via blackjax
-jaxtyping==0.2.28
+jaxtyping==0.2.31
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   diffrax
     #   equinox
     #   lineax
     #   optimistix
+    #   orbax-export
 jedi==0.19.1
     # via ipython
 jinja2==3.1.4
@@ -401,9 +444,10 @@ joblib==1.4.2
 jplephem==2.22
     # via skyfield
 jraph==0.0.6.dev0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 json5==0.9.25
     # via jupyterlab-server
-jsonpointer==2.4
+jsonpointer==3.0.0
     # via jsonschema
 jsonschema==4.22.0
     # via
@@ -414,10 +458,11 @@ jsonschema-specifications==2023.12.1
     # via jsonschema
 juliacall==0.9.20
     # via pysr
-juliapkg==0.1.11
+juliapkg==0.1.13
     # via juliacall
 jupyter==1.0.0
-jupyter-client==8.6.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+jupyter-client==8.6.2
     # via
     #   ipykernel
     #   jupyter-console
@@ -441,7 +486,7 @@ jupyter-events==0.10.0
     # via jupyter-server
 jupyter-lsp==2.2.5
     # via jupyterlab
-jupyter-server==2.14.0
+jupyter-server==2.14.1
     # via
     #   jupyter-lsp
     #   jupyterlab
@@ -450,39 +495,44 @@ jupyter-server==2.14.0
     #   notebook-shim
 jupyter-server-terminals==0.5.3
     # via jupyter-server
-jupyterlab==4.1.8
+jupyterlab==4.2.3
     # via notebook
 jupyterlab-pygments==0.3.0
     # via nbconvert
-jupyterlab-server==2.27.1
+jupyterlab-server==2.27.2
     # via
     #   jupyterlab
     #   notebook
-jupyterlab-widgets==3.0.10
+jupyterlab-widgets==3.0.11
     # via ipywidgets
-keras==3.3.3
-    # via tensorflow-intel
+keras==3.4.1
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   tensorflow-intel
 kfac==0.2.0
     # via tensor2tensor
 kiwisolver==1.4.5
     # via matplotlib
 langcodes==3.4.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 language-data==1.2.0
     # via langcodes
 libclang==18.1.1
     # via tensorflow-intel
 lineax==0.0.5
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   diffrax
     #   optimistix
 linkify-it-py==2.0.3
     # via markdown-it-py
-llvmlite==0.42.0
+llvmlite==0.43.0
     # via numba
 looseversion==1.3.0
     # via rethinkdb
-lxml==5.2.1
-marisa-trie==1.1.1
+lxml==5.2.2
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+marisa-trie==1.2.0
     # via language-data
 markdown==3.6
     # via tensorboard
@@ -496,17 +546,18 @@ markupsafe==2.1.5
     #   jinja2
     #   nbconvert
     #   werkzeug
-marshmallow==3.21.2
+marshmallow==3.21.3
     # via dataclasses-json
-matplotlib==3.8.4
+matplotlib==3.9.0
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   gymnax
     #   seaborn
 matplotlib-inline==0.1.7
     # via
     #   ipykernel
     #   ipython
-mdit-py-plugins==0.4.0
+mdit-py-plugins==0.4.1
     # via markdown-it-py
 mdurl==0.1.2
     # via markdown-it-py
@@ -521,7 +572,8 @@ ml-dtypes==0.3.2
     #   keras
     #   tensorflow-intel
     #   tensorstore
-more-itertools==10.2.0
+more-itertools==10.3.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 mpmath==1.3.0
     # via sympy
 msgpack==1.0.8
@@ -560,17 +612,22 @@ nest-asyncio==1.6.0
     #   ipykernel
     #   orbax-checkpoint
 neural-tangents==0.6.5
-nodejs-wheel-binaries==20.13.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+nodejs-wheel-binaries==20.15.0
     # via basedpyright
-notebook==7.1.3
-    # via jupyter
+notebook==7.2.1
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   jupyter
 notebook-shim==0.2.4
     # via
     #   jupyterlab
     #   notebook
-numba==0.59.1
+numba==0.60.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 numpy==1.26.4
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   chex
     #   clarabel
     #   contourpy
@@ -591,7 +648,6 @@ numpy==1.26.4
     #   jax
     #   jaxlib
     #   jaxopt
-    #   jaxtyping
     #   jplephem
     #   jraph
     #   keras
@@ -610,6 +666,8 @@ numpy==1.26.4
     #   pandas
     #   pandas-stubs
     #   patsy
+    #   pyarrow
+    #   pyogrio
     #   pysr
     #   qdldl
     #   rlax
@@ -629,11 +687,13 @@ numpy==1.26.4
     #   tensorstore
     #   tf2jax
     #   trax
-numpyro==0.14.0
+numpyro==0.15.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 oauth2client==4.1.3
     # via tensor2tensor
 objax==1.8.0
-opencv-python==4.9.0.80
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+opencv-python==4.10.0.84
     # via
     #   dopamine-rl
     #   tensor2tensor
@@ -643,22 +703,27 @@ opt-einsum==3.3.0
     #   tensorflow-intel
 optax==0.2.2
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   blackjax
     #   flax
-optimistix==0.0.6
-    # via diffrax
+optimistix==0.0.7
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   diffrax
 optree==0.11.0
     # via keras
-orbax-checkpoint==0.5.11
+orbax-checkpoint==0.5.20
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   flax
     #   orbax-export
-orbax-export==0.0.4
-osqp==0.6.4
+orbax-export==0.0.5
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+osqp==0.6.7.post0
     # via cvxpy
 overrides==7.7.0
     # via jupyter-server
-packaging==24.0
+packaging==24.1
     # via
     #   fastcore
     #   geopandas
@@ -667,9 +732,11 @@ packaging==24.0
     #   jupyter-server
     #   jupyterlab
     #   jupyterlab-server
+    #   keras
     #   marshmallow
     #   matplotlib
     #   nbconvert
+    #   pyogrio
     #   pytest
     #   qtconsole
     #   qtpy
@@ -677,27 +744,35 @@ packaging==24.0
     #   tensorflow-intel
 pandas==2.2.2
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   geopandas
+    #   pint-pandas
     #   pysr
     #   seaborn
     #   statsmodels
-pandas-stubs==2.2.1.240316
+pandas-stubs==2.2.2.240603
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 pandocfilters==1.5.1
     # via nbconvert
 parameterized==0.9.0
     # via objax
-parse==1.20.1
+parse==1.20.2
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 parso==0.8.4
     # via jedi
 patsy==0.5.6
     # via statsmodels
-pdbp==1.5.0
+pdbp==1.5.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 pendulum==3.0.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 pgx==2.0.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 pgx-minatar==0.5.1
     # via pgx
-pillow==10.3.0
+pillow==10.4.0
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   dopamine-rl
     #   imageio
     #   matplotlib
@@ -705,25 +780,38 @@ pillow==10.3.0
     #   plotext
     #   tensor2tensor
 pillow-avif-plugin==1.4.3
-pip==24.0
-    # via httpie
-platformdirs==4.2.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+pint==0.24.1
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   pint-pandas
+pint-pandas==0.6
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+pip==24.1.1
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   httpie
+platformdirs==4.2.2
     # via
     #   jupyter-core
     #   virtualenv
 plotext==5.2.8
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 pluggy==1.5.0
     # via pytest
+polars==1.0.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 prometheus-client==0.20.0
     # via jupyter-server
 promise==2.3
     # via tensorflow-datasets
-prompt-toolkit==3.0.43
+prompt-toolkit==3.0.47
     # via
     #   ipython
     #   jupyter-console
-proselint==0.13.0
-proto-plus==1.23.0
+proselint==0.14.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+proto-plus==1.24.0
     # via google-api-core
 protobuf==4.25.3
     # via
@@ -736,12 +824,15 @@ protobuf==4.25.3
     #   tensorflow-hub
     #   tensorflow-intel
     #   tensorflow-metadata
-psutil==5.9.8
+psutil==6.0.0
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   ipykernel
     #   tensorflow-datasets
 pure-eval==0.2.2
     # via stack-data
+pyarrow==16.1.0
+    # via tensorflow-datasets
 pyasn1==0.6.0
     # via
     #   oauth2client
@@ -751,7 +842,7 @@ pyasn1-modules==0.4.0
     # via
     #   google-auth
     #   oauth2client
-pybind11==2.12.0
+pybind11==2.13.1
     # via diffcp
 pycparser==2.22
     # via cffi
@@ -768,8 +859,13 @@ pygments==2.18.0
     #   qtconsole
     #   rich
 pylev==1.4.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 pynacl==1.5.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+pyogrio==0.9.0
+    # via geopandas
 pypandoc==1.13
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 pyparsing==3.1.2
     # via
     #   httplib2
@@ -782,9 +878,12 @@ pyreadline3==3.4.1
     # via tabcompleter
 pysocks==1.7.1
     # via requests
-pysr==0.18.4
+pysr==0.19.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 pytermgui==7.7.1
-pytest==8.2.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+pytest==8.2.2
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
     #   arrow
@@ -796,6 +895,7 @@ python-dateutil==2.9.0.post0
 python-json-logger==2.0.7
     # via jupyter-events
 pytomlpp==1.0.13
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 pytz==2024.1
     # via pandas
 pywin32==306
@@ -818,7 +918,7 @@ pyzmq==26.0.3
     #   jupyter-console
     #   jupyter-server
     #   qtconsole
-qdldl==0.1.7.post2
+qdldl==0.1.7.post4
     # via osqp
 qtconsole==5.5.2
     # via jupyter
@@ -832,9 +932,11 @@ referencing==0.35.1
     #   jsonschema-specifications
     #   jupyter-events
     #   types-jsonschema
-regex==2024.5.10
-requests==2.31.0
+regex==2024.5.15
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+requests==2.32.3
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   geocoder
     #   google-api-core
     #   httpie
@@ -847,6 +949,7 @@ requests==2.31.0
 requests-toolbelt==1.0.0
     # via httpie
 rethinkdb==2.4.10.post1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 rfc3339-validator==0.1.4
     # via
     #   jsonschema
@@ -857,12 +960,14 @@ rfc3986-validator==0.1.1
     #   jupyter-events
 rich==13.7.1
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   flax
     #   httpie
     #   keras
     #   textual
     #   typer
 rlax==0.1.6
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 rpds-py==0.18.1
     # via
     #   jsonschema
@@ -871,11 +976,13 @@ rsa==4.9
     # via
     #   google-auth
     #   oauth2client
-ruff==0.4.4
-scikit-learn==1.4.2
+ruff==0.5.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+scikit-learn==1.5.1
     # via pysr
-scipy==1.13.0
+scipy==1.14.0
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   clarabel
     #   cvxpy
     #   cvxpylayers
@@ -893,21 +1000,25 @@ scipy==1.13.0
     #   statsmodels
     #   tensor2tensor
     #   trax
-scs==3.2.4.post1
+scs==3.2.5
     # via
     #   cvxpy
     #   diffcp
 seaborn==0.13.2
-    # via gymnax
-semantic-version==2.10.0
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   gymnax
+semver==3.0.2
     # via juliapkg
 send2trash==1.8.3
     # via jupyter-server
-setuptools==69.5.1
+setuptools==70.2.0
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   chex
     #   distrax
     #   httpie
+    #   jupyterlab
     #   marisa-trie
     #   pysr
     #   tensorboard
@@ -920,12 +1031,13 @@ shapely==2.0.4
     # via geopandas
 shellingham==1.5.4
     # via typer
+simple-parsing==0.1.5
+    # via tensorflow-datasets
 six==1.16.0
     # via
     #   asttokens
     #   astunparse
     #   bleach
-    #   fiona
     #   geocoder
     #   google-pasta
     #   kfac
@@ -933,7 +1045,6 @@ six==1.16.0
     #   oauth2client
     #   patsy
     #   promise
-    #   proselint
     #   python-dateutil
     #   rethinkdb
     #   rfc3339-validator
@@ -942,31 +1053,40 @@ six==1.16.0
     #   tensorflow-intel
     #   tensorflow-probability
     #   trax
-skyfield==1.48
+skyfield==1.49
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 sniffio==1.3.1
     # via
     #   anyio
     #   httpx
 sortedcontainers==2.4.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 soupsieve==2.5
-    # via beautifulsoup4
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   beautifulsoup4
 stack-data==0.6.3
     # via ipython
 statsmodels==0.14.2
     # via seaborn
 svgwrite==1.4.3
     # via pgx
-sympy==1.12
+sympy==1.12.1
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   pysr
     #   sympy2jax
     #   tensor2tensor
 sympy2jax==0.0.5
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 tabcompleter==1.3.0
     # via pdbp
 tabulate==0.9.0
-    # via dm-sonnet
-tbb==2021.12.0
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   dm-sonnet
+tbb==2021.13.0
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 tensor2tensor==1.14.0
     # via trax
 tensorboard==2.16.2
@@ -975,12 +1095,13 @@ tensorboard==2.16.2
     #   tensorflow-intel
 tensorboard-data-server==0.7.2
     # via tensorboard
-tensorflow==2.16.1
+tensorflow==2.16.2
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   neural-tangents
     #   tf-keras
     #   tf2jax
-tensorflow-datasets==4.9.4
+tensorflow-datasets==4.9.6
     # via
     #   tensor2tensor
     #   trax
@@ -988,31 +1109,36 @@ tensorflow-gan==2.1.0
     # via tensor2tensor
 tensorflow-hub==0.16.1
     # via tensorflow-gan
-tensorflow-intel==2.16.1
+tensorflow-intel==2.16.2
     # via tensorflow
 tensorflow-metadata==1.15.0
     # via tensorflow-datasets
 tensorflow-probability==0.24.0
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   distrax
     #   kfac
     #   tensor2tensor
     #   tensorflow-gan
-tensorstore==0.1.59
+tensorstore==0.1.63
     # via
     #   flax
     #   orbax-checkpoint
 termcolor==2.4.0
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   tensorflow-datasets
     #   tensorflow-intel
 terminado==0.18.1
     # via
     #   jupyter-server
     #   jupyter-server-terminals
-textual==0.58.1
-    # via textual-dev
+textual==0.71.0
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   textual-dev
 textual-dev==1.5.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 tf-keras==2.16.0
     # via tensorflow-hub
 tf2jax==0.3.6
@@ -1021,15 +1147,17 @@ threadpoolctl==3.5.0
     # via
     #   diffcp
     #   scikit-learn
-time-machine==2.14.1
+time-machine==2.14.2
     # via pendulum
 tinycss2==1.3.0
     # via nbconvert
 toml==0.10.2
     # via tensorflow-datasets
 toolz==0.12.1
-    # via chex
-tornado==6.4
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   chex
+tornado==6.4.1
     # via
     #   ipykernel
     #   jupyter-client
@@ -1039,6 +1167,7 @@ tornado==6.4
     #   terminado
 tqdm==4.66.4
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   etils
     #   numpyro
     #   tensor2tensor
@@ -1061,27 +1190,42 @@ traitlets==5.14.3
     #   nbformat
     #   qtconsole
 trax==1.2.4
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+tree-sitter==0.22.3
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 typeguard==2.13.3
-    # via jaxtyping
+    # via
+    #   diffrax
+    #   jaxtyping
 typer==0.12.3
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 types-colorama==0.4.15.20240311
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 types-decorator==5.1.8.20240310
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 types-docutils==0.21.0.20240423
     # via types-pygments
-types-jsonschema==4.22.0.20240501
-types-openpyxl==3.1.0.20240428
-types-pillow==10.2.0.20240423
+types-jsonschema==4.22.0.20240610
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+types-openpyxl==3.1.5.20240630
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+types-pillow==10.2.0.20240520
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 types-pygments==2.18.0.20240506
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 types-python-dateutil==2.9.0.20240316
     # via arrow
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
-types-requests==2.31.0.20240406
-types-setuptools==69.5.0.20240423
+types-requests==2.32.0.20240622
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+types-setuptools==70.1.0.20240627
     # via types-pygments
-types-six==1.16.21.20240425
-typing-extensions==4.11.0
+types-six==1.16.21.20240513
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+typing-extensions==4.12.2
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   basedmypy
     #   basedtyping
     #   blackjax
@@ -1090,13 +1234,17 @@ typing-extensions==4.11.0
     #   equinox
     #   etils
     #   flax
+    #   flexcache
+    #   flexparser
     #   gymnasium
     #   lineax
     #   optimistix
     #   optree
     #   orbax-checkpoint
     #   pgx
+    #   pint
     #   pytermgui
+    #   simple-parsing
     #   tensorflow-intel
     #   textual
     #   textual-dev
@@ -1110,21 +1258,25 @@ tzdata==2024.1
     #   pendulum
 uc-micro-py==1.0.3
     # via linkify-it-py
+uncertainties==3.2.1
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 uri-template==1.3.0
     # via jsonschema
 uritemplate==4.1.1
     # via google-api-python-client
-urllib3==2.2.1
+urllib3==2.2.2
     # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   requests
     #   types-requests
     #   yt-dlp
-virtualenv==20.26.1
+virtualenv==20.26.3
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 wcwidth==0.2.13
     # via
     #   prompt-toolkit
     #   pytermgui
-webcolors==1.13
+webcolors==24.6.0
     # via jsonschema
 webencodings==0.5.1
     # via
@@ -1139,8 +1291,10 @@ werkzeug==3.0.3
     #   flask
     #   tensorboard
 wheel==0.43.0
-    # via astunparse
-widgetsnbextension==4.0.10
+    # via
+    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+    #   astunparse
+widgetsnbextension==4.0.11
     # via ipywidgets
 wrapt==1.16.0
     # via
@@ -1149,10 +1303,13 @@ wrapt==1.16.0
     #   tensorflow-intel
 yarl==1.9.4
     # via aiohttp
-yt-dlp==2024.4.9
-zipp==3.18.1
+yt-dlp==2024.7.2
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+zipfly==6.0.5
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
+zipp==3.19.2
     # via etils
 zope-event==5.0
     # via gevent
-zope-interface==6.3
+zope-interface==6.4.post2
     # via gevent
