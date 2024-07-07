@@ -1,145 +1,195 @@
 [project]
 name = "shorthand_packages"
-description = "common < hobby < extra + dev < all"
+description = "a toolbox of packages"
 version = "1.0.0"
 license = "MIT"
 authors = [{ name = "AlexBlandin" }]
 dependencies = [
   "pip",
-  "wheel",
-  "setuptools",
-  "virtualenv",
   "ruff",
   "pdbp",
   "attrs",
+  "wheel",
   "cattrs",
+  "yt-dlp",
   "basedmypy",
+  "curl_cffi",
+  "setuptools",
+  "virtualenv",
   "basedpyright",
+  "geocoder==1.38.1",
 ]
 
 [project.optional-dependencies]
-# Specific hobby projects as features
-yt-dlp = ["yt-dlp", "curl_cffi"]
-pytdl = [
-  "langcodes",
-  "pytomlpp",
-  "humanize",
+cli = [
   "tqdm",
-]
-sunrise = ["geocoder==1.38.1"]
-
-# Toolbox features
-test = ["pytest"]
-cli = ["tqdm", "typer", "rich", "icecream", "colorama", "termcolor"]
-cli_plus = [
-  "plotext[image]",
-  "pytermgui",
+  "rich",
+  "typer",
   "textual",
+  "colorama",
+  "pytermgui",
+  "termcolor",
   "textual-dev",
+  "plotext[image]",
 ]
-crypto = ["pynacl", "cryptography", "certifi", "blake3"]
+notebook = [
+  "lumen",
+  "panel",
+  "hvplot",
+  "intake",
+  "jupyter",
+  "notebook",
+  "datashader",
+  "jupyterlab",
+  "jupyverse[auth,jupyterlab]",
+]
 handy = [
   "cffi",
+  "pytz",
   "toolz",
+  "blake3",
   "duckdb",
   "psutil",
+  "pynacl",
+  "pytest",
+  "tzdata",
+  "xxhash",
   "zipfly",
-  "ada_url",
-  "pendulum",
-  "humanize",
-  "tabulate",
-  "pytomlpp",
+  "certifi",
+  "pywin32",
   "fastcore",
+  "humanize",
+  "pendulum",
+  "skyfield",
+  "geopandas",
   "rethinkdb",
+  "cachetools",
+  "cryptography",
+  # "ray[default]",
   "more-itertools",
   "sortedcontainers",
+  "typing-extensions",
 ]
 parsing = [
   "parse",
   "regex",
   "pylev",
+  "pyasn1",
+  "ada_url",
+  "pypandoc",
+  "pytomlpp",
   "langcodes",
+  "proselint",
   "tree-sitter",
+  "parsimonious",
+  "tree_sitter_languages",
 ]
-astro = ["skyfield"]
-carto = ["geopandas"]
-writing = ["pypandoc", "proselint"]
 web = [
   "lxml",
   "httpie",
   "aiohttp",
   "urllib3",
+  "html5lib",
   "requests",
   "soupsieve",
   "async-timeout",
   "beautifulsoup4",
 ]
-notebook = ["jupyter", "notebook", "graphviz", "tqdm", "img"]
-img = ["Pillow", "matplotlib", "seaborn[stats]", "pillow-avif-plugin", "dearpygui"]
+visual = [
+  "Pillow",
+  "dtreeviz",
+  "graphviz",
+  "dearpygui",
+  "matplotlib",
+  "seaborn[stats]",
+  "pillow-avif-plugin",
+]
 numeric = [
+  "tbb",
   "pint",
+  "gmpy2",
+  "numba",
   "numpy",
   "scipy",
   "sympy",
-  "numba",
-  "pandas",
-  "polars",
-  "imageio",
-  "pint-pandas",
-  "uncertainties",
-  "gmpy2==2.2.0rc1",
-]
-autograd = [
   "lineax",
-  "equinox",
-  "numpyro",
+  "polars",
+  # "taichi",
   "diffrax",
+  "equinox",
+  "imageio",
+  "numpyro",
+  # "shapely",
   "jax[cpu]",
   "blackjax",
   "sympy2jax",
   "jaxtyping",
   "optimistix",
+  "fastcluster",
+  "pandas[all]",
+  "pint-pandas",
+  "statsmodels",
+  "uncertainties",
+  "intel-cmplr-lib-rt",
 ]
-ml = ["keras"]
-ml_jax = [
+ml = [
   "pgx",
-  "pysr",
-  "trax",
-  "rlax",
   "chex",
+  "pysr",
+  "rlax",
+  "shap",
+  "trax",
+  "alibi",
   "elegy",
+  "jraph",
+  "keras",
   "objax",
   "optax",
-  "jraph",
   "gymnax",
+  "pdpbox",
+  "dice-ml",
   "distrax",
+  "imodels",
   # "jumanji",
-  # "envpool", # <3.12
+  # "envpool",
+  "lightgbm",
+  "interpret",
   "cvxpylayers",
   "orbax-export",
+  "scikit-learn",
   "neural-tangents",
   "orbax-checkpoint",
+  # "tensorflow-probability[jax]",
+  # "ray[data,train,tune,serve,rllib]",
 ]
-ml_tf = [
-  "dm-sonnet",
-  "tensorflow",
-  "tensorflow-probability",
-]
-# taichi = ["taichi"] # <3.12 # and actually had (beta) windows support now!
-numba_fast = ["tbb", "intel-cmplr-lib-rt"]
-# consider = ["pywin32", "mpl_plotter", "pre-commit"]
-# pip install -U "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-
-# Type stubs, try to keep uptodate
-stubs = [
+typeshed = [
   "types-six",
+  "types-cffi",
+  "types-pytz",
+  "types-tqdm",
+  "types-zstd",
+  "types-attrs",
+  "types-regex",
   "pandas-stubs",
   "types-Pillow",
-  "types-requests",
+  "types-psutil",
+  "types-pyasn1",
+  "types-xxhash",
+  "types-certifi",
+  "types-pywin32",
+  "types-seaborn",
+  "types-shapely",
+  "types-urllib3",
+  "types-colorama",
   "types-openpyxl",
   "types-Pygments",
-  "types-colorama",
-  "types-decorator",
+  "types-requests",
+  "types-termcolor",
+  "types-cachetools",
   "types-jsonschema",
-  "typing-extensions",
+  "types-tree-sitter",
+  "types-cryptography",
+  "types-parsimonious",
+  "types-beautifulsoup4",
+  "types-tree-sitter-languages",
 ]

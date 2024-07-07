@@ -41,7 +41,11 @@ from itertools import pairwise
 from math import prod, sqrt
 from typing import Any, Literal, NamedTuple, Self, SupportsIndex
 
-RE_HTTP = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", flags=re.I | re.M | re.U)  # credit @stephenhay
+# import more_itertools
+
+RE_HTTP = re.compile(
+  r"^https?://[^\s/$.?#].[^\s]*$", flags=re.IGNORECASE | re.MULTILINE | re.UNICODE
+)  # credit @stephenhay
 
 CPYTHON = sys.implementation.name == "cpython"
 PYPY = sys.implementation.name == "pypy"
@@ -191,6 +195,8 @@ class SubStruct:
 #########################
 ## Iterables Shorthand ##
 #########################
+
+# Realistically, you should be using more-itertools, though
 
 flatten = chain.from_iterable
 
@@ -889,7 +895,7 @@ if __name__ == "__main__":
         raise NotImplementedError
 
     @classmethod
-    def new(cls, x: float) -> Self:  # noqa: ANN102
+    def new(cls, x: float) -> Self:
       """Create a time from x."""
       self = cls()
       if CPYTHON:
