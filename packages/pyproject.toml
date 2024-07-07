@@ -139,7 +139,7 @@ ml = [
   "rlax",
   "shap",
   "trax",
-  "alibi",
+  # "alibi",
   "elegy",
   "jraph",
   "keras",

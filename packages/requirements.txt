@@ -15,10 +15,8 @@ absl-py==2.1.0
     #   rlax
     #   tensorboard
     #   tensorflow-datasets
-    #   tensorflow-intel
     #   tensorflow-metadata
     #   tensorflow-probability
-    #   tf2jax
     #   trax
 ada-url==1.13.0
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
@@ -49,8 +47,6 @@ aiosqlite==0.20.0
     #   fps-contents
 alabaster==0.7.16
     # via sphinx
-alibi==0.9.6
-    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 annotated-types==0.7.0
     # via pydantic
 anyio==4.4.0
@@ -83,8 +79,6 @@ asphalt-web==1.3.1
     # via jupyverse-api
 asttokens==2.4.1
     # via stack-data
-astunparse==1.6.3
-    # via tensorflow-intel
 async-generator==1.10
     # via
     #   asphalt
@@ -101,7 +95,6 @@ attrs==23.2.0
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   aiohttp
-    #   alibi
     #   cattrs
     #   hypothesis
     #   jsonschema
@@ -134,10 +127,6 @@ bleach==6.1.0
     #   panel
 blinker==1.8.2
     # via flask
-blis==0.7.11
-    # via
-    #   alibi
-    #   thinc
 blosc2==2.7.0
     # via tables
 bokeh==3.4.2
@@ -160,11 +149,6 @@ cachetools==5.3.3
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   google-auth
-catalogue==2.0.10
-    # via
-    #   spacy
-    #   srsly
-    #   thinc
 cattrs==23.2.3
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 certifi==2024.7.4
@@ -213,8 +197,6 @@ click==8.1.7
     #   textual-dev
     #   typer
     #   uvicorn
-cloudpathlib==0.18.1
-    # via weasel
 cloudpickle==3.0.0
     # via
     #   dask
@@ -233,7 +215,6 @@ colorama==0.4.6
     #   sphinx
     #   tqdm
     #   uvicorn
-    #   wasabi
 colorcet==3.1.0
     # via
     #   datashader
@@ -245,10 +226,6 @@ comm==0.2.2
     # via
     #   ipykernel
     #   ipywidgets
-confection==0.1.5
-    # via
-    #   thinc
-    #   weasel
 contourpy==1.2.1
     # via
     #   bokeh
@@ -267,11 +244,6 @@ cvxpylayers==0.1.6
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 cycler==0.12.1
     # via matplotlib
-cymem==2.0.8
-    # via
-    #   preshed
-    #   spacy
-    #   thinc
 dash==2.17.1
     # via
     #   dash-cytoscape
@@ -325,7 +297,6 @@ diffrax==0.6.0
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 dill==0.3.8
     # via
-    #   alibi
     #   interpret-core
     #   multiprocess
 distlib==0.3.8
@@ -341,7 +312,6 @@ dm-tree==0.1.8
     #   dm-env
     #   tensorflow-datasets
     #   tensorflow-probability
-    #   tf2jax
 dnspython==2.6.1
     # via email-validator
 docstring-parser==0.16
@@ -412,16 +382,11 @@ fastparquet==2024.5.0
 fastprogress==1.0.3
     # via blackjax
 filelock==3.15.4
-    # via
-    #   huggingface-hub
-    #   transformers
-    #   virtualenv
+    # via virtualenv
 flask==3.0.3
     # via
     #   dash
     #   tensor2tensor
-flatbuffers==24.3.25
-    # via tensorflow-intel
 flax==0.8.5
     # via gymnax
 flexcache==0.3
@@ -464,7 +429,6 @@ fsspec==2024.6.1
     #   etils
     #   fastparquet
     #   gcsfs
-    #   huggingface-hub
     #   intake
     #   pandas
     #   s3fs
@@ -476,9 +440,7 @@ future==1.0.0
     #   mesh-tensorflow
     #   tensor2tensor
 gast==0.6.0
-    # via
-    #   tensorflow-intel
-    #   tensorflow-probability
+    # via tensorflow-probability
 gcsfs==2024.6.1
     # via pandas
 geocoder==1.38.1
@@ -537,8 +499,6 @@ google-crc32c==1.5.0
     # via
     #   google-cloud-storage
     #   google-resumable-media
-google-pasta==0.2.0
-    # via tensorflow-intel
 google-resumable-media==2.7.1
     # via
     #   google-cloud-bigquery
@@ -562,7 +522,6 @@ grpcio==1.64.1
     #   grpcio-status
     #   tensor2tensor
     #   tensorboard
-    #   tensorflow-intel
 grpcio-status==1.62.2
     # via google-api-core
 gunicorn==22.0.0
@@ -588,7 +547,6 @@ h5py==3.11.0
     #   dice-ml
     #   keras
     #   tensor2tensor
-    #   tensorflow-intel
 holoviews==1.19.1
     # via
     #   hvplot
@@ -615,10 +573,6 @@ httpx==0.27.0
     #   jupyterlab
 httpx-oauth==0.14.1
     # via fastapi-users
-huggingface-hub==0.23.4
-    # via
-    #   tokenizers
-    #   transformers
 humanize==4.9.0
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 hvplot==0.10.0
@@ -636,9 +590,7 @@ idna==3.7
     #   requests
     #   yarl
 imageio==2.34.2
-    # via
-    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   scikit-image
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 imagesize==1.4.1
     # via sphinx
 immutabledict==4.2.0
@@ -706,7 +658,6 @@ jax==0.4.30
     #   pgx
     #   rlax
     #   sympy2jax
-    #   tf2jax
     #   trax
 jaxlib==0.4.30
     # via
@@ -723,7 +674,6 @@ jaxlib==0.4.30
     #   orbax-checkpoint
     #   orbax-export
     #   rlax
-    #   tf2jax
     #   trax
 jaxopt==0.8.3
     # via blackjax
@@ -749,7 +699,6 @@ jinja2==3.1.4
     #   lumen
     #   nbconvert
     #   pandas
-    #   spacy
     #   sphinx
 jmespath==1.0.1
     # via botocore
@@ -845,23 +794,15 @@ jupyverse-api==0.6.0
     #   fps-yjs
     #   jupyverse
 keras==3.4.1
-    # via
-    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   tensorflow-intel
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 kfac==0.2.0
     # via tensor2tensor
 kiwisolver==1.4.5
     # via matplotlib
 langcodes==3.4.0
-    # via
-    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   spacy
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 language-data==1.2.0
     # via langcodes
-lazy-loader==0.4
-    # via scikit-image
-libclang==18.1.1
-    # via tensorflow-intel
 lightgbm==4.4.0
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 lineax==0.0.5
@@ -909,7 +850,6 @@ marshmallow==3.21.3
 matplotlib==3.9.1
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   alibi
     #   dtreeviz
     #   gymnax
     #   imodels
@@ -933,12 +873,11 @@ mesh-tensorflow==0.1.21
     # via tensor2tensor
 mistune==3.0.2
     # via nbconvert
-ml-dtypes==0.3.2
+ml-dtypes==0.4.0
     # via
     #   jax
     #   jaxlib
     #   keras
-    #   tensorflow-intel
     #   tensorstore
 mlxtend==0.23.1
     # via imodels
@@ -964,11 +903,6 @@ multipledispatch==1.0.0
     #   numpyro
 multiprocess==0.70.16
     # via salib
-murmurhash==1.0.10
-    # via
-    #   preshed
-    #   spacy
-    #   thinc
 mutagen==1.47.0
     # via yt-dlp
 mypy-extensions==1.0.0
@@ -996,9 +930,7 @@ nest-asyncio==1.6.0
     #   dash
     #   ipykernel
     #   orbax-checkpoint
-networkx==3.3
-    # via scikit-image
-neural-tangents==0.6.5
+neural-tangents==0.5.0
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 nodejs-wheel-binaries==20.15.0
     # via basedpyright
@@ -1021,11 +953,9 @@ numexpr==2.10.1
     #   blosc2
     #   pandas
     #   tables
-numpy==1.26.4
+numpy==2.0.0
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   alibi
-    #   blis
     #   blosc2
     #   bokeh
     #   bottleneck
@@ -1088,7 +1018,6 @@ numpy==1.26.4
     #   qdldl
     #   rlax
     #   salib
-    #   scikit-image
     #   scikit-learn
     #   scipy
     #   scs
@@ -1096,20 +1025,14 @@ numpy==1.26.4
     #   shap
     #   shapely
     #   skyfield
-    #   spacy
     #   statsmodels
     #   tables
     #   tensor2tensor
     #   tensorboard
     #   tensorflow-datasets
     #   tensorflow-hub
-    #   tensorflow-intel
     #   tensorflow-probability
     #   tensorstore
-    #   tf2jax
-    #   thinc
-    #   tifffile
-    #   transformers
     #   trax
     #   types-seaborn
     #   types-shapely
@@ -1134,9 +1057,7 @@ opencv-python==4.10.0.84
 openpyxl==3.1.5
     # via pandas
 opt-einsum==3.3.0
-    # via
-    #   jax
-    #   tensorflow-intel
+    # via jax
 optax==0.2.2
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
@@ -1173,14 +1094,12 @@ packaging==24.1
     #   google-cloud-bigquery
     #   gunicorn
     #   holoviews
-    #   huggingface-hub
     #   hvplot
     #   ipykernel
     #   jupyter-server
     #   jupyterlab
     #   jupyterlab-server
     #   keras
-    #   lazy-loader
     #   lumen
     #   marshmallow
     #   matplotlib
@@ -1191,21 +1110,14 @@ packaging==24.1
     #   pytest
     #   qtconsole
     #   qtpy
-    #   scikit-image
     #   shap
-    #   spacy
     #   sphinx
     #   statsmodels
     #   tables
-    #   tensorflow-intel
-    #   thinc
-    #   transformers
-    #   weasel
     #   xarray
 pandas==2.2.2
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   alibi
     #   bokeh
     #   datashader
     #   db-dtypes
@@ -1278,7 +1190,6 @@ pgx-minatar==0.5.1
 pillow==10.4.0
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   alibi
     #   bokeh
     #   datashader
     #   dopamine-rl
@@ -1286,7 +1197,6 @@ pillow==10.4.0
     #   matplotlib
     #   objax
     #   plotext
-    #   scikit-image
     #   tensor2tensor
 pillow-avif-plugin==1.4.3
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
@@ -1317,10 +1227,6 @@ polars==1.0.0
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 pqdm==0.2.0
     # via pdpbox
-preshed==3.0.9
-    # via
-    #   spacy
-    #   thinc
 prometheus-client==0.20.0
     # via jupyter-server
 promise==2.3
@@ -1343,7 +1249,6 @@ protobuf==4.25.3
     #   tensorboard
     #   tensorflow-datasets
     #   tensorflow-hub
-    #   tensorflow-intel
     #   tensorflow-metadata
 psutil==6.0.0
     # via
@@ -1390,12 +1295,8 @@ pyct==0.5.0
     # via datashader
 pydantic==2.8.2
     # via
-    #   confection
     #   fastapi
     #   jupyverse-api
-    #   spacy
-    #   thinc
-    #   weasel
 pydantic-core==2.20.1
     # via pydantic
 pydata-google-auth==1.8.2
@@ -1504,11 +1405,9 @@ pyyaml==6.0.1
     #   dask
     #   flax
     #   gymnax
-    #   huggingface-hub
     #   intake
     #   jupyter-events
     #   orbax-checkpoint
-    #   transformers
     #   uvicorn
 pyzmq==26.0.3
     # via
@@ -1538,11 +1437,9 @@ regex==2024.5.15
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   parsimonious
-    #   transformers
 requests==2.32.3
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   alibi
     #   dash
     #   datashader
     #   gcsfs
@@ -1551,7 +1448,6 @@ requests==2.32.3
     #   google-cloud-bigquery
     #   google-cloud-storage
     #   httpie
-    #   huggingface-hub
     #   imodels
     #   intake
     #   interpret-core
@@ -1559,13 +1455,9 @@ requests==2.32.3
     #   panel
     #   requests-oauthlib
     #   requests-toolbelt
-    #   spacy
     #   sphinx
     #   tensor2tensor
     #   tensorflow-datasets
-    #   tensorflow-intel
-    #   transformers
-    #   weasel
     #   yt-dlp
 requests-oauthlib==2.0.0
     # via google-auth-oauthlib
@@ -1612,16 +1504,11 @@ ruff==0.5.1
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 s3fs==2024.6.1
     # via pandas
-safetensors==0.4.3
-    # via transformers
 salib==1.5.0
     # via interpret-core
-scikit-image==0.22.0
-    # via alibi
 scikit-learn==1.5.1
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   alibi
     #   dice-ml
     #   dtreeviz
     #   imodels
@@ -1633,7 +1520,6 @@ scikit-learn==1.5.1
 scipy==1.14.0
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   alibi
     #   clarabel
     #   cvxpy
     #   cvxpylayers
@@ -1652,7 +1538,6 @@ scipy==1.14.0
     #   pandas
     #   qdldl
     #   salib
-    #   scikit-image
     #   scikit-learn
     #   scs
     #   seaborn
@@ -1686,11 +1571,7 @@ setuptools==70.2.0
     #   pdpbox
     #   pydata-google-auth
     #   pysr
-    #   spacy
-    #   spacy-lookups-data
     #   tensorboard
-    #   tensorflow-intel
-    #   thinc
     #   zope-event
     #   zope-interface
 sgp4==2.23
@@ -1708,10 +1589,8 @@ simple-parsing==0.1.5
 six==1.16.0
     # via
     #   asttokens
-    #   astunparse
     #   bleach
     #   geocoder
-    #   google-pasta
     #   html5lib
     #   kfac
     #   mesh-tensorflow
@@ -1724,15 +1603,12 @@ six==1.16.0
     #   rfc3339-validator
     #   tensor2tensor
     #   tensorboard
-    #   tensorflow-intel
     #   tensorflow-probability
     #   trax
 skyfield==1.49
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 slicer==0.0.8
     # via shap
-smart-open==7.0.4
-    # via weasel
 sniffio==1.3.1
     # via
     #   anyio
@@ -1747,14 +1623,6 @@ soupsieve==2.5
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   beautifulsoup4
-spacy==3.7.5
-    # via alibi
-spacy-legacy==3.0.12
-    # via spacy
-spacy-loggers==1.0.5
-    # via spacy
-spacy-lookups-data==1.0.5
-    # via spacy
 sphinx==7.3.7
     # via
     #   numpydoc
@@ -1781,12 +1649,6 @@ sqlalchemy==2.0.31
     # via
     #   fastapi-users-db-sqlalchemy
     #   pandas
-srsly==2.4.8
-    # via
-    #   confection
-    #   spacy
-    #   thinc
-    #   weasel
 stack-data==0.6.3
     # via ipython
 starlette==0.37.2
@@ -1819,17 +1681,10 @@ tenacity==8.5.0
     # via plotly
 tensor2tensor==1.14.0
     # via trax
-tensorboard==2.16.2
-    # via
-    #   objax
-    #   tensorflow-intel
+tensorboard==2.17.0
+    # via objax
 tensorboard-data-server==0.7.2
     # via tensorboard
-tensorflow==2.16.2
-    # via
-    #   neural-tangents
-    #   tf-keras
-    #   tf2jax
 tensorflow-datasets==4.9.6
     # via
     #   tensor2tensor
@@ -1838,8 +1693,6 @@ tensorflow-gan==2.1.0
     # via tensor2tensor
 tensorflow-hub==0.16.1
     # via tensorflow-gan
-tensorflow-intel==2.16.2
-    # via tensorflow
 tensorflow-metadata==1.15.0
     # via tensorflow-datasets
 tensorflow-probability==0.24.0
@@ -1856,7 +1709,6 @@ termcolor==2.4.0
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   tensorflow-datasets
-    #   tensorflow-intel
 terminado==0.18.1
     # via
     #   jupyter-server
@@ -1867,24 +1719,16 @@ textual==0.71.0
     #   textual-dev
 textual-dev==1.5.1
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-tf-keras==2.16.0
+tf-keras==2.15.0
     # via tensorflow-hub
-tf2jax==0.3.6
-    # via neural-tangents
-thinc==8.2.5
-    # via spacy
 threadpoolctl==3.5.0
     # via
     #   diffcp
     #   scikit-learn
-tifffile==2024.7.2
-    # via scikit-image
 time-machine==2.14.2
     # via pendulum
 tinycss2==1.3.0
     # via nbconvert
-tokenizers==0.19.1
-    # via transformers
 toml==0.10.2
     # via tensorflow-datasets
 toolz==0.12.1
@@ -1906,20 +1750,16 @@ tornado==6.4.1
 tqdm==4.66.4
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   alibi
     #   dice-ml
     #   etils
-    #   huggingface-hub
     #   imodels
     #   numpyro
     #   panel
     #   pdpbox
     #   pqdm
     #   shap
-    #   spacy
     #   tensor2tensor
     #   tensorflow-datasets
-    #   transformers
 traitlets==5.14.3
     # via
     #   comm
@@ -1937,8 +1777,6 @@ traitlets==5.14.3
     #   nbconvert
     #   nbformat
     #   qtconsole
-transformers==4.42.3
-    # via alibi
 trax==1.2.4
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 tree-sitter==0.22.3
@@ -1956,8 +1794,6 @@ typer==0.12.3
     # via
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   fastapi-cli
-    #   spacy
-    #   weasel
 types-attrs==19.1.0
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 types-beautifulsoup4==4.12.0.20240511
@@ -2004,13 +1840,13 @@ types-regex==2024.5.15.20240519
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 types-requests==2.32.0.20240622
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-types-seaborn==0.13.2.20240618
+types-seaborn==0.13.2.20240417
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 types-setuptools==70.2.0.20240704
     # via
     #   types-cffi
     #   types-pygments
-types-shapely==2.0.0.20240618
+types-shapely==2.0.0.20240613
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 types-six==1.16.21.20240513
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
@@ -2033,7 +1869,6 @@ typing-extensions==4.12.2
     #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
     #   adbc-driver-manager
     #   aiosqlite
-    #   alibi
     #   basedmypy
     #   basedtyping
     #   blackjax
@@ -2047,8 +1882,8 @@ typing-extensions==4.12.2
     #   flexcache
     #   flexparser
     #   gymnasium
-    #   huggingface-hub
     #   lineax
+    #   neural-tangents
     #   optimistix
     #   optree
     #   orbax-checkpoint
@@ -2062,7 +1897,6 @@ typing-extensions==4.12.2
     #   rich-click
     #   simple-parsing
     #   sqlalchemy
-    #   tensorflow-intel
     #   textual
     #   textual-dev
     #   typer
@@ -2097,11 +1931,6 @@ uvicorn==0.30.1
     #   fastapi
 virtualenv==20.26.3
     # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-wasabi==1.1.3
-    # via
-    #   spacy
-    #   thinc
-    #   weasel
 watchfiles==0.22.0
     # via
     #   fps-contents
@@ -2111,8 +1940,6 @@ wcwidth==0.2.13
     # via
     #   prompt-toolkit
     #   pytermgui
-weasel==0.4.1
-    # via spacy
 webcolors==24.6.0
     # via jsonschema
 webencodings==0.5.1
@@ -2134,17 +1961,13 @@ werkzeug==3.0.3
     #   flask
     #   tensorboard
 wheel==0.43.0
-    # via
-    #   shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
-    #   astunparse
+    # via shorthand-packages (C:/code/shorthand/packages/pyproject.toml)
 widgetsnbextension==4.0.11
     # via ipywidgets
 wrapt==1.16.0
     # via
     #   aiobotocore
-    #   smart-open
     #   tensorflow-datasets
-    #   tensorflow-intel
 xarray==2024.6.0
     # via
     #   datashader
