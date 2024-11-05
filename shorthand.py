@@ -719,10 +719,8 @@ def lev(s1: str, s2: str) -> int:
         cost += 1
         ins_cost = d1[j] + 1
         del_cost = d0[j + 1] + 1
-        if ins_cost < cost:
-          cost = ins_cost
-        if del_cost < cost:
-          cost = del_cost
+        cost = min(ins_cost, cost)
+        cost = min(del_cost, cost)
       d1[j + 1] = cost
     d0, d1 = d1, d0
   return d0[-1]

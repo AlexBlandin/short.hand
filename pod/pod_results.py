@@ -445,7 +445,7 @@ def check_stats() -> None:  # noqa: D103
   stats(pvariance(ratios_4700u_to_8700k))
   stats(stdev(ratios_4700u_to_8700k))
   stats(variance(ratios_4700u_to_8700k))
-  print("")  # noqa: T201
+  print()  # noqa: T201
 
   ratios_cpython_to_pypy = [
     68.9289 / 0.6991,
@@ -521,7 +521,7 @@ def check_stats() -> None:  # noqa: D103
   stats(pvariance(ratios_cpython_to_pypy))
   stats(stdev(ratios_cpython_to_pypy))
   stats(variance(ratios_cpython_to_pypy))
-  print("")  # noqa: T201
+  print()  # noqa: T201
 
   ratios_4700u_battery_to_4700u_plugged = [
     77.4804 / 129.8398,
@@ -623,4 +623,4 @@ def check_stats() -> None:  # noqa: D103
   stats(pvariance(ratios_4700u_battery_to_4700u_plugged))
   stats(stdev(ratios_4700u_battery_to_4700u_plugged))
   stats(variance(ratios_4700u_battery_to_4700u_plugged))
-  print("")  # noqa: T201
+  print()  # noqa: T201

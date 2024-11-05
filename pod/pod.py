@@ -128,7 +128,7 @@ def row(name: str, new: str, access: str) -> None:
     to_new = TIMESCALE * time(new) / N_ITERATIONS
     to_access = TIMESCALE * time("var" + access, setup="var=" + new) / N_ITERATIONS
     print2(
-      f"| {name:>23} | {getsizeof(eval(new)):04} | {to_new:>11.4f} | {to_access:>11.4f} |"  # noqa: S307, PGH001  # pyright: ignore [reportAny]
+      f"| {name:>23} | {getsizeof(eval(new)):04} | {to_new:>11.4f} | {to_access:>11.4f} |"  # noqa: S307  # pyright: ignore [reportAny]
     )
 
 

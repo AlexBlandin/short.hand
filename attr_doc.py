@@ -47,13 +47,15 @@ class AttrDocProperty(property):
   """
 
   def __str__(self) -> str:
+    "Return `str(self)`, which for AttrDocProperty, refers to the inserted `.__doc__()` `property`."
     return self.__doc__ if self.__doc__ is not None else super().__str__()
 
   def __repr__(self) -> str:
+    "Return `repr(self)`, which for AttrDocProperty, refers to the inserted `.__doc__()` `property`."
     return repr(self.__doc__) if self.__doc__ is not None else super().__repr__()
 
 
-def attr_docs(cls):
+def attr_docs(cls: type) -> type:
   """
   Fixes `__doc__` on Enum class attributes, so they can be documented too, in accordance with PEP257.
 
@@ -76,7 +78,11 @@ def attr_docs(cls):
   ```
   """
 
-  clast = next(e for e in ast.walk(ast.parse(inspect.getsource(cls))) if isinstance(e, ast.ClassDef))
+  clast = next(
+    node
+    for node in ast.walk(ast.parse(inspect.getsource(cls)))
+    if isinstance(node, ast.ClassDef) and node.name == cls.__name__
+  )
   __attr_docs__ = {clast.name: cls.__doc__}
 
   for expr, nexpr in itertools.pairwise(clast.body):
@@ -92,7 +98,7 @@ def attr_docs(cls):
     cls.__attr_docs__ = __attr_docs__
 
     @AttrDocProperty
-    def attr_doc(self=cls) -> str | None:
+    def attr_doc(self: type = cls) -> str | None:
       return (
         self.__class__.__attr_docs__.get(self)
         or (self.__class__.__attr_docs__.get(self.name) if hasattr(self, "name") else None)
@@ -107,12 +113,17 @@ def attr_docs(cls):
   return cls
 
 
+### testing
+
+# ruff: noqa: E402
+
 import enum
+from dataclasses import dataclass
 
 
 @attr_docs
 class Words(enum.StrEnum):
-  "A typical enum class"
+  "A typical enum class."
 
   hello = enum.auto()
   "A greeting"
@@ -131,6 +142,8 @@ class Swords(enum.Enum):
   great = 9001
   r"""
   Now, this, this is a sword
+  """
+  r"""
   ```
                 />
   (           //-------------------------------------------------------(
@@ -139,6 +152,66 @@ class Swords(enum.Enum):
                 \>
   ```
   """
+
+
+@attr_docs
+class Regular:
+  "A non-Enum class."
+
+  hello = "world"
+  "We're being polite"
+
+  world = "here"
+  "Good to know where we are"
+
+
+@attr_docs
+@dataclass
+class Structy:
+  "A non-Enum dataclass."
+
+  colour: int
+  "I believe magic's is 8"
+
+  meaning: int = 42
+  "Something about opening doors?"
+
+
+@dataclass
+@attr_docs
+class Recordy:
+  "A non-Enum classdata (attr_docs and dataclass switched in order)."
+
+  classic: str
+  "It is"
+
+  always_was: str
+  "I believe this is a 'meme'?"
+
+
+@attr_docs
+@dataclass(slots=True)
+class Tiny:
+  "A non-Enum dataclasswith slots."
+
+  little: int
+  "is so smol"
+
+  big: str
+  "Tiny and Big"
+
+
+@attr_docs
+class Small:
+  "A non-Enum class with slots."
+
+  __slots__ = ["very", "quite"]
+
+  very: str  # = "almost can't see it"
+  "really very small"
+
+  quite: str  # = "I'd say so"
+  "it's pretty small"
 
 
 if __name__ == "__main__":
@@ -151,3 +224,22 @@ if __name__ == "__main__":
   print(f"{Swords.short.__doc__ = :}")
   print(f"{Swords.great.__doc__ = :}")
   print(f"{Swords.__doc__ = :}")
+
+  print()
+  print("now for my own testing")
+  print()
+
+  print(f"{Words.__mro__ = :}")
+  print(f"{Words.__attr_docs__ = :}")
+  print(f"{Swords.__mro__ = :}")
+  print(f"{Swords.__attr_docs__ = :}")
+  print(f"{Regular.__mro__ = :}")
+  print(f"{Regular.__attr_docs__ = :}")
+  print(f"{Structy.__mro__ = :}")
+  print(f"{Structy.__attr_docs__ = :}")
+  print(f"{Recordy.__mro__ = :}")
+  print(f"{Recordy.__attr_docs__ = :}")
+  print(f"{Small.__mro__ = :}")
+  print(f"{Small.__attr_docs__ = :}")
+  print(f"{Tiny.__mro__ = :}")
+  print(f"{Tiny.__attr_docs__ = :}")
