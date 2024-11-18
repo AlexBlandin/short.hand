@@ -14,7 +14,7 @@ dependencies = [
   "cattrs",
   "yt-dlp[default]>=2024.10.22",
   "basedmypy",
-  "curl_cffi",
+  "curl-cffi",
   "setuptools",
   "virtualenv",
   "basedpyright",
@@ -78,7 +78,9 @@ parsing = [
   "regex",
   "pylev",
   "pyasn1",
-  "ada_url",
+  "ada-url",
+  "pikepdf",
+  "ocrmypdf",
   "pypandoc",
   "pytomlpp",
   "langcodes",
@@ -87,7 +89,14 @@ parsing = [
   "tree-sitter",
   "parsimonious",
   "pyahocorasick",
-  "tree_sitter_languages",
+  "tree-sitter-languages",
+]
+writing = [
+  "mdformat",
+  "mdformat-gfm",
+  "mdformat-frontmatter",
+  "mdformat-footnote",
+  "mdformat-gfm-alerts",
 ]
 web = [
   "lxml",
@@ -115,7 +124,7 @@ numeric = [
   "pint",
   "gmpy2",
   "numba",
-  "numpy",
+  "numpy<2.0.0", # for now
   # "patsy",
   "scipy",
   "sympy",
