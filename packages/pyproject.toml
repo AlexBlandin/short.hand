@@ -3,7 +3,7 @@ name = "shorthand_packages"
 description = "a toolbox of packages"
 version = "1.0.0"
 license = "MIT"
-requires-python = ">=3.12"
+requires-python = ">=3.13" # this is the baseline "system" python, not venv related
 authors = [{ name = "AlexBlandin" }]
 dependencies = [
   "pip",
@@ -12,7 +12,7 @@ dependencies = [
   "attrs",
   "wheel",
   "cattrs",
-  "yt-dlp[default]>=2024.10.22",
+  "yt-dlp[default]>2024.10.22",
   "basedmypy",
   "curl-cffi",
   "setuptools",
@@ -34,13 +34,13 @@ cli = [
   "plotext[image]",
 ]
 notebook = [
-  "lumen",
-  "panel",
-  "hvplot",
-  "intake",
+  # "lumen",
+  # "panel",
+  # "hvplot",
+  # "intake",
   "jupyter",
   "notebook",
-  "datashader",
+  # "datashader",
   "jupyterlab",
   "jupyverse[auth,jupyterlab]",
 ]
@@ -60,7 +60,7 @@ handy = [
   "pywin32",
   "fastcore",
   "humanize",
-  "pendulum",
+  # "pendulum", # no 3.13 support due to transitive dependency
   "skyfield",
   "geopandas",
   "cachetools",
@@ -89,7 +89,7 @@ parsing = [
   "tree-sitter",
   "parsimonious",
   "pyahocorasick",
-  "tree-sitter-languages",
+  # "tree-sitter-languages", # always late to python releases
 ]
 writing = [
   "mdformat",
@@ -100,7 +100,7 @@ writing = [
 ]
 web = [
   "lxml",
-  "ucall",
+  # "ucall", # no 3.13 support yet
   "httpie",
   "aiohttp",
   "urllib3",
@@ -124,7 +124,7 @@ numeric = [
   "pint",
   "gmpy2",
   "numba",
-  "numpy<2.0.0", # for now
+  "numpy",
   # "patsy",
   "scipy",
   "sympy",
@@ -146,6 +146,8 @@ numeric = [
   # "optimistix",
   # "fastcluster",
   "pandas",
+  # "fireducks",
+  "redframes",
   # "pandas[all]",
   "pint-pandas",
   # "statsmodels",
@@ -180,7 +182,7 @@ ml = [
   # "cvxpylayers",
   # "orbax-export",
   "scikit-learn",
-  "neural-tangents",
+  # "neural-tangents", # depends on tf which doesn't support 3.13 yet
   # "orbax-checkpoint",
   # # "tensorflow-probability[jax]",
 ]
@@ -216,10 +218,28 @@ typeshed = [
   "types-tree-sitter-languages",
 ]
 
-[tool.uv.sources]
-torch = { index = "pytorch" }
+# # Include `torch` whenever `--extra cpu` or `--extra gpu` is provided.
+# ml_cpu = ["torch>=2.5.1"]
+# ml_gpu = ["torch>=2.5.1"]
 
-[[tool.uv.index]]
-name = "pytorch"
-url = "https://download.pytorch.org/whl/cpu"
-explicit = true
+# [tool.uv]
+# # But allow `cpu` and `gpu` to choose conflicting versions of `torch`.
+# conflicts = [[{ extra = "ml_cpu" }, { extra = "ml_gpu" }]]
+
+# [tool.uv.sources]
+# torch = [
+#   # With `--extra cpu`, pull PyTorch from the CPU-only index.
+#   { index = "pytorch-cpu", extra = "ml_cpu", marker = "platform_system != 'Darwin'" },
+#   # With `--extra gpu`, pull PyTorch from the GPU-enabled index.
+#   { index = "pytorch-gpu", extra = "ml_gpu" },
+# ]
+
+# [[tool.uv.index]]
+# name = "pytorch-cpu"
+# url = "https://download.pytorch.org/whl/cpu"
+# explicit = true
+
+# [[tool.uv.index]]
+# name = "pytorch-gpu"
+# url = "https://download.pytorch.org/whl/cu124"
+# explicit = true
