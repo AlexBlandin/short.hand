@@ -65,7 +65,7 @@ handy = [
   "geopandas",
   "cachetools",
   "stringzilla",
-  "typstwriter",
+  # "typstwriter",
   "cryptography",
   "pyinstrument",
   "wat-inspector",

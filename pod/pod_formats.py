@@ -41,7 +41,7 @@ class Regular:
 class Slots:
   """regular class with slots."""
 
-  __slots__ = ["sender", "amount", "receiver", "date"]
+  __slots__ = ["amount", "date", "receiver", "sender"]
 
   def __init__(self, sender, receiver, date, amount) -> None:  # noqa: ANN001, D107 # pyright: ignore[reportMissingSuperCall,reportUnknownParameterType,reportMissingParameterType]
     self.sender = sender
@@ -124,7 +124,7 @@ class FrozenAttrUnslot:
 class DataSlots:
   """dataclass with slots, uses manual entry."""
 
-  __slots__ = ["sender", "amount", "receiver", "date"]
+  __slots__ = ["amount", "date", "receiver", "sender"]
   sender: str
   receiver: str
   date: str
@@ -155,7 +155,7 @@ class FrozenData:
 class FrozenDataSlots:
   """frozen dataclass with slots, uses manual entry."""
 
-  __slots__ = ["sender", "amount", "receiver", "date"]
+  __slots__ = ["amount", "date", "receiver", "sender"]
   sender: str
   receiver: str
   date: str

@@ -4,7 +4,7 @@ ada-url==1.15.3
     # via shorthand-packages (pyproject.toml)
 aiohappyeyeballs==2.4.4
     # via aiohttp
-aiohttp==3.11.9
+aiohttp==3.11.11
     # via
     #   shorthand-packages (pyproject.toml)
     #   aiohttp-jinja2
@@ -12,7 +12,7 @@ aiohttp==3.11.9
     #   textual-serve
 aiohttp-jinja2==1.6
     # via textual-serve
-aiosignal==1.3.1
+aiosignal==1.3.2
     # via aiohttp
 aiosqlite==0.20.0
     # via
@@ -20,7 +20,7 @@ aiosqlite==0.20.0
     #   fps-contents
 annotated-types==0.7.0
     # via pydantic
-anyio==4.6.2.post1
+anyio==4.8.0
     # via
     #   fps-contents
     #   fps-terminals
@@ -29,7 +29,7 @@ anyio==4.6.2.post1
     #   pycrdt
     #   starlette
     #   watchfiles
-appnope==0.1.4 ; platform_system == 'Darwin'
+appnope==0.1.4 ; sys_platform == 'darwin'
     # via ipykernel
 argon2-cffi==23.1.0
     # via
@@ -62,7 +62,7 @@ async-timeout==5.0.1
     #   asphalt
 asyncio-extras==1.3.2
     # via asphalt
-attrs==24.2.0
+attrs==24.3.0
     # via
     #   shorthand-packages (pyproject.toml)
     #   aiohttp
@@ -73,9 +73,9 @@ babel==2.16.0
     # via
     #   fps-lab
     #   jupyterlab-server
-basedmypy==2.8.0
+basedmypy==2.9.1
     # via shorthand-packages (pyproject.toml)
-basedpyright==1.22.0
+basedpyright==1.23.2
     # via shorthand-packages (pyproject.toml)
 basedtyping==0.1.10
     # via basedmypy
@@ -85,7 +85,7 @@ beautifulsoup4==4.12.3
     # via
     #   shorthand-packages (pyproject.toml)
     #   nbconvert
-blake3==1.0.0
+blake3==1.0.1
     # via shorthand-packages (pyproject.toml)
 bleach==6.2.0
     # via nbconvert
@@ -97,7 +97,7 @@ cachetools==5.5.0
     # via shorthand-packages (pyproject.toml)
 cattrs==24.1.2
     # via shorthand-packages (pyproject.toml)
-certifi==2024.8.30
+certifi==2024.12.14
     # via
     #   shorthand-packages (pyproject.toml)
     #   curl-cffi
@@ -118,12 +118,12 @@ cffi==1.17.1
     #   curl-cffi
     #   pynacl
     #   pyzmq
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via
     #   httpie
     #   pdfminer-six
     #   requests
-click==8.1.7
+click==8.1.8
     # via
     #   asphalt
     #   geocoder
@@ -158,7 +158,7 @@ cycler==0.12.1
     # via matplotlib
 dearpygui==2.0.0
     # via shorthand-packages (pyproject.toml)
-debugpy==1.8.9
+debugpy==1.8.11
     # via ipykernel
 decorator==5.1.1
     # via
@@ -197,15 +197,15 @@ fastapi-users==13.0.0
     # via
     #   fastapi-users-db-sqlalchemy
     #   fps-auth
-fastapi-users-db-sqlalchemy==6.0.1
+fastapi-users-db-sqlalchemy==7.0.0
     # via fastapi-users
-fastcore==1.7.22
+fastcore==1.7.28
     # via shorthand-packages (pyproject.toml)
 fastjsonschema==2.21.1
     # via nbformat
 filelock==3.16.1
     # via virtualenv
-fonttools==4.55.1
+fonttools==4.55.3
     # via matplotlib
 fps-auth==0.6.4
     # via jupyverse
@@ -251,11 +251,11 @@ httpcore==1.0.7
     # via httpx
 httpie==3.2.4
     # via shorthand-packages (pyproject.toml)
-httpx==0.28.0
+httpx==0.28.1
     # via
     #   httpx-oauth
     #   jupyterlab
-httpx-oauth==0.15.1
+httpx-oauth==0.16.1
     # via fastapi-users
 humanize==4.11.0
     # via shorthand-packages (pyproject.toml)
@@ -276,7 +276,7 @@ ipykernel==6.29.5
     #   jupyter
     #   jupyter-console
     #   jupyterlab
-ipython==8.30.0
+ipython==8.31.0
     # via
     #   ipykernel
     #   ipywidgets
@@ -287,7 +287,7 @@ isoduration==20.11.0
     # via jsonschema
 jedi==0.19.2
     # via ipython
-jinja2==3.1.4
+jinja2==3.1.5
     # via
     #   aiohttp-jinja2
     #   jupyter-server
@@ -330,11 +330,11 @@ jupyter-core==5.7.2
     #   nbclient
     #   nbconvert
     #   nbformat
-jupyter-events==0.10.0
+jupyter-events==0.11.0
     # via jupyter-server
 jupyter-lsp==2.2.5
     # via jupyterlab
-jupyter-server==2.14.2
+jupyter-server==2.15.0
     # via
     #   jupyter-lsp
     #   jupyterlab
@@ -343,7 +343,7 @@ jupyter-server==2.14.2
     #   notebook-shim
 jupyter-server-terminals==0.5.3
     # via jupyter-server
-jupyterlab==4.3.2
+jupyterlab==4.3.4
     # via
     #   shorthand-packages (pyproject.toml)
     #   fps-jupyterlab
@@ -372,7 +372,7 @@ jupyverse-api==0.6.4
     #   fps-terminals
     #   fps-yjs
     #   jupyverse
-kiwisolver==1.4.7
+kiwisolver==1.4.8
     # via matplotlib
 langcodes==3.5.0
     # via shorthand-packages (pyproject.toml)
@@ -399,7 +399,7 @@ markupsafe==3.0.2
     # via
     #   jinja2
     #   nbconvert
-matplotlib==3.9.3
+matplotlib==3.10.0
     # via
     #   shorthand-packages (pyproject.toml)
     #   seaborn
@@ -408,7 +408,7 @@ matplotlib-inline==0.1.7
     # via
     #   ipykernel
     #   ipython
-mdformat==0.7.19
+mdformat==0.7.21
     # via
     #   shorthand-packages (pyproject.toml)
     #   mdformat-footnote
@@ -420,7 +420,7 @@ mdformat-footnote==0.1.1
     # via shorthand-packages (pyproject.toml)
 mdformat-frontmatter==2.0.8
     # via shorthand-packages (pyproject.toml)
-mdformat-gfm==0.3.7
+mdformat-gfm==0.4.1
     # via shorthand-packages (pyproject.toml)
 mdformat-gfm-alerts==1.0.1
     # via shorthand-packages (pyproject.toml)
@@ -435,7 +435,7 @@ mdit-py-plugins==0.4.2
     #   mdformat-gfm-alerts
 mdurl==0.1.2
     # via markdown-it-py
-mistune==3.0.2
+mistune==3.1.0
     # via nbconvert
 more-itertools==10.5.0
     # via shorthand-packages (pyproject.toml)
@@ -450,9 +450,9 @@ mutagen==1.47.0
     # via yt-dlp
 mypy-extensions==1.0.0
     # via basedmypy
-nbclient==0.10.1
+nbclient==0.10.2
     # via nbconvert
-nbconvert==7.16.4
+nbconvert==7.16.5
     # via
     #   fps-nbconvert
     #   jupyter
@@ -464,9 +464,9 @@ nbformat==5.10.4
     #   nbconvert
 nest-asyncio==1.6.0
     # via ipykernel
-nodejs-wheel-binaries==22.11.0
+nodejs-wheel-binaries==22.13.0
     # via basedpyright
-notebook==7.3.0
+notebook==7.3.2
     # via
     #   shorthand-packages (pyproject.toml)
     #   jupyter
@@ -474,7 +474,7 @@ notebook-shim==0.2.4
     # via
     #   jupyterlab
     #   notebook
-numpy==2.1.3
+numpy==2.2.1
     # via
     #   contourpy
     #   geopandas
@@ -491,7 +491,7 @@ numpy==2.1.3
     #   statsmodels
     #   types-seaborn
     #   types-shapely
-ocrmypdf==16.6.2
+ocrmypdf==16.8.0
     # via shorthand-packages (pyproject.toml)
 overrides==7.7.0
     # via jupyter-server
@@ -510,7 +510,6 @@ packaging==24.2
     #   pikepdf
     #   pyogrio
     #   pytest
-    #   qtpy
     #   statsmodels
 pandas==2.2.3
     # via
@@ -539,12 +538,12 @@ pexpect==4.9.0 ; sys_platform != 'emscripten' and sys_platform != 'win32'
     # via ipython
 pi-heif==0.21.0
     # via ocrmypdf
-pikepdf==9.4.2
+pikepdf==9.5.1
     # via
     #   shorthand-packages (pyproject.toml)
     #   img2pdf
     #   ocrmypdf
-pillow==11.0.0
+pillow==11.1.0
     # via
     #   shorthand-packages (pyproject.toml)
     #   img2pdf
@@ -582,7 +581,7 @@ propcache==0.2.1
     #   yarl
 proselint==0.14.0
     # via shorthand-packages (pyproject.toml)
-psutil==6.1.0
+psutil==6.1.1
     # via
     #   shorthand-packages (pyproject.toml)
     #   ipykernel
@@ -604,13 +603,13 @@ pycrdt==0.9.18
     # via fps-yjs
 pycryptodomex==3.21.0
     # via yt-dlp
-pydantic==2.10.3
+pydantic==2.10.5
     # via
     #   fastapi
     #   jupyverse-api
-pydantic-core==2.27.1
+pydantic-core==2.27.2
     # via pydantic
-pygments==2.18.0
+pygments==2.19.1
     # via
     #   httpie
     #   ipython
@@ -618,7 +617,6 @@ pygments==2.18.0
     #   nbconvert
     #   pdbp
     #   rich
-    #   typstwriter
 pyinstrument==5.0.0
     # via shorthand-packages (pyproject.toml)
 pyjwt==2.8.0
@@ -629,25 +627,17 @@ pynacl==1.5.0
     # via shorthand-packages (pyproject.toml)
 pyogrio==0.10.0
     # via geopandas
-pypandoc==1.14
+pypandoc==1.15
     # via shorthand-packages (pyproject.toml)
-pyparsing==3.2.0
+pyparsing==3.2.1
     # via matplotlib
 pyproj==3.7.0
     # via geopandas
-pyreadline3==3.5.4 ; platform_system == 'Windows'
+pyreadline3==3.5.4 ; sys_platform == 'win32'
     # via tabcompleter
-pyside6==6.8.1
-    # via typstwriter
-pyside6-addons==6.8.1
-    # via pyside6
-pyside6-essentials==6.8.1
-    # via
-    #   pyside6
-    #   pyside6-addons
 pysocks==1.7.1
     # via requests
-pytermgui==7.7.2
+pytermgui==7.7.3
     # via shorthand-packages (pyproject.toml)
 pytest==8.3.4
     # via shorthand-packages (pyproject.toml)
@@ -658,7 +648,7 @@ python-dateutil==2.9.0.post0
     #   jupyter-client
     #   matplotlib
     #   pandas
-python-json-logger==2.0.7
+python-json-logger==3.2.1
     # via jupyter-events
 python-multipart==0.0.9
     # via fastapi-users
@@ -672,7 +662,7 @@ pywin32==308
     # via
     #   shorthand-packages (pyproject.toml)
     #   jupyter-core
-pywinpty==2.0.14 ; platform_system == 'Windows' or os_name == 'nt'
+pywinpty==2.0.14 ; os_name == 'nt' or sys_platform == 'win32'
     # via
     #   fps-terminals
     #   jupyter-server
@@ -687,9 +677,7 @@ pyzmq==26.2.0
     #   jupyter-client
     #   jupyter-console
     #   jupyter-server
-qtpy==2.4.2
-    # via typstwriter
-rapidfuzz==3.10.1
+rapidfuzz==3.11.0
     # via shorthand-packages (pyproject.toml)
 ratelim==0.1.6
     # via geocoder
@@ -732,29 +720,27 @@ rich==13.9.4
     #   typer
 rich-click==1.8.5
     # via jupyverse-api
-rpds-py==0.22.1
+rpds-py==0.22.3
     # via
     #   jsonschema
     #   referencing
-ruamel-yaml==0.18.6
+ruamel-yaml==0.18.10
     # via
     #   asphalt
     #   mdformat-frontmatter
 ruamel-yaml-clib==0.2.12 ; python_full_version < '3.13' and platform_python_implementation == 'CPython'
     # via ruamel-yaml
-ruff==0.8.1
+ruff==0.9.0
     # via shorthand-packages (pyproject.toml)
-scipy==1.14.1
+scipy==1.15.0
     # via
     #   seaborn
     #   statsmodels
 seaborn==0.13.2
     # via shorthand-packages (pyproject.toml)
 send2trash==1.8.3
-    # via
-    #   jupyter-server
-    #   typstwriter
-setuptools==75.6.0
+    # via jupyter-server
+setuptools==75.8.0
     # via
     #   shorthand-packages (pyproject.toml)
     #   httpie
@@ -766,12 +752,7 @@ shapely==2.0.6
     # via geopandas
 shellingham==1.5.4
     # via typer
-shiboken6==6.8.1
-    # via
-    #   pyside6
-    #   pyside6-addons
-    #   pyside6-essentials
-six==1.16.0
+six==1.17.0
     # via
     #   geocoder
     #   html5lib
@@ -795,7 +776,7 @@ starlette==0.41.3
     # via fastapi
 statsmodels==0.14.4
     # via seaborn
-stringzilla==3.11.0
+stringzilla==3.11.3
     # via shorthand-packages (pyproject.toml)
 tabcompleter==1.4.0
     # via pdbp
@@ -805,7 +786,7 @@ terminado==0.18.1
     # via
     #   jupyter-server
     #   jupyter-server-terminals
-textual==0.88.1
+textual==1.0.0
     # via
     #   shorthand-packages (pyproject.toml)
     #   textual-dev
@@ -815,7 +796,7 @@ textual-dev==1.7.0
 textual-serve==1.1.1
     # via textual-dev
 tinycss2==1.4.0
-    # via nbconvert
+    # via bleach
 tomli==2.2.1 ; python_full_version < '3.11'
     # via
     #   basedmypy
@@ -854,7 +835,7 @@ tree-sitter==0.23.2
     # via
     #   shorthand-packages (pyproject.toml)
     #   types-tree-sitter-languages
-typer==0.15.0
+typer==0.15.1
     # via shorthand-packages (pyproject.toml)
 types-attrs==19.1.0
     # via shorthand-packages (pyproject.toml)
@@ -864,7 +845,7 @@ types-cachetools==5.5.0.20240820
     # via shorthand-packages (pyproject.toml)
 types-certifi==2021.10.8.3
     # via shorthand-packages (pyproject.toml)
-types-cffi==1.16.0.20240331
+types-cffi==1.16.0.20241221
     # via shorthand-packages (pyproject.toml)
 types-colorama==0.4.15.20240311
     # via shorthand-packages (pyproject.toml)
@@ -874,31 +855,31 @@ types-docutils==0.21.0.20241128
     # via types-pygments
 types-html5lib==1.1.11.20241018
     # via types-beautifulsoup4
-types-jsonschema==4.23.0.20240813
+types-jsonschema==4.23.0.20241208
     # via shorthand-packages (pyproject.toml)
-types-openpyxl==3.1.5.20241126
+types-openpyxl==3.1.5.20241225
     # via shorthand-packages (pyproject.toml)
 types-parsimonious==0.10.0.20240331
     # via shorthand-packages (pyproject.toml)
 types-pillow==10.2.0.20240822
     # via shorthand-packages (pyproject.toml)
-types-psutil==6.1.0.20241102
+types-psutil==6.1.0.20241221
     # via shorthand-packages (pyproject.toml)
 types-pyasn1==0.6.0.20240913
     # via shorthand-packages (pyproject.toml)
-types-pygments==2.18.0.20240506
+types-pygments==2.19.0.20250107
     # via shorthand-packages (pyproject.toml)
-types-python-dateutil==2.9.0.20241003
+types-python-dateutil==2.9.0.20241206
     # via
     #   arrow
     #   fps-kernels
-types-pytz==2024.2.0.20241003
+types-pytz==2024.2.0.20241221
     # via
     #   shorthand-packages (pyproject.toml)
     #   pandas-stubs
-types-pywin32==308.0.0.20241128
+types-pywin32==308.0.0.20241221
     # via shorthand-packages (pyproject.toml)
-types-regex==2024.11.6.20241108
+types-regex==2024.11.6.20241221
     # via shorthand-packages (pyproject.toml)
 types-requests==2.32.0.20241016
     # via
@@ -906,17 +887,17 @@ types-requests==2.32.0.20241016
     #   types-tqdm
 types-seaborn==0.13.2.20241204
     # via shorthand-packages (pyproject.toml)
-types-setuptools==75.6.0.20241126
+types-setuptools==75.6.0.20241223
     # via
     #   types-cffi
     #   types-pygments
-types-shapely==2.0.0.20241112
+types-shapely==2.0.0.20241221
     # via shorthand-packages (pyproject.toml)
-types-six==1.16.21.20241105
+types-six==1.17.0.20241205
     # via shorthand-packages (pyproject.toml)
 types-termcolor==1.1.6.2
     # via shorthand-packages (pyproject.toml)
-types-tqdm==4.67.0.20241119
+types-tqdm==4.67.0.20241221
     # via shorthand-packages (pyproject.toml)
 types-tree-sitter==0.20.1.20240311
     # via shorthand-packages (pyproject.toml)
@@ -941,6 +922,7 @@ typing-extensions==4.12.2
     #   curl-cffi
     #   fastapi
     #   ipython
+    #   mistune
     #   multidict
     #   pydantic
     #   pydantic-core
@@ -952,8 +934,6 @@ typing-extensions==4.12.2
     #   textual-dev
     #   typer
     #   uvicorn
-typstwriter==0.2
-    # via shorthand-packages (pyproject.toml)
 tzdata==2024.2
     # via
     #   shorthand-packages (pyproject.toml)
@@ -962,15 +942,15 @@ uc-micro-py==1.0.3
     # via linkify-it-py
 uri-template==1.3.0
     # via jsonschema
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   shorthand-packages (pyproject.toml)
     #   requests
     #   types-requests
     #   yt-dlp
-uvicorn==0.32.1
+uvicorn==0.34.0
     # via asphalt-web
-virtualenv==20.28.0
+virtualenv==20.28.1
     # via shorthand-packages (pyproject.toml)
 wat-inspector==0.4.3
     # via shorthand-packages (pyproject.toml)
@@ -1007,7 +987,7 @@ xxhash==3.5.0
     # via shorthand-packages (pyproject.toml)
 yarl==1.18.3
     # via aiohttp
-yt-dlp==2024.12.3
+yt-dlp==2024.12.23
     # via shorthand-packages (pyproject.toml)
 zipfly==6.0.5
     # via shorthand-packages (pyproject.toml)

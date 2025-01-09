@@ -205,7 +205,7 @@ class Tiny:
 class Small:
   "A non-Enum class with slots."
 
-  __slots__ = ["very", "quite"]
+  __slots__ = ["quite", "very"]
 
   very: str  # = "almost can't see it"
   "really very small"

@@ -346,7 +346,7 @@ def tmap[T](f: Callable[..., T], *args: Any) -> tuple[T, ...]:  # noqa: ANN401
 
 
 def join(xs: Iterable, sep: str = " ") -> str:
-  """Because sep.join(iterable) doesn't convert to str(i) for i in iterable."""  # noqa: D402
+  """Because sep.join(iterable) doesn't convert to str(i) for i in iterable."""
   return sep.join(map(str, xs))
 
 
