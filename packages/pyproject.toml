@@ -12,7 +12,7 @@ dependencies = [
   "attrs",
   "wheel",
   "cattrs",
-  "yt-dlp[default]>2024.10.22",
+  "yt-dlp[default,curl-cffi]>2024.10.22",
   "basedmypy",
   "curl-cffi",
   "setuptools",
