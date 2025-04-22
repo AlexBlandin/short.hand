@@ -12,6 +12,7 @@ dependencies = [
   "attrs",
   "wheel",
   "cattrs",
+  "duckdb",
   "yt-dlp[default,curl-cffi]>2024.10.22",
   "basedmypy",
   "curl-cffi",
@@ -60,14 +61,16 @@ handy = [
   "pywin32",
   "fastcore",
   "humanize",
-  # "pendulum", # no 3.13 support due to transitive dependency
+  "whenever", # community "pendulum-next" with better DST, with speed
   "skyfield",
   "geopandas",
+  "pyroaring",
   "cachetools",
   "stringzilla",
   # "typstwriter",
   "cryptography",
   "pyinstrument",
+  "duckdb-engine",
   "wat-inspector",
   "more-itertools",
   "sortedcontainers",
@@ -111,11 +114,17 @@ web = [
   "beautifulsoup4",
 ]
 visual = [
+  "panel", # holoviz
+  "param", # holoviz
+  "hvplot", # holoviz
   "Pillow",
   # "dtreeviz",
   # "graphviz",
   "dearpygui",
+  "holoviews", # holoviz
+  "pygwalker",
   "matplotlib",
+  "datashader", # holoviz
   "seaborn[stats]",
   "pillow-avif-plugin",
 ]
