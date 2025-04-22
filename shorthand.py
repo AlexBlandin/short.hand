@@ -53,6 +53,7 @@ PYPY = sys.implementation.name == "pypy"
 ###################
 ## POD Shorthand ##
 ###################
+"""you should be using `attrs` instead"""
 
 
 class Dot(dict):
@@ -195,8 +196,7 @@ class SubStruct:
 #########################
 ## Iterables Shorthand ##
 #########################
-
-# Realistically, you should be using more-itertools, though
+"""you should be using `more-itertools` instead"""
 
 flatten = chain.from_iterable
 
@@ -652,8 +652,7 @@ def from_bytes(b: bytes, *, signed: bool = False, byteorder: Literal["little", "
 ####################
 ## Path Shorthand ##
 ####################
-
-# convenience functions to not write as much
+"""convenience functions to not write as much"""
 
 
 def resolve(path: str | Path) -> Path:
@@ -699,6 +698,7 @@ def writelinesmap(
 ######################
 ## String Shorthand ##
 ######################
+"""you should be using `stringzilla` instead"""
 
 
 def lev(s1: str, s2: str) -> int:
@@ -724,6 +724,11 @@ def lev(s1: str, s2: str) -> int:
       d1[j + 1] = cost
     d0, d1 = d1, d0
   return d0[-1]
+
+
+###################
+## WIP Shorthand ##
+###################
 
 
 def cross_platform_filename(  # noqa: PLR0913
