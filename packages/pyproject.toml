@@ -81,7 +81,7 @@ parsing = [
   "regex",
   "pylev",
   "pyasn1",
-  "ada-url",
+  "ada_url", # avoid can_ada
   "pikepdf",
   "ocrmypdf",
   "pypandoc",
@@ -90,6 +90,7 @@ parsing = [
   "proselint",
   "rapidfuzz",
   "tree-sitter",
+  "ast-comments",
   "parsimonious",
   "pyahocorasick",
   # "tree-sitter-languages", # always late to python releases

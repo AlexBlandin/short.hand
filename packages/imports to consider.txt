@@ -1,0 +1,17 @@
+https://pypi.org/project/pipx/
+
+aiohttp async-timeout beautifulsoup4 lxml httpie soupsieve curl_cffi requests urllib3
+
+imageio numpy pandas scipy numba tbb intel-cmplr-lib-rt
+
+graphviz
+
+"plotext[image]" pytermgui textual textual-dev
+
+geopandas
+
+pytest pdbpp psutil
+
+mpl_plotter pre-commit pywin32 pyreadline3
+
+attrs sortedcontainers more-itertools toolz cffi fastcore pytomlpp humanize parse regex pendulum pylev langcodes colorama termcolor rich tqdm proselint
