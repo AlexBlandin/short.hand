@@ -228,7 +228,7 @@ fastapi-users==14.0.1
     #   fps-auth
 fastapi-users-db-sqlalchemy==7.0.0
     # via fastapi-users
-fastcore==1.8.2
+fastcore==1.8.4
     # via shorthand-packages (pyproject.toml)
 fastjsonschema==2.21.1
     # via nbformat
@@ -360,7 +360,7 @@ jinja2==3.1.6
     #   nbconvert
     #   pygwalker
     #   textual-serve
-jplephem==2.22
+jplephem==2.23
     # via skyfield
 json5==0.12.0
     # via
@@ -533,7 +533,7 @@ mutagen==1.47.0
     # via yt-dlp
 mypy-extensions==1.1.0
     # via basedmypy
-narwhals==1.43.1
+narwhals==1.44.0
     # via bokeh
 nbclient==0.10.2
     # via nbconvert
@@ -733,7 +733,7 @@ pyasn1==0.6.1
     # via shorthand-packages (pyproject.toml)
 pycparser==2.22
     # via cffi
-pycrdt==0.12.21
+pycrdt==0.12.22
     # via
     #   fps-kernels
     #   fps-yjs
@@ -749,7 +749,7 @@ pydantic==2.11.7
     #   pygwalker
 pydantic-core==2.33.2
     # via pydantic
-pygments==2.19.1
+pygments==2.19.2
     # via
     #   httpie
     #   ipython
@@ -808,7 +808,7 @@ pytz==2025.2
     #   dateutils
     #   pandas
     #   pygwalker
-pyviz-comms==3.0.5
+pyviz-comms==3.0.6
     # via
     #   holoviews
     #   panel
@@ -896,7 +896,7 @@ ruamel-yaml-clib==0.2.12 ; python_full_version < '3.14' and platform_python_impl
     # via ruamel-yaml
 ruff==0.12.0
     # via shorthand-packages (pyproject.toml)
-scipy==1.15.3
+scipy==1.16.0
     # via
     #   datashader
     #   seaborn
@@ -940,7 +940,7 @@ sqlalchemy==2.0.41
     #   duckdb-engine
     #   fastapi-users-db-sqlalchemy
     #   pygwalker
-sqlglot==26.29.0
+sqlglot==26.30.0
     # via pygwalker
 sqlite-anyio==0.2.3
     # via
@@ -964,7 +964,7 @@ terminado==0.18.1
     # via
     #   jupyter-server
     #   jupyter-server-terminals
-textual==3.4.0
+textual==3.5.0
     # via
     #   shorthand-packages (pyproject.toml)
     #   textual-dev
@@ -1125,7 +1125,7 @@ urllib3==2.5.0
     #   yt-dlp
 virtualenv==20.31.2
     # via shorthand-packages (pyproject.toml)
-wasmtime==33.0.0
+wasmtime==34.0.0
     # via gw-dsl-parser
 wat-inspector==0.4.3
     # via shorthand-packages (pyproject.toml)
