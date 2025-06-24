@@ -292,7 +292,7 @@ class Circular[T](list[T]):
 
 def unique_list(xs: Sequence) -> list:
   """Reduce a list to only its unique elements `[1,1,2,7,2,4] -> [1,2,7,4]`."""
-  return list(dict(zip(xs if len(xs) != 1 else xs[0], itertools.repeat(0))))
+  return list(dict.fromkeys(xs))
 
 
 def unwrap[T, S](f: Callable[[T, T], S], *args: T, **kwargs: T) -> S | None:
