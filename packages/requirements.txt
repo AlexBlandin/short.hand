@@ -40,10 +40,6 @@ anyioutils==0.7.3
     # via
     #   fps
     #   zmq-anyio
-anywidget==0.9.18
-    # via pygwalker
-appdirs==1.4.4
-    # via pygwalker
 appnope==0.1.4 ; sys_platform == 'darwin'
     # via ipykernel
 argon2-cffi==23.1.0
@@ -53,13 +49,9 @@ argon2-cffi==23.1.0
 argon2-cffi-bindings==21.2.0
     # via argon2-cffi
 arrow==1.3.0
-    # via
-    #   isoduration
-    #   pygwalker
+    # via isoduration
 ast-comments==1.2.2
     # via shorthand-packages (pyproject.toml)
-astor==0.8.1
-    # via pygwalker
 asttokens==3.0.0
     # via stack-data
 async-lru==2.0.5
@@ -78,10 +70,6 @@ babel==2.17.0
     # via
     #   fps-lab
     #   jupyterlab-server
-backoff==2.2.1
-    # via
-    #   kanaries-track
-    #   segment-analytics-python
 basedmypy==2.10.0
     # via shorthand-packages (pyproject.toml)
 basedpyright==1.29.4
@@ -110,9 +98,7 @@ brotli==1.1.0 ; implementation_name == 'cpython'
 brotlicffi==1.1.0.0 ; implementation_name != 'cpython'
     # via yt-dlp
 cachetools==6.1.0
-    # via
-    #   shorthand-packages (pyproject.toml)
-    #   pygwalker
+    # via shorthand-packages (pyproject.toml)
 cattrs==25.1.1
     # via shorthand-packages (pyproject.toml)
 certifi==2025.6.15
@@ -184,8 +170,6 @@ cycler==0.12.1
     # via matplotlib
 datashader==0.18.1
     # via shorthand-packages (pyproject.toml)
-dateutils==0.6.12
-    # via kanaries-track
 dearpygui==2.0.0
     # via shorthand-packages (pyproject.toml)
 debugpy==1.8.14
@@ -210,7 +194,6 @@ duckdb==1.3.1
     # via
     #   shorthand-packages (pyproject.toml)
     #   duckdb-engine
-    #   pygwalker
 duckdb-engine==0.17.0
     # via shorthand-packages (pyproject.toml)
 email-validator==2.2.0
@@ -276,8 +259,6 @@ geopandas==1.1.0
     # via shorthand-packages (pyproject.toml)
 greenlet==3.2.3
     # via sqlalchemy
-gw-dsl-parser==0.1.49.1
-    # via pygwalker
 h11==0.16.0
     # via
     #   anycorn
@@ -285,7 +266,7 @@ h11==0.16.0
     #   wsproto
 h2==4.2.0
     # via anycorn
-holoviews==1.20.2
+holoviews==1.21.0
     # via
     #   shorthand-packages (pyproject.toml)
     #   hvplot
@@ -321,8 +302,6 @@ idna==3.10
     #   yarl
 img2pdf==0.6.1
     # via ocrmypdf
-importlib-resources==6.5.2
-    # via wasmtime
 iniconfig==2.1.0
     # via pytest
 ipykernel==6.29.5
@@ -330,22 +309,15 @@ ipykernel==6.29.5
     #   jupyter
     #   jupyter-console
     #   jupyterlab
-ipylab==1.0.0
-    # via pygwalker
 ipython==9.3.0
     # via
     #   ipykernel
     #   ipywidgets
     #   jupyter-console
-    #   pygwalker
 ipython-pygments-lexers==1.1.1
     # via ipython
 ipywidgets==8.1.7
-    # via
-    #   anywidget
-    #   ipylab
-    #   jupyter
-    #   pygwalker
+    # via jupyter
 isoduration==20.11.0
     # via jsonschema
 jedi==0.19.2
@@ -358,7 +330,6 @@ jinja2==3.1.6
     #   jupyterlab
     #   jupyterlab-server
     #   nbconvert
-    #   pygwalker
     #   textual-serve
 jplephem==2.23
     # via skyfield
@@ -441,8 +412,6 @@ jupyverse-api==0.9.0
     #   fps-terminals
     #   fps-yjs
     #   jupyverse
-kanaries-track==0.0.5
-    # via pygwalker
 kiwisolver==1.4.8
     # via matplotlib
 langcodes==3.5.0
@@ -516,13 +485,11 @@ mdurl==0.1.2
     # via markdown-it-py
 mistune==3.1.3
     # via nbconvert
-monotonic==1.6
-    # via segment-analytics-python
 more-itertools==10.7.0
     # via shorthand-packages (pyproject.toml)
 msgpack==1.1.1
     # via textual-dev
-multidict==6.5.0
+multidict==6.5.1
     # via
     #   aiohttp
     #   httpie
@@ -575,7 +542,6 @@ numpy==2.2.6
     #   pandas
     #   pandas-stubs
     #   patsy
-    #   pygwalker
     #   pyogrio
     #   scipy
     #   seaborn
@@ -611,7 +577,6 @@ packaging==25.0
     #   ocrmypdf
     #   panel
     #   pikepdf
-    #   pygwalker
     #   pyogrio
     #   pytest
     #   statsmodels
@@ -624,7 +589,6 @@ pandas==2.3.0
     #   holoviews
     #   hvplot
     #   panel
-    #   pygwalker
     #   seaborn
     #   statsmodels
     #   xarray
@@ -714,9 +678,6 @@ psutil==7.0.0
     # via
     #   shorthand-packages (pyproject.toml)
     #   ipykernel
-    #   pygwalker
-psygnal==0.13.0
-    # via anywidget
 ptyprocess==0.7.0 ; os_name != 'nt' or (sys_platform != 'emscripten' and sys_platform != 'win32')
     # via
     #   pexpect
@@ -727,8 +688,6 @@ pwdlib==0.2.1
     # via fastapi-users
 pyahocorasick==2.2.0
     # via shorthand-packages (pyproject.toml)
-pyarrow==20.0.0
-    # via pygwalker
 pyasn1==0.6.1
     # via shorthand-packages (pyproject.toml)
 pycparser==2.22
@@ -746,7 +705,6 @@ pydantic==2.11.7
     # via
     #   fastapi
     #   jupyverse-api
-    #   pygwalker
 pydantic-core==2.33.2
     # via pydantic
 pygments==2.19.2
@@ -759,8 +717,6 @@ pygments==2.19.2
     #   pdbp
     #   pytest
     #   rich
-pygwalker==0.4.9.15
-    # via shorthand-packages (pyproject.toml)
 pyinstrument==5.0.2
     # via shorthand-packages (pyproject.toml)
 pyjwt==2.10.1
@@ -790,12 +746,10 @@ pytest==8.4.1
 python-dateutil==2.9.0.post0
     # via
     #   arrow
-    #   dateutils
     #   fps-kernels
     #   jupyter-client
     #   matplotlib
     #   pandas
-    #   segment-analytics-python
 python-json-logger==3.3.0
     # via jupyter-events
 python-multipart==0.0.20
@@ -805,9 +759,7 @@ pytomlpp==1.0.13
 pytz==2025.2
     # via
     #   shorthand-packages (pyproject.toml)
-    #   dateutils
     #   pandas
-    #   pygwalker
 pyviz-comms==3.0.6
     # via
     #   holoviews
@@ -834,8 +786,6 @@ pyzmq==26.4.0
     #   jupyter-console
     #   jupyter-server
     #   zmq-anyio
-quickjs==1.19.4
-    # via pygwalker
 rapidfuzz==3.13.0
     # via shorthand-packages (pyproject.toml)
 ratelim==0.1.6
@@ -857,11 +807,8 @@ requests==2.32.4
     #   geocoder
     #   httpie
     #   jupyterlab-server
-    #   kanaries-track
     #   panel
-    #   pygwalker
     #   requests-toolbelt
-    #   segment-analytics-python
     #   yt-dlp
 requests-toolbelt==1.0.0
     # via httpie
@@ -903,8 +850,6 @@ scipy==1.16.0
     #   statsmodels
 seaborn==0.13.2
     # via shorthand-packages (pyproject.toml)
-segment-analytics-python==2.2.3
-    # via pygwalker
 send2trash==1.8.3
     # via jupyter-server
 setuptools==80.9.0
@@ -939,9 +884,6 @@ sqlalchemy==2.0.41
     # via
     #   duckdb-engine
     #   fastapi-users-db-sqlalchemy
-    #   pygwalker
-sqlglot==26.30.0
-    # via pygwalker
 sqlite-anyio==0.2.3
     # via
     #   fps-file-id
@@ -1008,7 +950,6 @@ traitlets==5.14.3
     #   nbclient
     #   nbconvert
     #   nbformat
-    #   pygwalker
 tree-sitter==0.24.0
     # via
     #   shorthand-packages (pyproject.toml)
@@ -1089,7 +1030,6 @@ typing-extensions==4.14.0
     # via
     #   shorthand-packages (pyproject.toml)
     #   aiosqlite
-    #   anywidget
     #   basedmypy
     #   basedtyping
     #   beautifulsoup4
@@ -1098,7 +1038,6 @@ typing-extensions==4.14.0
     #   panel
     #   pydantic
     #   pydantic-core
-    #   pygwalker
     #   pytermgui
     #   rich-click
     #   sqlalchemy
@@ -1125,8 +1064,6 @@ urllib3==2.5.0
     #   yt-dlp
 virtualenv==20.31.2
     # via shorthand-packages (pyproject.toml)
-wasmtime==34.0.0
-    # via gw-dsl-parser
 wat-inspector==0.4.3
     # via shorthand-packages (pyproject.toml)
 watchfiles==1.1.0
@@ -1154,7 +1091,7 @@ websockets==15.0.1
     #   yt-dlp
 wheel==0.45.1
     # via shorthand-packages (pyproject.toml)
-whenever==0.8.5
+whenever==0.8.6
     # via shorthand-packages (pyproject.toml)
 widgetsnbextension==4.0.14
     # via ipywidgets
@@ -1170,7 +1107,7 @@ xyzservices==2025.4.0
     # via bokeh
 yarl==1.20.1
     # via aiohttp
-yt-dlp==2025.6.9
+yt-dlp==2025.6.25
     # via shorthand-packages (pyproject.toml)
 zipfly==6.0.5
     # via shorthand-packages (pyproject.toml)
