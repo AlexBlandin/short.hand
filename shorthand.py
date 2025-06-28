@@ -677,19 +677,22 @@ def readlinesmap[T](fp: str | Path, *fs: Callable[..., T], encoding: str = "utf8
   return list(mapcomp(resolve(fp).read_text(encoding).splitlines(), *fs))
 
 
-def writelines(fp: str | Path, lines: str | list[str], encoding: str = "utf8", newline: str = "\n") -> int:
+def writelines(fp: str | Path, lines: str | list[str], encoding: str = "utf8", newline: str = "\n"):
   """Just writes lines as you normally would want to."""
-  return resolve(fp).write_text(
-    lines if isinstance(lines, str) else newline.join(lines), encoding=encoding, newline=newline
-  )
+  with Path(fp).resolve().open(mode=mode, encoding=encoding, newline=newline) as f:
+    if isinstance(lines, str):
+      f.write(f"{lines}\n")
+    else:
+      f.writelines(f"{line}{newline}" for line in lines)
 
 
 def writelinesmap(
   fp: str | Path, lines: str | list[str], *fs: Callable, encoding: str = "utf8", newline: str = "\n"
 ) -> int:
   """Writelines but map each function in fs to fp's lines in order (fs[0] first, fs[-1] last)."""
-  return resolve(fp).write_text(
-    newline.join(mapcomp(lines if isinstance(lines, list) else lines.splitlines()), *fs),
+  writelines(
+    fp,
+    mapcomp(lines if isinstance(lines, list) else lines.splitlines(), *fs),
     encoding=encoding,
     newline=newline,
   )
