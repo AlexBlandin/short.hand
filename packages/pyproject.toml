@@ -27,12 +27,12 @@ cli = [
   "tqdm",
   "rich",
   "typer",
-  "textual",
   "colorama",
   "pytermgui",
   "termcolor",
   "textual-dev",
   "plotext[image]",
+  "textual[syntax]",
 ]
 notebook = [
   # "lumen",
