@@ -677,7 +677,14 @@ def readlinesmap[T](fp: str | Path, *fs: Callable[..., T], encoding: str = "utf8
   return list(mapcomp(resolve(fp).read_text(encoding).splitlines(), *fs))
 
 
-def writelines(fp: str | Path, lines: str | list[str], encoding: str = "utf8", newline: str = "\n"):
+def writelines(
+  fp: str | Path,
+  lines: str | list[str],
+  *,
+  mode: str = "w+",
+  encoding: str = "utf8",
+  newline: str = "\n",
+) -> None:
   """Just writes lines as you normally would want to."""
   with Path(fp).resolve().open(mode=mode, encoding=encoding, newline=newline) as f:
     if isinstance(lines, str):

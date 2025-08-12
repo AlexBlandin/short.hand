@@ -1,12 +1,16 @@
 """
 `@attr_docs` lets `Enum` classes get attribute `__doc__` support.
 
+You should usually just use `typing.Annotated` and look through `.__metadata__` instead.
+Yes, I'm as annoyed as you are that this is the state of doc comments.
+
 Copyright 2024 Alex Blandin
 """
 
 import ast
 import inspect
 import itertools
+from typing import Annotated
 
 
 class AttrDocProperty(property):
@@ -24,7 +28,7 @@ class AttrDocProperty(property):
 
   Typical use is to define a managed attribute x:
   ```
-  class C(object):
+  class C:
       def getx(self): return self._x
       def setx(self, value): self._x = value
       def delx(self): del self._x
@@ -32,7 +36,7 @@ class AttrDocProperty(property):
   ```
   Decorators make defining new properties or modifying existing ones easy:
   ```
-  class C(object):
+  class C:
       @property
       def x(self):
           "I am the 'x' property."
@@ -62,6 +66,8 @@ def attr_docs(cls: type) -> type:
   The machinery is a `property` that replaces `cls.__doc__`, wrapped so `cls.__doc__.__str__` works.
 
   This, of course, means anything that inspects `cls.__doc__` too closely will fail, but c'est la vie.
+
+  That's why you should probably just use `typing.Annotated` and look through `.__metadata__` instead.
 
   ```
   @attr_docs
@@ -104,6 +110,11 @@ def attr_docs(cls: type) -> type:
         or (self.__class__.__attr_docs__.get(self.name) if hasattr(self, "name") else None)
         or (self.__class__.__attr_docs__.get(self.__name__) if hasattr(self, "__name__") else None)
         or self.__class__.__attr_docs__.get(self.__class__.__name__)
+        or (
+          "\n\n".join(str(m) for m in self.__metadata__ if isinstance(m, str) or hasattr(m, "__str__"))
+          if hasattr(self, "__metadata__") and hasattr(self, "__iter__")  # typing.Annotated support
+          else None
+        )
         or None
       )
 
@@ -192,7 +203,7 @@ class Recordy:
 @attr_docs
 @dataclass(slots=True)
 class Tiny:
-  "A non-Enum dataclasswith slots."
+  "A non-Enum dataclass with slots."
 
   little: int
   "is so smol"
@@ -214,8 +225,23 @@ class Small:
   "it's pretty small"
 
 
+@dataclass
+class TypedDC:
+  "Dataclass, using `typing.Annotated`."
+
+  foo: Annotated[int, "Dataclass field"] = 5
+
+
+class TypedEnum(enum.StrEnum):
+  "Enum, using `typing.Annotated`."
+
+  a: Annotated[str, "Enum the first"] = enum.auto()
+  b: Annotated[str, "Enum the second"] = enum.auto()
+  c: Annotated[str, "Enum the third"] = enum.auto()
+
+
 if __name__ == "__main__":
-  # ruff: noqa: T201
+  # ruff: noqa: T201  # noqa: RUF100
   print(f"{Words.hello.__doc__ = :}")
   print(f"{Words.bye.__doc__ = :}")
   print(f"{Words.goodbye.__doc__ = :}")
@@ -243,3 +269,10 @@ if __name__ == "__main__":
   print(f"{Small.__attr_docs__ = :}")
   print(f"{Tiny.__mro__ = :}")
   print(f"{Tiny.__attr_docs__ = :}")
+
+  print()
+  print("now for typing.Annotated")
+  print()
+
+  print(f"{TypedDC.__annotations__}")
+  print(f"{TypedEnum.__annotations__}")
