@@ -1,5 +1,7 @@
 packages/*.xt
 
+*.code-workspace
+
 # ---> Python
 requirements.txt
 requirements-*.txt
