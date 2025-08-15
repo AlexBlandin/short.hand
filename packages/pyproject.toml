@@ -78,14 +78,15 @@ handy = [
 ]
 parsing = [
   "parse",
-  "regex",
   "pylev",
+  "regex",
+  "rtoml",
   "pyasn1",
   "ada_url", # avoid can_ada
   "pikepdf",
   "ocrmypdf",
   "pypandoc",
-  "pytomlpp",
+  # "pytomlpp",  # no updates past 3.11
   "langcodes",
   "proselint",
   "rapidfuzz",
