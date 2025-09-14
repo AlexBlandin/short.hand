@@ -28,7 +28,7 @@ LOG_CONFIG = {
   "disable_existing_loggers": False,
   "formatters": {
     "simple": {"format": "{levelname:<8s} :: {message}", "style": "{"},
-    "precise": {"format": "{asctime} {levelname:8s} :: {message}", "style": "{"},
+    "precise": {"format": "{asctime} PID:{process:08d} THREAD:{thread:08d} {levelname:<8s} :: {message}", "style": "{"},
   },
   "filters": {"warnings_and_below": {"()": "quicklog.filter_maker", "level": "WARNING"}},
   "handlers": {
@@ -39,7 +39,12 @@ LOG_CONFIG = {
       "stream": "ext://sys.stdout",
       "filters": ["warnings_and_below"],
     },
-    "stderr": {"class": "logging.StreamHandler", "level": "ERROR", "formatter": "simple", "stream": "ext://sys.stderr"},
+    "stderr": {
+      "class": "logging.StreamHandler",
+      "level": "ERROR",
+      "formatter": "simple",
+      "stream": "ext://sys.stderr",
+    },
     "file": {
       "class": "logging.handlers.RotatingFileHandler",
       "formatter": "precise",

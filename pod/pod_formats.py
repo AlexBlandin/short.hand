@@ -1,3 +1,12 @@
+#!/usr/bin/env -S uv run -qqs
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "attrs",
+#   "cattrs",
+# ]
+# ///
+#
 """
 POD Formats.
 

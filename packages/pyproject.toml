@@ -6,20 +6,12 @@ license = "MIT"
 requires-python = ">=3.13" # this is the baseline "system" python, not venv related
 authors = [{ name = "AlexBlandin" }]
 dependencies = [
-  "pip",
   "ruff",
-  "pdbp",
   "attrs",
-  "wheel",
   "cattrs",
   "duckdb",
-  "yt-dlp[default,curl-cffi]>2024.10.22",
-  "basedmypy",
-  "curl-cffi",
-  "setuptools",
-  "virtualenv",
-  "basedpyright",
-  "geocoder==1.38.1",
+  "geocoder",
+  "yt-dlp[default,curl-cffi]>=2025.09.05",
 ]
 
 [project.optional-dependencies]
@@ -61,13 +53,14 @@ handy = [
   "pywin32",
   "fastcore",
   "humanize",
-  "whenever", # community "pendulum-next" with better DST, with speed
+  "whenever", # community "pendulum-next" with better DST and *speed*
   "skyfield",
   "geopandas",
   "pyroaring",
   "cachetools",
   "stringzilla",
   # "typstwriter",
+  "vortex-data",
   "cryptography",
   "pyinstrument",
   "duckdb-engine",
@@ -229,9 +222,12 @@ typeshed = [
   "types-tree-sitter-languages",
 ]
 
+[tool.uv.sources]
+geocoder = { git = "https://github.com/AlexBlandin/geocoder3" }
+
 # # Include `torch` whenever `--extra cpu` or `--extra gpu` is provided.
-# ml_cpu = ["torch>=2.5.1"]
-# ml_gpu = ["torch>=2.5.1"]
+# ml_cpu = ["torch>=2.8.0"]
+# ml_gpu = ["torch>=2.8.0"]
 
 # [tool.uv]
 # # But allow `cpu` and `gpu` to choose conflicting versions of `torch`.

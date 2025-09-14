@@ -603,6 +603,11 @@ def hours_minutes_seconds(t: float) -> None:
 ##################
 
 
+def clear_previous_line() -> None:
+  """Clears the previous terminal line using standard escape codes."""
+  print("\033[A\033[K", end="\r")
+
+
 def yesno(
   prompt: str = "",
   *,

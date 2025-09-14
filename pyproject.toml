@@ -9,7 +9,7 @@ authors = [{ name = "AlexBlandin" }]
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["ruff", "pdbp", "basedmypy", "basedpyright"]
+dev = ["ruff"]
 
 [project.urls]
 Documentation = "https://github.com/alexblandin/short.hand#readme"
