@@ -6,13 +6,16 @@ license = "MIT"
 requires-python = ">=3.13" # this is the baseline "system" python, not venv related
 authors = [{ name = "AlexBlandin" }]
 dependencies = [
-  "ruff",
   "attrs",
   "cattrs",
   "duckdb",
-  "geocoder",
-  "yt-dlp[default,curl-cffi]>=2025.09.05",
+  # "duckdb[all]",
+  "geocoder@https://github.com/AlexBlandin/geocoder3.git",
+  "yt-dlp[default,curl-cffi]>=2025.11.12",
 ]
+
+[dependency-groups]
+dev = ["ruff"]
 
 [project.optional-dependencies]
 cli = [
@@ -51,6 +54,7 @@ handy = [
   "zipfly",
   "certifi",
   "pywin32",
+  # "vechord", # https://github.com/tensorchord/vechord
   "fastcore",
   "humanize",
   "whenever", # community "pendulum-next" with better DST and *speed*
@@ -115,7 +119,7 @@ visual = [
   "Pillow",
   # "dtreeviz",
   # "graphviz",
-  "dearpygui",
+  # "dearpygui",
   "holoviews", # holoviz
   # "pygwalker", # quickjs build error
   "matplotlib",
@@ -222,23 +226,20 @@ typeshed = [
   "types-tree-sitter-languages",
 ]
 
-[tool.uv.sources]
-geocoder = { git = "https://github.com/AlexBlandin/geocoder3" }
-
 # # Include `torch` whenever `--extra cpu` or `--extra gpu` is provided.
-# ml_cpu = ["torch>=2.8.0"]
-# ml_gpu = ["torch>=2.8.0"]
+# cpu = ["torch>=2.8.0"]
+# gpu = ["torch>=2.8.0"]
 
 # [tool.uv]
 # # But allow `cpu` and `gpu` to choose conflicting versions of `torch`.
-# conflicts = [[{ extra = "ml_cpu" }, { extra = "ml_gpu" }]]
+# conflicts = [[{ extra = "cpu" }, { extra = "gpu" }]]
 
 # [tool.uv.sources]
 # torch = [
 #   # With `--extra cpu`, pull PyTorch from the CPU-only index.
-#   { index = "pytorch-cpu", extra = "ml_cpu", marker = "platform_system != 'Darwin'" },
+#   { index = "pytorch-cpu", extra = "cpu", marker = "platform_system != 'Darwin'" },
 #   # With `--extra gpu`, pull PyTorch from the GPU-enabled index.
-#   { index = "pytorch-gpu", extra = "ml_gpu" },
+#   { index = "pytorch-gpu", extra = "gpu" },
 # ]
 
 # [[tool.uv.index]]
@@ -248,5 +249,5 @@ geocoder = { git = "https://github.com/AlexBlandin/geocoder3" }
 
 # [[tool.uv.index]]
 # name = "pytorch-gpu"
-# url = "https://download.pytorch.org/whl/cu124"
+# url = "https://download.pytorch.org/whl/cu128" # for now, avoid cu130
 # explicit = true
