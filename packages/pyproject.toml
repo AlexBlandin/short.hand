@@ -9,6 +9,8 @@ dependencies = [
   "attrs",
   "cattrs",
   "duckdb",
+  "orjson",
+  "orjsonl",
   # "duckdb[all]",
   "geocoder@https://github.com/AlexBlandin/geocoder3.git",
   "yt-dlp[default,curl-cffi]>=2025.11.12",
